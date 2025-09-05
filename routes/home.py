@@ -6,31 +6,43 @@ home = Blueprint('home', __name__)
 
 USERS_FILE = (Path(__file__).resolve().parents[1] / "data" / "users.xlsx")
 
+
 def load_users():
-    if USERS_FILE.exists():
+    # ✅ Read when it exists; otherwise return empty with the right columns
+    if not USERS_FILE.exists():
         return pd.DataFrame(columns=["role", "username", "password"])
-    return pd.read_excel(USERS_FILE)
+
+    df = pd.read_excel(USERS_FILE, engine="openpyxl")
+    # Normalize column names/values
+    df.columns = [c.strip().lower() for c in df.columns]
+    required = {"role", "username", "password"}
+    missing = required - set(df.columns)
+    if missing:
+        raise ValueError(f"users.xlsx missing columns: {missing}")
+
+    for col in ["role", "username", "password"]:
+        df[col] = df[col].astype(str).str.strip()
+
+    return df
 
 @home.route("/", methods=["GET", "POST"])
 def role_selection():
     if request.method == "POST":
-        role = request.form.get("role")
-        username = request.form.get("username", "")
-        password = request.form.get("password", "")
-
-        print(f"🔍 POST - Role: {role}, Username: {username}, Password: {password}")
+        role = (request.form.get("role") or "").strip().lower()
+        username = (request.form.get("username") or "").strip()
+        password = (request.form.get("password") or "").strip()
 
         # Shift Team – no login required
         if role == "shift":
-            print("✅ Shift Team login")
             return redirect(url_for("dashboard.index"))
 
-        # Load users from Excel
         users_df = load_users()
+        # normalize role in df too
+        users_df["role"] = users_df["role"].str.lower()
 
         match = users_df[
             (users_df["role"] == role) &
-            (users_df["username"] == username) &
+            (users_df["username"].str.casefold() == username.casefold()) &
             (users_df["password"] == password)
         ]
 
