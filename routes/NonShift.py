@@ -3,16 +3,16 @@ import pandas as pd
 import os
 from datetime import date
 import plotly.express as px
-
+from pathlib import Path
 nonshift = Blueprint('nonshift', __name__, url_prefix='/nonshift')
-file_path = r"C:/Users/ahgua/Documents/Website visual/Data.xlsx"
+DATA_PATH = (Path(__file__).resolve().parents[1] / "data" / "Data.xlsx")
 
 @nonshift.route('/', methods=["GET", "POST"])
 def index():
-    if not os.path.exists(file_path):
+    if not DATA_PATH.exists():
         return "<h2>Data file not found.</h2>"
 
-    df = pd.read_excel(file_path, dtype={"YWT": float})
+    df = pd.read_excel(DATA_PATH, dtype={"YWT": float})
     df["Date"] = pd.to_datetime(df["Date"])
     df = df.sort_values(by="Date", ascending=False)
 

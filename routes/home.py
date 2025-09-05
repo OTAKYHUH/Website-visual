@@ -1,13 +1,13 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 import pandas as pd
 import os
-
+from pathlib import Path
 home = Blueprint('home', __name__)
 
-USERS_FILE = r"C:/Users/ahgua/Documents/Website visual/users.xlsx"
+USERS_FILE = (Path(__file__).resolve().parents[1] / "data" / "users.xlsx")
 
 def load_users():
-    if not os.path.exists(USERS_FILE):
+    if USERS_FILE.exists():
         return pd.DataFrame(columns=["role", "username", "password"])
     return pd.read_excel(USERS_FILE)
 
