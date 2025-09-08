@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Launching Power BI…</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 0; display: grid; place-items: center; height: 100vh; }
+    .card { padding: 24px 28px; border: 1px solid #333; border-radius: 12px; max-width: 520px; text-align: center; }
+    .btn { display: inline-block; margin-top: 12px; padding: 10px 14px; border-radius: 8px; border: 1px solid #444; text-decoration: none; }
+    #auto-link { position: absolute; left: -9999px; top: -9999px; } /* hidden link */
+  </style>
+</head>
+<body>
+  <!-- Hidden auto-launch link -->
+  <a id="auto-link" href="{{ pbi_url }}" target="_blank" rel="noopener noreferrer">auto</a>
+
+  <div class="card">
+    <h2>Opening your Power BI report…</h2>
+    <p>Click below to open:</p>
+    <p><a class="btn" href="{{ pbi_url }}" target="_blank" rel="noopener noreferrer">Open Power BI</a></p>
+    <p><a class="btn" href="{{ url_for('home.role_selection') }}">Back</a></p>
+  </div>
+
+  <script>
+    try {
+      const link = document.getElementById('auto-link');
+      link.dispatchEvent(new MouseEvent('click', { view: window, bubbles: true, cancelable: true }));
+    } catch (e) {}
+  </script>
+
+  <noscript>
+    JavaScript is required. <a href="{{ pbi_url }}" target="_blank" rel="noopener">Open Power BI</a> |
+    <a href="{{ url_for('home.role_selection') }}">Back</a>
+  </noscript>
+</body>
+</html>
