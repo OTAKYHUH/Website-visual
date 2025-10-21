@@ -33,7 +33,7 @@ _PHOTO_TTL_SEC = 300
 _PHOTO_CACHE: Dict[str, object] = {"ts": 0.0, "photos_dict": {}}
 
 # Local photo directory (used by build/photos.py)
-PHOTO_DIR = r"C:\Users\ahgua\PSA International\(PSAC-CNBD)-YOD-efile - Cess\Staff Photo"
+PHOTO_DIR = Path(__file__).resolve().parents[1] / "static" / "Staff Photo"
 
 
 # -----------------------------------------------------------------------------
