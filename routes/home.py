@@ -1,23 +1,23 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, flash
 import pandas as pd
 from pathlib import Path
+from flask import Flask, render_template, request, redirect, url_for
 
 home = Blueprint('home', __name__)
 
 USERS_FILE = (Path(__file__).resolve().parents[1] / "data" / "users.xlsx")
 
-ROLE_TO_PBI_URL = {
-    "shift":     "https://app.powerbi.com/reportEmbed?reportId=da709d26-ef86-4a23-bdfe-46ca2d260554&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3",
-    "non_shift": "https://app.powerbi.com/reportEmbed?reportId=3a1ec64e-1b23-4811-a593-52ddb00ca52c&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3",
-}
-
 def load_users():
     if not USERS_FILE.exists():
+        # If the file doesn't exist, return an empty table with expected columns
         return pd.DataFrame(columns=["role", "username", "password"])
     df = pd.read_excel(USERS_FILE, engine="openpyxl")
     df.columns = [c.strip().lower() for c in df.columns]
     for col in ["role", "username", "password"]:
-        df[col] = df[col].astype(str).str.strip()
+        if col in df.columns:
+            df[col] = df[col].astype(str).str.strip()
+        else:
+            df[col] = ""  # ensure the column exists
     return df
 
 @home.route("/", methods=["GET", "POST"])
@@ -28,7 +28,8 @@ def role_selection():
         password = (request.form.get("password") or "").strip()
 
         users_df = load_users()
-        users_df["role"] = users_df["role"].str.lower()
+        if "role" in users_df.columns:
+            users_df["role"] = users_df["role"].str.lower()
 
         is_valid = False
         if role == "shift":
@@ -42,12 +43,20 @@ def role_selection():
             is_valid = not match.empty
 
         if is_valid:
-            pbi_url = ROLE_TO_PBI_URL.get(role)
-            if pbi_url:
-                # Just render the launch page, no redirect
-                return render_template("launch_pbi.html", pbi_url=pbi_url)
-            return redirect(url_for("home.role_selection"))
+            # send user based on chosen role
+            if role == "non_shift":
+                return redirect(url_for("nonshift.index"))
+            elif role == "shift":
+                # keep your existing behavior or point elsewhere
+                return redirect(url_for("main.index"))  # temp while testing
+            elif role == "avp_vp":
+                return redirect(url_for("nonshift.index"))  # temp while testing
+
+            # fallback if role is unexpected
+            return redirect(url_for("nonshift.index"))
 
         flash("❌ Invalid username or password.")
 
+    # Show your existing home form template
     return render_template("home.html")
+
