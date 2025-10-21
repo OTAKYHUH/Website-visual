@@ -24,7 +24,7 @@ _CACHE = {"ts": 0.0, "tables": None}
 _PHOTO_TTL = 300
 _PHOTO_CACHE = {"ts": 0.0, "photos": {}}
 
-PHOTO_DIR = r"C:\Users\ahgua\PSA International\(PSAC-CNBD)-YOD-efile - Cess\Staff Photo"
+PHOTO_DIR = Path(__file__).resolve().parents[1] / "static" / "Staff Photo"
 MONTHS_ORDER = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 
 def _tables():

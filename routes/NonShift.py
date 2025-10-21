@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 import time, os, re, difflib
 import pandas as pd
+from pathlib import Path
 
 # DATA
 from build.build_data import get_tables
@@ -17,7 +18,7 @@ except Exception:
 nonshift = Blueprint("nonshift", __name__, url_prefix="/non-shift", template_folder="templates")
 
 # ========= CONFIG =========
-PHOTO_DIR = r"C:\Users\ahgua\PSA International\(PSAC-CNBD)-YOD-efile - Cess\Staff Photo"
+PHOTO_DIR = Path(__file__).resolve().parents[1] / "static" / "Staff Photo"
 
 # ========= caches =========
 _CACHE_TTL_SEC = 120
