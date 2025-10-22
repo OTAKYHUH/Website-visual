@@ -178,9 +178,13 @@
           {% endfor %}
         </div>
 
-        <!-- 2) Deep Dive button uses current selection -->
+        <!-- 2) Deep Dive button uses current selection + cluster + name -->
         <a class="cta" id="deepDiveBtn"
-          href="{{ url_for('daily.index', date=selected_date_str, shift=selected_shift) }}">
+          href="{{ url_for('daily.index',
+                           date=selected_date_str,
+                           shift=selected_shift,
+                           cluster=(tab_hint or 'P123'),
+                           name=person.name) }}">
           Deep Dive
         </a>
       </section>
@@ -240,6 +244,7 @@
         const params = new URLSearchParams(window.location.search);
         params.delete('month');
         boxes.filter(b=>b.checked).forEach(b=>params.append('month', b.value));
+        // keep any existing cluster/tab hint the user arrived with
         window.location.assign(`${window.location.pathname}?${params.toString()}`);
       }
       all.addEventListener('change', () => { boxes.forEach(b => b.checked = all.checked); updateSummary(); apply(); });
@@ -255,6 +260,10 @@
       const strip = document.getElementById('shiftStrip');
       const btn   = document.getElementById('deepDiveBtn');
 
+      // inject current cluster + name from the server
+      const cluster = "{{ (tab_hint or 'P123')|e }}";
+      const personName = "{{ person.name|e }}";
+
       function setActive(el){
         [...strip.querySelectorAll('.pill')].forEach(x=>{
           x.classList.remove('active'); x.setAttribute('aria-selected','false');
@@ -263,7 +272,9 @@
 
         const date  = el.dataset.date;
         const shift = el.dataset.shift || "{{ selected_shift }}";
-        btn.href = `${baseDaily}?date=${encodeURIComponent(date)}&shift=${encodeURIComponent(shift)}`;
+        // Always carry cluster + name through to /daily
+        const url = `${baseDaily}?date=${encodeURIComponent(date)}&shift=${encodeURIComponent(shift)}&cluster=${encodeURIComponent(cluster)}&name=${encodeURIComponent(personName)}`;
+        btn.href = url;
       }
 
       // click to select

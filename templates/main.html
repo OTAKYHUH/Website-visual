@@ -89,7 +89,12 @@
   .header{ display:grid; grid-template-columns: 1fr var(--kpi-wrap) 110px; gap:18px; align-items:start; }
   .kpi-grid{ display:grid; grid-template-columns:repeat(4, var(--kpi-col)); gap:var(--kpi-gap) }
   .icons{ grid-column:2; justify-self:start; width:var(--kpi-wrap) }
+
+  /* make icons act like buttons + show active state */
   .icon-card{ width:var(--kpi-col); height:var(--icon-card-h); background:var(--panel); border:1px solid var(--ring); border-radius:18px; padding:12px 14px; display:grid; place-items:center; gap:8px; }
+  .sort-btn{ cursor:pointer; }
+  .sort-btn.active{ outline:2px solid var(--accent); box-shadow:0 0 16px rgba(0,240,255,.35) inset, 0 0 16px rgba(0,240,255,.25) }
+
   .ico{ width:var(--icon-bubble); height:var(--icon-bubble); border-radius:50%; display:grid; place-items:center; }
   .icon-img{ width:var(--icon-size); height:var(--icon-size); object-fit:contain; display:block; }
 
@@ -138,12 +143,29 @@
   .cell.safety.pts-green{ background:rgba(0,255,160,.14); border-color:rgba(0,255,160,.45); color:#00ff9e; }
   .cell.safety.pts-red{ background:rgba(255,70,70,.14); border-color:rgba(255,70,70,.45); color:#ff6b6b; }
 
+  /* HSL cell (3&2 = green, 1 = orange, 0 = red) */
+  .cell.hsl{ border:1px solid var(--ring); }
+  .cell.hsl .num{ text-shadow:none; }
+  .cell.hsl.pts-green{ background:rgba(0,255,160,.14); border-color:rgba(0,255,160,.45); color:#00ff9e; }
+  .cell.hsl.pts-orange{ background:rgba(255,160,0,.14); border-color:rgba(255,160,0,.45); color:#ffb24a; }
+  .cell.hsl.pts-red{ background:rgba(255,70,70,.14); border-color:rgba(255,70,70,.45); color:#ff6b6b; }
+
   /* Small badge inside metric cells */
   .cell .pts-badge{
     margin-top:6px; padding:3px 8px; display:inline-block;
     font-size:12px; font-weight:800; letter-spacing:.6px; text-transform:uppercase;
     border-radius:999px; border:1px solid currentColor; background:rgba(255,255,255,.06); opacity:.95;
   }
+  /* FISH cell (binary) */
+  .cell.fish{ border:1px solid var(--ring); }
+  .cell.fish .num{
+    text-shadow:none;
+    font-size: clamp(14px, 1.9vw, 40px);
+    line-height: 1.05;
+    white-space: nowrap;
+  }
+  .cell.fish.pts-green{ background:rgba(0,255,160,.14); border-color:rgba(0,255,160,.45); color:#00ff9e; }
+  .cell.fish.pts-red{ background:rgba(255,70,70,.14); border-color:rgba(255,70,70,.45); color:#ff6b6b; }
 </style>
 </head>
 
@@ -226,22 +248,23 @@
         <div class="header">
           <div></div>
           <div class="icons kpi-grid" aria-label="Key metric icons">
-            <div class="icon-card icon-plain">
+            <!-- make these buttons and tag each with a sort key -->
+            <button class="icon-card icon-plain sort-btn" type="button" data-key="ywt" title="Sort by YWT">
               <div class="ico"><img class="icon-img" src="{{ url_for('static', filename='YWT.jpg') }}" alt="YWT"></div>
               <div class="icon-title">YWT</div>
-            </div>
-            <div class="icon-card icon-plain">
+            </button>
+            <button class="icon-card icon-plain sort-btn" type="button" data-key="safety" title="Sort by Safety">
               <div class="ico"><img class="icon-img" src="{{ url_for('static', filename='Safety.jpg') }}" alt="Safety"></div>
               <div class="icon-title">SAFETY</div>
-            </div>
-            <div class="icon-card icon-plain">
+            </button>
+            <button class="icon-card icon-plain sort-btn" type="button" data-key="hsl" title="Sort by HSL">
               <div class="ico"><img class="icon-img" src="{{ url_for('static', filename='HSL.jpg') }}" alt="HSL"></div>
               <div class="icon-title">HSL</div>
-            </div>
-            <div class="icon-card icon-plain">
+            </button>
+            <button class="icon-card icon-plain sort-btn" type="button" data-key="fish" title="Sort by Fish">
               <div class="ico"><img class="icon-img" src="{{ url_for('static', filename='Fish.jpg') }}" alt="Fish"></div>
               <div class="icon-title">FISH</div>
-            </div>
+            </button>
           </div>
           <div></div>
         </div>
@@ -257,7 +280,18 @@
         <!-- Rows -->
         <section id="rows" class="rows" aria-label="Employee rows">
           {% for p in people %}
-          <article class="row" data-name="{{ p.name|lower }}" data-role="{{ (p.designation or '')|lower }}">
+          <!-- add sort data-* attributes -->
+          <article class="row"
+                   data-name="{{ p.name|lower }}"
+                   data-role="{{ (p.designation or '')|lower }}"
+                   data-total="{{ p.points }}"
+                   data-ywt="{{ (p.ywt if p.ywt != '-' else '') }}"
+                   data-ywtpts="{{ p.ywt_points }}"
+                   data-si="{{ p.si_done }}"
+                   data-shifts="{{ p.shift_count }}"
+                   data-safetypts="{{ p.safety_points }}"
+                   data-hsl="{{ (p.hsl[:-1] if p.hsl and '%' in p.hsl else p.hsl) }}"
+                   data-fish="{{ p.fish_points }}">
             <div class="person">
               <div class="avatar">
                 {% if p.photo %}<img src="{{ p.photo }}" alt="">{% else %}<span>🧑‍💼</span>{% endif %}
@@ -283,8 +317,26 @@
                 <div class="pts-badge">{{ p.safety_points }} pts</div>
               </div>
 
-              <div class="cell"><div class="num">{{ p.hsl }}</div></div>
-              <div class="cell"><div class="num">{{ p.fish }}</div></div>
+              {# HSL: show average % + points, color mapping 3&2=green, 1=orange, 0=red #}
+              {% set _h = p.hsl_points|default(0) %}
+              {% if _h >= 2 %}
+                {% set _h_class = 'pts-green' %}
+              {% elif _h == 1 %}
+                {% set _h_class = 'pts-orange' %}
+              {% else %}
+                {% set _h_class = 'pts-red' %}
+              {% endif %}
+              <div class="cell hsl {{ _h_class }}">
+                <div class="num">{{ p.hsl }}</div>
+                <div class="pts-badge">{{ _h }} pts</div>
+              </div>
+
+              <!-- FISH: label above point, color-coded -->
+              <div class="cell fish {{ p.fish_class }}">
+                <div class="num">{{ p.fish_label }}</div>
+                <div class="pts-badge">{{ p.fish_points }} pt</div>
+              </div>
+
             </div>
 
             <div class="points">
@@ -370,6 +422,96 @@
     all.checked = boxes.length > 0 && boxes.every(b => b.checked);
     updateSummary();
     document.addEventListener('click', (e)=>{ if (!dd.contains(e.target)) dd.removeAttribute('open'); });
+  })();
+  </script>
+
+  <!-- Click-to-sort behaviour -->
+  <script>
+  (function(){
+    const container = document.getElementById('rows');
+    if (!container) return;
+
+    const original = Array.from(container.querySelectorAll('.row')); // initial order
+    const buttons  = Array.from(document.querySelectorAll('.sort-btn'));
+    let activeKey = null;
+
+    const getN = (el, name) => {
+      const v = el.dataset[name];
+      if (v === undefined || v === '') return NaN;
+      const n = Number(v);
+      return isNaN(n) ? NaN : n;
+    };
+    const byNum = (a,b) => (a>b) - (a<b);
+
+    function reinsert(list){
+      const frag = document.createDocumentFragment();
+      list.forEach(x => frag.appendChild(x));
+      container.innerHTML = '';
+      container.appendChild(frag);
+    }
+    function restore(){ reinsert(original.slice()); }
+
+    function ratio(el){
+      const si = getN(el,'si'), sh = getN(el,'shifts');
+      return (isNaN(si) || isNaN(sh) || sh<=0) ? -1 : (si/sh);
+    }
+
+    function sortBy(key){
+      const rows = Array.from(container.querySelectorAll('.row'));
+      const list = rows.slice();
+
+      if (key === 'ywt'){                // lower YWT better
+        list.sort((a,b)=>{
+          const av=getN(a,'ywt'), bv=getN(b,'ywt');
+          if (isNaN(av) && !isNaN(bv)) return 1;
+          if (!isNaN(av) && isNaN(bv)) return -1;
+          if (av !== bv) return byNum(av,bv);           // ascending
+          const ap=getN(a,'ywtpts'), bp=getN(b,'ywtpts');
+          if (ap !== bp) return byNum(bp,ap);
+          return byNum(a.dataset.name,b.dataset.name);
+        });
+      } else if (key === 'safety'){      // more points, better SI ratio
+        list.sort((a,b)=>{
+          const ap=getN(a,'safetypts'), bp=getN(b,'safetypts');
+          if (ap !== bp) return byNum(bp,ap);
+          const ar=ratio(a), br=ratio(b);
+          if (ar !== br) return byNum(br,ar);
+          return byNum(a.dataset.name,b.dataset.name);
+        });
+      } else if (key === 'hsl'){         // higher pass %
+        list.sort((a,b)=>{
+          const av=getN(a,'hsl'), bv=getN(b,'hsl');
+          if (isNaN(av) && !isNaN(bv)) return 1;
+          if (!isNaN(av) && isNaN(bv)) return -1;
+          if (av !== bv) return byNum(bv,av);           // descending
+          return byNum(a.dataset.name,b.dataset.name);
+        });
+      } else if (key === 'fish'){        // Fish (1) first
+        list.sort((a,b)=>{
+          const av=getN(a,'fish'), bv=getN(b,'fish');
+          if (av !== bv) return byNum(bv,av);
+          return byNum(a.dataset.name,b.dataset.name);
+        });
+      } else {
+        restore(); return;
+      }
+      reinsert(list);
+    }
+
+    buttons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const key = btn.dataset.key;
+        if (activeKey === key){
+          activeKey = null;
+          buttons.forEach(b=>b.classList.remove('active'));
+          restore();
+        } else {
+          activeKey = key;
+          buttons.forEach(b=>b.classList.toggle('active', b===btn));
+          sortBy(key);
+        }
+      });
+    });
   })();
   </script>
 </body>

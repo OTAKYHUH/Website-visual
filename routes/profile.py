@@ -113,6 +113,15 @@ def _base_df_for_name(all_tables: Dict[str,pd.DataFrame], person_key: str) -> pd
                 return sub
     return None
 
+# ======== NEW: soft plant/cluster inference helper (P123/P456) ========
+def _which_plant(val: str) -> str | None:
+    v = (val or "").upper().strip()
+    if v in {"P123", "P456"}: return v
+    if "456" in v: return "P456"
+    if "123" in v: return "P123"
+    return None
+# ======================================================================
+
 @profile.get("/<path:raw_name>")
 def person(raw_name: str):
     """
@@ -120,9 +129,17 @@ def person(raw_name: str):
     Optional query params:
       - month=Jan&month=Feb (multi)
       - tab=P123 or P456 (to hint plant filter if available)
+      - cluster=P123 or P456 (alias of tab; will be honored if present)
     """
     selected_months = request.args.getlist("month")
-    tab_hint = (request.args.get("tab") or "").strip().upper()
+
+    # --------- CHANGED: also accept ?cluster= in addition to ?tab= ----------
+    tab_hint = (
+        request.args.get("cluster")
+        or request.args.get("tab")
+        or ""
+    ).strip().upper()
+    # -----------------------------------------------------------------------
 
     tables = _tables()
     person_key = _name_key(raw_name)
@@ -137,8 +154,31 @@ def person(raw_name: str):
     if nm:
         df0 = df0[df0[nm].astype(str).str.upper().map(_name_key).eq(person_key)]
 
-    # Optional plant/tab slice
+    # ======== NEW: infer cluster if not explicitly provided =========
     plant_col = _find_col(df0, "Plant","PLANT","Source")
+    if not tab_hint:
+        inferred = None
+        # 1) Try plant/source column
+        if plant_col and plant_col in df0.columns:
+            for v in df0[plant_col].astype(str):
+                p = _which_plant(v)
+                if p:
+                    inferred = p
+                    break
+        # 2) Try group column (sometimes carries hints)
+        if not inferred:
+            grp_col = _find_col(df0, "group","Group","GROUP")
+            if grp_col and grp_col in df0.columns:
+                for v in df0[grp_col].astype(str):
+                    p = _which_plant(v)
+                    if p:
+                        inferred = p
+                        break
+        # 3) Keep as "" if nothing found; downstream we still fallback to P123 at render
+        tab_hint = inferred or ""
+    # =================================================================
+
+    # Optional plant/tab slice (honors explicit/inferred tab_hint)
     if tab_hint and plant_col and df0[plant_col].astype(str).str.upper().eq(tab_hint).any():
         df0 = df0[df0[plant_col].astype(str).str.upper().eq(tab_hint)]
 
@@ -243,6 +283,8 @@ def person(raw_name: str):
         chart_x=chart_x,
         chart_y=[(None if (pd.isna(v) or v=="") else float(v)) for v in chart_y],
         shift_dates=shift_dates,
+        # If the template needs a default, it can still do "| default('P123')"
+        # but we now pass the best-available explicit/inferred hint here.
         tab_hint=tab_hint or "P123",
     )
 
