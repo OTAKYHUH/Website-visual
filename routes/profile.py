@@ -15,6 +15,13 @@ try:
 except Exception:
     get_photo_tables = None
 
+# ===== NEW: SI report reader (PDF index) =====
+try:
+    from build.build_si_report import get_tables as get_si_tables  # expects {"SI Report": DataFrame}
+except Exception:
+    get_si_tables = None
+# =============================================
+
 profile = Blueprint("profile", __name__, url_prefix="/profile", template_folder="templates")
 
 # ---------- caches ----------
@@ -23,6 +30,11 @@ _CACHE = {"ts": 0.0, "tables": None}
 
 _PHOTO_TTL = 300
 _PHOTO_CACHE = {"ts": 0.0, "photos": {}}
+
+# ===== NEW: SI cache (separate from main tables) =====
+_SI_TTL = 300
+_SI_CACHE = {"ts": 0.0, "tables": {}}
+# =====================================================
 
 PHOTO_DIR = Path(__file__).resolve().parents[1] / "static" / "Staff Photo"
 MONTHS_ORDER = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
@@ -48,12 +60,34 @@ def _photos():
         _PHOTO_CACHE.update({"ts": now, "photos": photos})
     return _PHOTO_CACHE["photos"]
 
+# ===== NEW: load SI tables with a small cache =====
+def _si_tables():
+    now = time.time()
+    if (now - _SI_CACHE["ts"] > _SI_TTL) or not _SI_CACHE["tables"]:
+        si = {}
+        if callable(get_si_tables):
+            try:
+                si = get_si_tables() or {}
+            except Exception:
+                si = {}
+        _SI_CACHE.update({"ts": now, "tables": si})
+    return _SI_CACHE["tables"]
+# ================================================
+
 def _name_key(s) -> str:
     t = "" if pd.isna(s) else str(s)
     t = t.upper().replace("/", " ")
     t = re.sub(r"[^A-Z0-9]+", " ", t)
     t = re.sub(r"\s+", " ", t).strip()
     return t
+
+# ===== NEW: nospace key (for SI 'Name' which stores names without spaces) =====
+def _name_key_nospace(s) -> str:
+    t = "" if pd.isna(s) else str(s)
+    t = t.upper()
+    t = re.sub(r"[^A-Z0-9]+", "", t)  # remove all non-alnum (including spaces)
+    return t
+# ============================================================================
 
 def _display_name(n: str) -> str:
     if not n: return n
@@ -270,6 +304,56 @@ def person(raw_name: str):
         m = re.match(r"(\d{2}\s\w{3}\s\d{2,4})\s+([DN])", selected_full)
         if m:
             selected_date_str, selected_shift = m.group(1), m.group(2)
+
+    # ===== NEW: Build SI filename links for this profile (month-filter aware) =====
+    si_files: List[dict] = []
+    try:
+        si_bundle = _si_tables()
+        si_df = si_bundle.get("SI Report")
+        if isinstance(si_df, pd.DataFrame) and not si_df.empty:
+            name_col    = _find_col(si_df, "Name") or "Name"
+            file_col    = _find_col(si_df, "Filename") or "Filename"
+            date_col_si = _find_col(si_df, "Shift Date") or "Shift Date"
+
+            if (name_col in si_df.columns) and (file_col in si_df.columns):
+                me_key_nospace = _name_key_nospace(raw_name)
+
+                # rows for this person (SI 'Name' has no spaces)
+                sub = si_df[si_df[name_col].astype(str).str.upper() == me_key_nospace].copy()
+
+                # --- Parse ddmmyyyy -> datetime + Month (e.g., "Jan") ---
+                if date_col_si in sub.columns:
+                    sub["_DT_"]   = pd.to_datetime(sub[date_col_si].astype(str), format="%d%m%Y", errors="coerce")
+                    sub["Month"]  = sub["_DT_"].dt.strftime("%b")
+                    sub["_LABEL"] = sub["_DT_"].dt.strftime("%d %b %y")
+                else:
+                    sub["_DT_"] = pd.NaT
+                    sub["Month"] = ""
+                    sub["_LABEL"] = ""
+
+                # --- Apply Month filter from page (uses your existing selected_months) ---
+                if selected_months:
+                    keep_m = [m[:3] for m in selected_months]
+                    sub = sub[sub["Month"].isin(keep_m)]
+
+                # Sort newest first if date exists
+                sub = sub.sort_values("_DT_", ascending=False, na_position="last")
+
+                # De-dupe filenames, keep order
+                seen = set()
+                for _, r in sub.iterrows():
+                    fn = str(r[file_col]).strip()
+                    if not fn or fn in seen:
+                        continue
+                    seen.add(fn)
+                    si_files.append({
+                        "filename": fn,
+                        "href": url_for("static", filename=f"SI/{fn}"),
+                        "date_label": ("" if pd.isna(r.get("_DT_")) else str(r.get("_LABEL", ""))),
+                    })
+    except Exception:
+        si_files = []
+    # ================================================================================
     return render_template(
         "profile.html",
         person={
@@ -283,9 +367,12 @@ def person(raw_name: str):
         chart_x=chart_x,
         chart_y=[(None if (pd.isna(v) or v=="") else float(v)) for v in chart_y],
         shift_dates=shift_dates,
-        # If the template needs a default, it can still do "| default('P123')"
-        # but we now pass the best-available explicit/inferred hint here.
         tab_hint=tab_hint or "P123",
+        # NEW: y-axis floor by plant (default to P123 behavior)
+        y_min=(6 if (tab_hint or "P123") == "P456" else 8),
+
+        # NEW: expose SI files to the template (render under Deep Dive)
+        si_files=si_files,
     )
 
 # convenience: /profile?name=...

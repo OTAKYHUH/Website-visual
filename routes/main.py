@@ -8,32 +8,27 @@ from typing import Dict, List, Tuple
 import pandas as pd
 from flask import Blueprint, render_template, request
 
-# ===== Primary data (P123/P456/appended/etc.) =====
 from build.build_data import get_tables as get_main_tables  # type: ignore
-
-# ===== Safety bundle =====
 from build.build_safety import get_tables as get_safety_tables  # type: ignore
-
-# ===== Fish (Name/Month/FishScore) =====
 from build.fish import get_tables as get_fish_tables  # type: ignore
-
-# ===== Optional staff photos (if present) =====
 try:
     from build.photos import get_tables as get_photo_tables  # type: ignore
 except Exception:
     get_photo_tables = None
-
-# ===== HSL (read from build.build_H 'Log') =====
 from build.build_H import get_tables as get_hsl_tables  # type: ignore
 
 main = Blueprint("main", __name__, template_folder="templates")
 
 # ---------- caches ----------
-_CACHE_TTL = 120
+_CACHE_TTL = 600
 _MAIN_CACHE: Dict[str, object] = {"ts": 0.0, "tables": None}
 _SAFETY_CACHE: Dict[str, object] = {"ts": 0.0, "tables": None}
 _PHOTO_TTL = 300
 _PHOTO_CACHE: Dict[str, object] = {"ts": 0.0, "photos": {}}
+_PEOPLE_TTL = 300
+_PEOPLE_CACHE: Dict[Tuple[Tuple[str, ...], str], Dict[str, object]] = {}
+_MONTHS_TTL = 600
+_MONTHS_CACHE: Dict[str, object] = {"ts": 0.0, "months": None}
 
 PHOTO_DIR = Path(__file__).resolve().parents[1] / "static" / "Staff Photo"
 MONTHS_ORDER = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
@@ -71,12 +66,37 @@ def _find_col(df: pd.DataFrame, *candidates: str) -> str | None:
             return index[alt]
     return None
 
+def _fast_parse_date(series, *, dayfirst=False):
+    """Fast, tolerant date parser that avoids slow per-element dateutil fallback."""
+    s = pd.Series(series)
+    if pd.api.types.is_datetime64_any_dtype(s):
+        return pd.to_datetime(s, errors="coerce")
+    if pd.api.types.is_numeric_dtype(s):
+        return pd.to_datetime(s, unit="D", origin="1899-12-30", errors="coerce")
+    st = s.astype(str).str.strip()
+    candidates = [
+        "%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y",
+        "%d-%m-%Y", "%m-%d-%Y",
+        "%d %b %Y", "%d %B %Y", "%Y/%m/%d",
+    ]
+    best = None; best_hit = -1
+    for fmt in candidates:
+        dt = pd.to_datetime(st, format=fmt, errors="coerce")
+        hit = dt.notna().sum()
+        if hit > best_hit:
+            best, best_hit = dt, hit
+        if hit >= 0.6 * len(st):
+            return dt
+    if best_hit > 0:
+        return best
+    return pd.to_datetime(st, errors="coerce", dayfirst=dayfirst, cache=True)
+
 def _ensure_month_3(df: pd.DataFrame) -> pd.DataFrame:
     if df is None or df.empty: return df
     if "Month" not in df.columns:
         dc = _find_col(df, "EVENT_SHIFT_DT","DATE","Date")
         if dc:
-            dt = pd.to_datetime(df[dc], errors="coerce")
+            dt = _fast_parse_date(df[dc], dayfirst=False)
             df = df.copy(); df["Month"] = dt.dt.strftime("%b")
         else:
             df = df.copy(); df["Month"] = pd.NA
@@ -108,19 +128,31 @@ def _which_plant(val: str) -> str | None:
     return None
 
 # --- month normalization ---
+# FIX: make this a pure string helper (no pandas per element)
 def _to_month_abbr(x) -> str:
-    if x is None: return ""
+    """Cheap per-value month normalizer (no pandas construction)."""
+    if x is None:
+        return ""
     s = str(x).strip()
-    dt = pd.to_datetime(s, errors="coerce", dayfirst=False)
-    if not pd.isna(dt): return dt.strftime("%b")
-    if re.fullmatch(r"\d{1,2}", s):
+    if not s:
+        return ""
+    if s.isdigit():
         n = int(s)
-        if 1 <= n <= 12: return calendar.month_abbr[n]
+        if 1 <= n <= 12:
+            return calendar.month_abbr[n]
     low = s.lower()
-    abbr_map = {calendar.month_abbr[i].lower(): calendar.month_abbr[i] for i in range(1,13)}
-    full_map = {calendar.month_name[i].lower():  calendar.month_abbr[i] for i in range(1,13)}
-    if low in abbr_map: return abbr_map[low]
-    if low in full_map: return full_map[low]
+    full = {calendar.month_name[i].lower(): calendar.month_abbr[i] for i in range(1, 13)}
+    abbr = {calendar.month_abbr[i].lower(): calendar.month_abbr[i] for i in range(1, 13)}
+    if low in full:  return full[low]
+    if low in abbr:  return abbr[low]
+    if ("/" in s) or ("-" in s):
+        from datetime import datetime
+        for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y", "%d-%m-%Y", "%m-%d-%Y"):
+            try:
+                dt = datetime.strptime(s, fmt)
+                return calendar.month_abbr[dt.month]
+            except ValueError:
+                pass
     return s[:3].title()
 
 def _norm_keep_months(selected: list[str]) -> list[str]:
@@ -252,13 +284,13 @@ def _norm_df_shift_date_tuple(df: pd.DataFrame) -> pd.DataFrame:
         return g
     if date_col in ("Shift Date","ShiftDate"):
         date_only = g[date_col].astype(str).str.replace(r"\s+[DNdn]$", "", regex=True)
-        g["_sd_date"] = pd.to_datetime(date_only, errors="coerce", dayfirst=True).dt.date
+        g["_sd_date"] = _fast_parse_date(date_only, dayfirst=True).dt.date
         missing = g["_sd_shift"].isna() | (g["_sd_shift"]=="")
         if missing.any():
             sh = g.loc[missing, date_col].astype(str).str.extract(r"([DNdn])$")[0].fillna("")
             g.loc[missing, "_sd_shift"] = sh.str.upper().map(_norm_shift_letter)
     else:
-        g["_sd_date"] = pd.to_datetime(g[date_col], errors="coerce", dayfirst=True).dt.date
+        g["_sd_date"] = _fast_parse_date(g[date_col], dayfirst=True).dt.date
     return g
 
 def _canon_term(x: object) -> str:
@@ -287,7 +319,6 @@ def _norm_op(v: object) -> str:
     if "off" in s or "dis" in s: return "Offload"
     return "Other"
 
-# ---------- HSL helpers (read ONLY build_H['Log']) ----------
 def _pct_to_hsl_points(pct: float) -> int:
     if pd.isna(pct): return 0
     x = float(pct)
@@ -297,12 +328,6 @@ def _pct_to_hsl_points(pct: float) -> int:
     return 0
 
 def _extract_hsl_rates_from_log() -> pd.DataFrame:
-    """
-    Read build_H['Log'] and return rows: (_key, terminal, pass_rate)
-      _key      = 'YYYY-MM-DD@D|N'
-      terminal  = canonical PPT (PPT1/PPT4/P56SE…)
-      pass_rate = 0..100 float for that (date,shift,terminal) across ops
-    """
     try:
         bundle = get_hsl_tables() or {}
     except Exception as e:
@@ -337,15 +362,11 @@ def _extract_hsl_rates_from_log() -> pd.DataFrame:
     rows = []
     for (key, term), chunk in g.groupby(["__key__","__term__"]):
         mg = mt = og = ot = None
-
-        # 1) dedicated mount/off totals present
         if (col_m_good or col_m_tot) or (col_o_good or col_o_tot):
             mg = pd.to_numeric(chunk.get(col_m_good, 0), errors="coerce").fillna(0).sum() if col_m_good else 0
             mt = pd.to_numeric(chunk.get(col_m_tot,  0), errors="coerce").fillna(0).sum() if col_m_tot  else 0
             og = pd.to_numeric(chunk.get(col_o_good, 0), errors="coerce").fillna(0).sum() if col_o_good else 0
             ot = pd.to_numeric(chunk.get(col_o_tot,  0), errors="coerce").fillna(0).sum() if col_o_tot  else 0
-
-        # 2) otherwise try generic Good/Total split by op
         elif col_good and col_total and "__op__" in chunk.columns:
             def agg(oplab: str) -> tuple[float,float]:
                 sub = chunk.loc[chunk["__op__"] == oplab]
@@ -354,16 +375,12 @@ def _extract_hsl_rates_from_log() -> pd.DataFrame:
                 return good, tot
             mg, mt = agg("Mounting")
             og, ot = agg("Offload")
-
         else:
-            # nothing usable for this (key,term)
             continue
-
         good = float(mg) + float(og)
         tot  = float(mt) + float(ot)
-        if tot <= 0:  # skip if no events
+        if tot <= 0:
             continue
-
         pass_rate = (good / tot) * 100.0
         rows.append({"_key": key, "terminal": term, "pass_rate": pass_rate})
 
@@ -374,26 +391,36 @@ def _extract_hsl_rates_from_log() -> pd.DataFrame:
     out = out.groupby(["_key","terminal"], as_index=False)["pass_rate"].mean()
     return out
 
-# ---------- core ----------
-def _get_people(selected_months: List[str]) -> List[Dict[str, str]]:
+# ---------- core (heavy) ----------
+def _get_people(selected_months: List[str], terminal: str | None) -> List[Dict[str, str]]:
+    tnorm = (terminal or "ALL").upper()
+    if tnorm not in {"ALL","P123","P456"}:
+        tnorm = "ALL"
+
+    month_key = tuple(sorted(selected_months)) if selected_months else ("__ALL__",)
+    key = (month_key, tnorm)
+    now = _now()
+    hit = _PEOPLE_CACHE.get(key)
+    if hit and (now - float(hit.get("ts", 0))) <= _PEOPLE_TTL:
+        return hit.get("people", [])  # type: ignore[return-value]
+
     selected_months = _norm_keep_months(selected_months)
 
     tables = _main_tables()
     safety_tables = _safety_tables()
 
-    # choose base frames
     frames: List[pd.DataFrame] = []
-    for key in ("appended","p123_enriched","p456_enriched","p456_group_enriched","p123_ywt","p123_long"):
-        df = tables.get(key)  # type: ignore[index]
+    for key_df in ("appended","p123_enriched","p456_enriched","p456_group_enriched","p123_ywt","p123_long"):
+        df = tables.get(key_df)  # type: ignore[index]
         if isinstance(df, pd.DataFrame) and not df.empty:
             frames.append(df)
     if not frames:
+        _PEOPLE_CACHE[key] = {"ts": now, "people": []}
         return []
 
     base = pd.concat(frames, ignore_index=True)
     base = _ensure_month_3(base)
 
-    # columns
     name_c  = _find_col(base, "Name")
     group_c = _find_col(base, "Group")
     plant_c = _find_col(base, "Plant","Source","Terminal","terminal","PLANT")
@@ -401,6 +428,7 @@ def _get_people(selected_months: List[str]) -> List[Dict[str, str]]:
     date_c  = _find_col(base, "EVENT_SHIFT_DT", "DATE", "Date")
     shift_c = _find_col(base, "EVENT_HR12_SHIFT_C", "Shift")
     if not name_c:
+        _PEOPLE_CACHE[key] = {"ts": now, "people": []}
         return []
 
     base[name_c] = base[name_c].astype(str).str.strip()
@@ -408,27 +436,31 @@ def _get_people(selected_months: List[str]) -> List[Dict[str, str]]:
     if group_c:
         base = _filter_to_abcd(base, group_c)
 
+    # Month filter (FIX: do not parse per value; Month is already %b)
     if selected_months:
         keep = set(selected_months)
-        base["Month"] = base["Month"].astype(str).map(_to_month_abbr)
+        base["Month"] = base["Month"].astype(str).str[:3]
         base = base[base["Month"].isin(keep)]
 
-    # ---- YWT means/points (restrict to shifts that HAVE YWT) ----
+    # Terminal filter
+    base["_PL"] = base[plant_c].map(_which_plant).fillna("P123") if plant_c else "P123"
+    if tnorm in {"P123","P456"}:
+        base = base[base["_PL"] == tnorm]
+
     if wait_c:
         base[wait_c] = pd.to_numeric(base[wait_c], errors="coerce")
 
     base_ywt = base.dropna(subset=[wait_c]).copy() if wait_c else base.copy()
-
     ywt_overall = base_ywt.groupby(name_c, dropna=False)[wait_c].mean() if wait_c else pd.Series(dtype=float)
 
     pts_map: Dict[str, int] = {}
     if wait_c:
         sub = base_ywt.copy()
-        sub["_PL"] = sub[plant_c].map(_which_plant).fillna("P123")
-        per_pp = sub.groupby([name_c,"_PL"], dropna=False)[wait_c].mean().reset_index()
+        sub["_PL2"] = sub[plant_c].map(_which_plant).fillna("P123") if plant_c else "P123"
+        per_pp = sub.groupby([name_c,"_PL2"], dropna=False)[wait_c].mean().reset_index()
         for _, r in per_pp.iterrows():
             nm = str(r[name_c]).strip()
-            pl = str(r["_PL"])
+            pl = str(r["_PL2"])
             pts_map[nm] = pts_map.get(nm, 0) + _ywt_points_for_plant(r[wait_c], pl)
 
     # ===== SAFETY =====
@@ -438,9 +470,10 @@ def _get_people(selected_months: List[str]) -> List[Dict[str, str]]:
         if v.startswith("N"): return "N"
         return v[:1] if v else ""
 
+    # FIX: use fast parser here
     def _shift_key(df: pd.DataFrame, dc: str | None, sc: str | None) -> pd.Series:
         if not dc or not sc: return pd.Series([pd.NA] * len(df))
-        dt = pd.to_datetime(df[dc], errors="coerce")
+        dt = _fast_parse_date(df[dc], dayfirst=False)
         sh = df[sc].astype(str).map(_norm_shift)
         return dt.dt.strftime("%Y-%m-%d") + "@" + sh
 
@@ -502,7 +535,7 @@ def _get_people(selected_months: List[str]) -> List[Dict[str, str]]:
     by_person_shifts = worked_df.groupby("_norm")["_key"].nunique()
     allowed_keys = set(worked_df["_key"])
 
-    safety_bundle = _safety_tables()
+    safety_bundle = safety_tables
     safety_df = _get_table_ci(safety_bundle, "safety")
     if not isinstance(safety_df, pd.DataFrame) or safety_df.empty:
         frames_si = []
@@ -518,7 +551,8 @@ def _get_people(selected_months: List[str]) -> List[Dict[str, str]]:
 
         if selected_months:
             keep = set(selected_months)
-            saf["Month"] = saf["Month"].astype(str).map(_to_month_abbr)
+            # FIX: Month already %b
+            saf["Month"] = saf["Month"].astype(str).str[:3]
             saf = saf[saf["Month"].isin(keep)]
 
         name_col = _find_col(saf, "Name")
@@ -580,9 +614,7 @@ def _get_people(selected_months: List[str]) -> List[Dict[str, str]]:
         safety_pts_map[base_norm] = pts
         safety_ratio_map[base_norm] = (si_cnt, int(shift_cnt))
 
-    # ===== HSL (from build_H['Log']) =====
-    hsl_rates = _extract_hsl_rates_from_log()  # (_key, terminal, pass_rate)
-
+    hsl_rates = _extract_hsl_rates_from_log()
     hsl_avg_by_key = pd.Series(dtype=float)
     if not hsl_rates.empty:
         filt = hsl_rates[hsl_rates["_key"].isin(allowed_keys)]
@@ -599,7 +631,6 @@ def _get_people(selected_months: List[str]) -> List[Dict[str, str]]:
             hsl_pct_map[base_norm] = avg_pct
             hsl_pts_map[base_norm] = _pct_to_hsl_points(avg_pct)
 
-    # --- FISH ---
     fish_pts_map: Dict[str, int] = {}
     try:
         fish_bundle = get_fish_tables()
@@ -610,6 +641,7 @@ def _get_people(selected_months: List[str]) -> List[Dict[str, str]]:
             score_col = "FishScore" if "FishScore" in f.columns else _find_col(f, "FishScore", "Fish Score", "Score", "Points")
             month_col = "Month"     if "Month" in f.columns     else _find_col(f, "Month")
             if name_col and score_col:
+                # OK to use pure-string mapper here; it's vectorized & cheap
                 if month_col: f[month_col] = f[month_col].astype(str).map(_to_month_abbr)
                 f["_score"] = pd.to_numeric(f[score_col], errors="coerce").fillna(0).clip(lower=0, upper=1).astype(int)
                 f_filtered = f
@@ -622,7 +654,6 @@ def _get_people(selected_months: List[str]) -> List[Dict[str, str]]:
     except Exception as e:
         print("[FISH] get_tables error:", e)
 
-    # dedup people
     role_c = _find_col(base, "Role")
     cols = [name_c] + ([group_c] if group_c else []) + ([role_c] if role_c else [])
     dedup = base[cols].drop_duplicates(subset=[name_c], keep="first")
@@ -647,12 +678,10 @@ def _get_people(selected_months: List[str]) -> List[Dict[str, str]]:
         si_cnt, shift_cnt = safety_ratio_map.get(nm_key, (0, 0))
         s_cls  = _safety_class(s_pts)
 
-        # HSL
         hsl_pct  = hsl_pct_map.get(nm_key, float("nan"))
         hsl_pts  = int(hsl_pts_map.get(nm_key, 0))
         hsl_disp = "-" if pd.isna(hsl_pct) else f"{hsl_pct:.1f}%"
 
-        # Fish
         fish_pts = int(fish_pts_map.get(nm_key, 0))
         fish_lbl = "Fish" if fish_pts >= 1 else "No fish"
         fish_cls = "pts-green" if fish_pts >= 1 else "pts-red"
@@ -661,50 +690,72 @@ def _get_people(selected_months: List[str]) -> List[Dict[str, str]]:
             "name": _display_name(raw_name),
             "group": group_val,
             "designation": desig,
-
             "ywt": ywt_disp,
             "ywt_points": ywt_pts,
             "ywt_class": ywt_cls,
-
             "safety_points": s_pts,
             "safety_class": s_cls,
             "si_done": si_cnt,
             "shift_count": shift_cnt,
-
             "hsl": hsl_disp,
             "hsl_points": hsl_pts,
-
             "fish_label": fish_lbl,
             "fish_points": fish_pts,
             "fish_class": fish_cls,
-
             "points": (ywt_pts + s_pts + fish_pts + hsl_pts),
-
             "photo": photos.get(_name_key(raw_name), ""),
         })
 
     people.sort(key=lambda x: (-int(x["points"]), x["name"]))
+
+    _PEOPLE_CACHE[key] = {"ts": now, "people": people}
     return people
 
-@main.route("/main")
-def index():
-    raw_months = request.args.getlist("months") or request.args.getlist("month")
-    selected_months = _norm_keep_months(raw_months)
+def _months_dropdown() -> List[str]:
+    """Compute months for the dropdown, cached for _MONTHS_TTL."""
+    now = _now()
+    if _MONTHS_CACHE["months"] and (now - float(_MONTHS_CACHE["ts"])) <= _MONTHS_TTL:
+        return _MONTHS_CACHE["months"]  # type: ignore[return-value]
 
     months_seen: List[str] = []
+
+    # main tables (FIX: no parsing; take 3-char)
     for df in _main_tables().values():
         if isinstance(df, pd.DataFrame) and not df.empty and "Month" in df.columns:
-            months_seen.extend(df["Month"].astype(str).map(_to_month_abbr).unique().tolist())
+            months_seen.extend(df["Month"].astype(str).str[:3].unique().tolist())
+
+    # safety
     for df in _safety_tables().values():
         if isinstance(df, pd.DataFrame) and not df.empty and "Month" in df.columns:
-            months_seen.extend(df["Month"].astype(str).map(_to_month_abbr).unique().tolist())
+            months_seen.extend(df["Month"].astype(str).str[:3].unique().tolist())
 
+    # fish tables (month strings may vary; normalize cheaply)
     fish_bundle = get_fish_tables()
     fish_df = _pick_df(fish_bundle, "fish", "fish_monthly")
     if isinstance(fish_df, pd.DataFrame) and "Month" in fish_df.columns:
         months_seen.extend(fish_df["Month"].astype(str).map(_to_month_abbr).unique().tolist())
 
     months = _order_months(pd.unique(pd.Series(months_seen))) or MONTHS_ORDER
-    people = _get_people(selected_months)
+    _MONTHS_CACHE.update({"ts": now, "months": months})
+    return months
 
-    return render_template("main.html", months=months, selected_months=selected_months, people=people)
+# ---------- route ----------
+@main.route("/main")
+def index():
+    raw_months = request.args.getlist("months") or request.args.getlist("month")
+    selected_months = _norm_keep_months(raw_months)
+
+    terminal = (request.args.get("terminal") or "ALL").upper()
+    if terminal not in {"ALL","P123","P456"}:
+        terminal = "ALL"
+
+    months = _months_dropdown()
+    people = _get_people(selected_months, terminal)
+
+    return render_template(
+        "main.html",
+        months=months,
+        selected_months=selected_months,
+        people=people,
+        selected_terminal=terminal,
+    )

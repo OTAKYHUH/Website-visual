@@ -76,6 +76,18 @@
   .multi-dd label:hover{ background:rgba(255,255,255,.05) }
   .multi-dd input[type="checkbox"]{ width:16px; height:16px }
 
+  /* Terminal button group */
+  .term-filter{ display:flex; gap:10px; margin-top:12px; }
+  .pill{
+    flex:0 0 auto; padding:10px 14px; border-radius:12px; font-weight:800; letter-spacing:.3px;
+    background:linear-gradient(180deg, rgba(2,7,18,.60), rgba(2,7,18,.32));
+    border:1px solid var(--ring); color:#fff; cursor:pointer;
+  }
+  .pill.active{
+    outline:2px solid var(--accent);
+    box-shadow:0 0 18px rgba(0,240,255,.25);
+  }
+
   .criteria-block{ padding:18px; position:relative; z-index:0; }
   .criteria-title{ margin:0 0 14px 0; font-weight:900; letter-spacing:2px; text-transform:uppercase; color:#b9c3d0; padding-bottom:8px; border-bottom:3px solid #8a2be2; }
   .criteria{ background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid var(--ring); border-radius:16px; padding:16px; }
@@ -160,12 +172,12 @@
   .cell.fish{ border:1px solid var(--ring); }
   .cell.fish .num{
     text-shadow:none;
-    font-size: clamp(14px, 1.9vw, 40px);
+    font-size: clamp(20px, 2.4vw, 40px);
     line-height: 1.05;
     white-space: nowrap;
   }
   .cell.fish.pts-green{ background:rgba(0,255,160,.14); border-color:rgba(0,255,160,.45); color:#00ff9e; }
-  .cell.fish.pts-red{ background:rgba(255,70,70,.14); border-color:rgba(255,70,70,.45); color:#ff6b6b; }
+  .cell.fish.pts-red{ background:rgba(255,70,70,.14); border-color:rgba(0,255,160,.45); color:#ff6b6b; }
 </style>
 </head>
 
@@ -211,6 +223,19 @@
               </div>
             </details>
             <form id="filtersForm" method="GET"></form>
+          </div>
+
+          <!-- Terminal filter buttons -->
+          <div class="term-filter" role="tablist" aria-label="Terminal filter">
+            <button type="button"
+                    class="pill {{ 'active' if (selected_terminal or 'ALL') == 'ALL' else '' }}"
+                    data-terminal="ALL">All</button>
+            <button type="button"
+                    class="pill {{ 'active' if (selected_terminal or 'ALL') == 'P123' else '' }}"
+                    data-terminal="P123">P123</button>
+            <button type="button"
+                    class="pill {{ 'active' if (selected_terminal or 'ALL') == 'P456' else '' }}"
+                    data-terminal="P456">P456</button>
           </div>
         </div>
 
@@ -319,9 +344,9 @@
 
               {# HSL: show average % + points, color mapping 3&2=green, 1=orange, 0=red #}
               {% set _h = p.hsl_points|default(0) %}
-              {% if _h >= 2 %}
+              {% if _h > 2 %}
                 {% set _h_class = 'pts-green' %}
-              {% elif _h == 1 %}
+              {% elif _h > 1 %}
                 {% set _h_class = 'pts-orange' %}
               {% else %}
                 {% set _h_class = 'pts-red' %}
@@ -404,6 +429,9 @@
     }
     function autoSubmit(){
       const params = new URLSearchParams(window.location.search);
+      // preserve terminal filter
+      params.set('terminal', "{{ (selected_terminal or 'ALL') }}");
+      // months
       params.delete('month');
       boxes.filter(b=>b.checked).forEach(b=>params.append('month', b.value));
       window.location.assign(`${window.location.pathname}?${params.toString()}`);
@@ -422,6 +450,25 @@
     all.checked = boxes.length > 0 && boxes.every(b => b.checked);
     updateSummary();
     document.addEventListener('click', (e)=>{ if (!dd.contains(e.target)) dd.removeAttribute('open'); });
+  })();
+  </script>
+
+  <!-- Terminal filter behaviour -->
+  <script>
+  (function(){
+    const wrap = document.querySelector('.term-filter');
+    if (!wrap) return;
+
+    wrap.addEventListener('click', (e)=>{
+      const btn = e.target.closest('button[data-terminal]');
+      if (!btn) return;
+      const t = btn.dataset.terminal; // ALL / P123 / P456
+      const params = new URLSearchParams(window.location.search);
+      params.set('terminal', t); // set terminal
+      // keep any existing month selections intact
+      const url = `${window.location.pathname}?${params.toString()}`;
+      window.location.assign(url);
+    });
   })();
   </script>
 
@@ -514,5 +561,10 @@
     });
   })();
   </script>
+
+  <style>
+    /* 75% page scale (Chrome/Edge/Safari) */
+    html { zoom: .75; }     /* non-standard, but widely supported */
+  </style>
 </body>
 </html>

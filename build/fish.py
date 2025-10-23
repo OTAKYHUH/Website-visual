@@ -122,7 +122,7 @@ def _month_to_num_and_abbr(month_val) -> tuple[pd.Series, pd.Series]:
     """
     s = pd.Series(month_val)
     # Try datetime first (covers real dates or strings with dates)
-    dt = pd.to_datetime(s, errors="coerce", dayfirst=False)
+    dt = pd.to_datetime(s, errors="coerce", dayfirst=False, cache=True)
     # Where datetime parsed, use dt.month
     monthnum = dt.dt.month
 

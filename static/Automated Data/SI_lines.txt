@@ -1,0 +1,31 @@
+HSS Inspection Report
+Date:01 Sep 2025
+Page:1of3
+ReportNumber: SIS2522532 InspectionDate/Time: 01Sep202511:56
+01Sep202517:56
+Workplace: PPT2,PPT1,PPT3
+Inspectors: CALVINHO,SROPSEXEC,YOD,PSA
+HAIDARBINJUNIDI,OPSEXEC,YOD,PSA
+YARD-HYSTEROPS
+Inspectedon:01Sep202511:57
+CheckList
+SWPCOMPLIANCE
+Description/ImmediateAction FollowUp/Remarks
+CCTVInspectionwasconductedatK11.
+-PFM060operatorwasobservedtohaveadheredto
+SOPwhengantrytobiggerslot.Ithaditsspreader
+retractedto20ftandhoistedto3high.
+-PFM060operatorwascommendedforcomplyingto SBRawarded.
+SOPandtocontinuepracticinggoodsafetyhabitsat
+alltimes.
+-PFM060operatorwasremindedtoreportanyhazard
+immediatelytohissuperiorsorcontrolcenter.
+Caption:PFM060ongantrycomplyingwiththesafety
+SOPaspects.
+Personnel
+Person Company NISR/SBR
+LAMTIANLOY GKESERVICESPTELTD /SBRRefNo:SBR202509019381
+ROADS-TRAFFICMOVEMENT
+Inspectedon:01Sep202513:16
+CheckList
+SWP-COMPLIANCETOTRAFFICRULES

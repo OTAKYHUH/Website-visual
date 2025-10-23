@@ -67,13 +67,22 @@
   }
   .seg-btn.active{ outline:2px solid var(--accent); box-shadow:0 0 16px rgba(0,240,255,.25) }
 
-  /* kpis / HSL block (unchanged) */
+  /* kpis / HSL block */
   .kpi-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin: 0 16px }
   .neo-card{ background:var(--panel-2); border:1px solid var(--ring); border-radius:14px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.15) }
   .kpi{ padding:16px }
   .kpi-title{ color:var(--muted); font-weight:700; font-size:12px }
   .kpi-val{ margin-top:6px; font-weight:800; font-size:16px }
-  .kpi-val.good{ color:#6DFFBD } .kpi-val.warn{ color:#FFD65A }
+  .kpi-val.good{ color:#6DFFBD } .kpi-val.warn{ color:#FFD65A } .kpi-val.bad{ color:#FF647C }
+  .kpi [data-tip]{ position:relative; cursor:help }
+  .kpi [data-tip]:hover:after{
+    content:attr(data-tip);
+    position:absolute; left:14px; bottom:110%;
+    background:#111028; color:#cfd5e3; border:1px solid var(--ring);
+    padding:8px 10px; font-size:12px; border-radius:8px; white-space:pre-line;
+    box-shadow:0 8px 20px rgba(0,0,0,.35);
+  }
+
   .hsl-grid{ display:grid; gap:18px; grid-template-columns:1fr; margin-top:16px }
   @media (min-width:980px){ .hsl-grid{ grid-template-columns: 1.1fr 1.4fr } }
   .left{ display:flex; flex-direction:column; gap:16px }
@@ -132,10 +141,22 @@
 
   <!-- KPI row -->
   <div class="kpi-grid">
-    <div class="kpi neo-card"><div class="kpi-title">Gate Ops</div><div class="kpi-val">No Problem</div></div>
-    <div class="kpi neo-card"><div class="kpi-title">Available Manpower › Today Demand</div><div class="kpi-val good">Balanced</div></div>
-    <div class="kpi neo-card"><div class="kpi-title">Today Demand › Available Manpower</div><div class="kpi-val warn">Tight</div></div>
-    <div class="kpi neo-card"><div class="kpi-title">Safety</div><div class="kpi-val">No Problem</div></div>
+    <div class="kpi neo-card">
+      <div class="kpi-title" id="kpi-gate-title">Gate Ops</div>
+      <div class="kpi-val" id="kpi-gate">No Problem</div>
+    </div>
+    <div class="kpi neo-card">
+      <div class="kpi-title">Available Manpower › Today Demand</div>
+      <div class="kpi-val" id="kpi-avail-vs-demand">—</div>
+    </div>
+    <div class="kpi neo-card">
+      <div class="kpi-title">Today Demand › Available Manpower</div>
+      <div class="kpi-val" id="kpi-demand-vs-avail">—</div>
+    </div>
+    <div class="kpi neo-card">
+      <div class="kpi-title" id="kpi-safety-title">Safety</div>
+      <div class="kpi-val" id="kpi-safety">No Problem</div>
+    </div>
   </div>
 
   <!-- HSL block -->
@@ -207,7 +228,7 @@
     {{ payload | tojson }}
   </script>
 
-  <!-- ======== CORE JS (cluster-aware + P56SE alias) ======== -->
+  <!-- ======== CORE JS (cluster-aware + targets + legend) ======== -->
   <script>
     const _srvEl = document.getElementById('server-payload');
     let PAYLOAD = {};
@@ -221,6 +242,9 @@
       var meta = document.getElementById('pageMeta');
       if (meta) meta.textContent = 'Daily · ' + CLUSTER;
     })();
+
+    // Target line by cluster
+    const TARGET_Y = (CLUSTER === 'P456') ? 7.4 : 9.7;
 
     // --- Canonicalize keys so P56SE or PPT56SE both work ---
     function normalizeP56(obj){
@@ -237,14 +261,17 @@
     const COLORS = {
       mounting: (THEME.getPropertyValue('--accent')   || '#00F0FF').trim(),
       offload:  (THEME.getPropertyValue('--accent-2') || '#B06CFF').trim(),
-      avg:      '#FFD65A'
+      avg:      '#FFD65A',
+      target:   (THEME.getPropertyValue('--muted')    || '#9aa4b2').trim()
     };
     Chart.defaults.color = '#cfd5e3';
     Chart.defaults.borderColor = 'rgba(255,255,255,0.08)';
 
+    // Glow plugin (skip glow on target line)
     const Glow = { id:'glow', afterDatasetsDraw(chart){
       const ctx = chart.ctx;
       (chart.data.datasets||[]).forEach((ds,i)=>{
+        if (ds._noGlow) return;
         const meta = chart.getDatasetMeta(i); if(!meta || !meta.dataset) return;
         ctx.save(); ctx.shadowColor = ds.borderColor||COLORS.mounting; ctx.shadowBlur = 18;
         ctx.lineWidth = ds.borderWidth||2; meta.dataset.draw(ctx); ctx.restore();
@@ -254,15 +281,21 @@
     function mkTripleConfig(series) {
       const s = series || {mounting:[], avg:[], offload:[]};
       const toNums = a => (a || []).map(v => (v==null ? null : Number(v)));
+      const labels = HOURS.slice();
+      const targetArr = labels.map(()=>TARGET_Y);
+
       return {
         type: 'line',
         plugins:[Glow],
         data: {
-          labels: HOURS,
+          labels,
           datasets: [
             { label:'Mounting', data: toNums(s.mounting), borderColor: COLORS.mounting, tension:0.35, borderWidth:2, pointRadius:3, pointHoverRadius:6 },
-            { label:'Average Wait Time', data: toNums(s.avg), borderColor: COLORS.avg, borderDash:[6,6], tension:0.35, borderWidth:2, pointRadius:0, pointHoverRadius:0 },
-            { label:'Offloading', data: toNums(s.offload), borderColor: COLORS.offload, tension:0.35, borderWidth:2, pointRadius:3, pointHoverRadius:6 }
+            // Average is SOLID now
+            { label:'Average Wait Time', data: toNums(s.avg), borderColor: COLORS.avg, tension:0.35, borderWidth:2, pointRadius:0, pointHoverRadius:0 },
+            { label:'Offloading', data: toNums(s.offload), borderColor: COLORS.offload, tension:0.35, borderWidth:2, pointRadius:3, pointHoverRadius:6 },
+            // Dotted Target line
+            { label:`Target (${TARGET_Y})`, data: targetArr, borderColor: COLORS.target, borderDash:[6,6], tension:0, borderWidth:2, pointRadius:0, pointHoverRadius:0, _noGlow:true }
           ]
         },
         options: {
@@ -272,7 +305,10 @@
             x:{ grid:{ color:'rgba(255,255,255,.06)' } },
             y:{ grid:{ color:'rgba(255,255,255,.06)' }, suggestedMin:5, suggestedMax:15, ticks:{ stepSize:1 } }
           },
-          plugins:{ legend:{ display:false } }
+          plugins:{
+            legend:{ display:true, position:'top', labels:{ boxWidth:12, boxHeight:12 } },
+            tooltip:{ mode:'nearest', intersect:false }
+          }
         }
       };
     }
@@ -376,6 +412,183 @@
         fillRows('card-ppt2',m.ppt2);
         fillRows('card-ppt3',m.ppt3);
         fillRows('card-fm',  m.fm);
+      }
+    })();
+  </script>
+
+<!-- ======== INDICATORS (derive from Manning & Equipment) ======== -->
+  <script>
+    (function indicatorsFromManning(){
+      var hasServer = PAYLOAD && Object.keys(PAYLOAD).length;
+      var server = hasServer ? PAYLOAD : __FALLBACK_PAYLOAD__;
+
+      var manningP123 = (server.manning_p123 || __FALLBACK_PAYLOAD__.manning_p123 || {});
+      var manningP456 = (server.manning_p456 || server.manning || __FALLBACK_PAYLOAD__.manning_p456 || {});
+
+      // Parse a card value into an array of section numbers.
+      // "64/63+1" -> [64,64], "49 | 11" -> [49,11], "55/54+1" -> [55,55], "57" -> [57]
+      function parseParts(raw){
+        if (raw == null) return [];
+        var s = String(raw).replace(/[^0-9|/+]/g, '').trim();
+        if (!s) return [];
+        var groups = s.includes('|') ? s.split('|') : [s];
+
+        function sumPlus(x){
+          var m = String(x).match(/\d+/g);
+          return m ? m.map(Number).reduce((a,b)=>a+b,0) : 0;
+        }
+
+        let parts = [];
+        groups.forEach(g=>{
+          if (g.includes('/')){
+            g.split('/').forEach(seg => parts.push(sumPlus(seg)));
+          } else {
+            parts.push(sumPlus(g));
+          }
+        });
+        return parts.filter(n=>!isNaN(n));
+      }
+
+      function extractSection(rows){
+        rows = rows || [];
+        function getRaw(label){
+          var r = rows.find(x => String(x[0]).toLowerCase().includes(label));
+          return r ? r[1] : null;
+        }
+        return {
+          availParts:    parseParts(getRaw('available manpower')),
+          demandParts:   parseParts(getRaw('today demand')),
+          forecastParts: parseParts(getRaw('previous forecast'))
+        };
+      }
+
+      // Comparators (use the higher/best available when needed)
+      function demandExceedsAvail(availArr, demandArr){
+        if (!demandArr.length) return false;
+        if (!availArr.length)  return true;
+        if (availArr.length === demandArr.length){
+          return demandArr.some((d,i)=> d > availArr[i]);
+        }
+        // if lengths differ, compare each demand to the BEST (max) available
+        const bestAvail = Math.max.apply(null, availArr);
+        return demandArr.some(d => d > bestAvail);
+      }
+
+      function allAvailGreaterThanDemand(availArr, demandArr){
+        if (!demandArr.length) return false;
+        if (!availArr.length)  return false;
+        if (availArr.length === demandArr.length){
+          return demandArr.every((d,i)=> availArr[i] > d);
+        }
+        const bestAvail = Math.max.apply(null, availArr);
+        return demandArr.every(d => bestAvail > d);
+      }
+
+      function anyForecastMeetsOrExceedsDemand(forecastArr, demandArr){
+        if (!demandArr.length || !forecastArr.length) return false;
+        if (forecastArr.length === demandArr.length){
+          return demandArr.every((d,i)=> forecastArr[i] >= d);
+        }
+        const bestForecast = Math.max.apply(null, forecastArr);
+        return demandArr.every(d => bestForecast >= d);
+      }
+
+      function anyDemandGreaterThanForecast(demandArr, forecastArr){
+        if (!demandArr.length) return false;
+        if (!forecastArr.length) return true; // no forecast → treat as occurring
+        if (demandArr.length === forecastArr.length){
+          return demandArr.some((d,i)=> d > forecastArr[i]);
+        }
+        const bestForecast = Math.max.apply(null, forecastArr); // take whichever is higher on forecast side
+        return demandArr.some(d => d > bestForecast);
+      }
+
+      // sections list (cluster-aware)
+      var list = [];
+      if (CLUSTER === 'P456') {
+        var m = manningP456 || {};
+        if (m.ppt4 || m.PPT4)       list.push(['PPT4',     extractSection(m.ppt4 || m.PPT4)]);
+        if (m.ppt56se || m.PPT56SE) list.push(['PPT56SE',  extractSection(m.ppt56se || m.PPT56SE)]);
+      } else {
+        var m = manningP123 || {};
+        if (m.bc)   list.push(['BC',   extractSection(m.bc)]);
+        if (m.ppt2) list.push(['PPT2', extractSection(m.ppt2)]);
+        if (m.ppt3) list.push(['PPT3', extractSection(m.ppt3)]);
+        if (m.fm)   list.push(['FM',   extractSection(m.fm)]);
+      }
+
+      var insufficient = [];                 // sections where demand >= avail (no longer shown as "Tight")
+      var sufficient = [];                   // sections where avail > demand
+      var meetsForecastVsDemand = [];        // forecast >= demand
+      var demandVsForecastOccurs = [];       // demand >= forecast
+
+      list.forEach(function([name, s]){
+        if (demandExceedsAvail(s.availParts, s.demandParts)) insufficient.push(name);
+        if (allAvailGreaterThanDemand(s.availParts, s.demandParts)) sufficient.push(name);
+        if (anyForecastMeetsOrExceedsDemand(s.forecastParts, s.demandParts)) meetsForecastVsDemand.push(name);
+        if (anyDemandGreaterThanForecast(s.demandParts, s.forecastParts)) demandVsForecastOccurs.push(name);
+      });
+
+      // KPI 1: Available Manpower › Today Demand (show True only; no hover when false)
+      var el1 = document.getElementById('kpi-avail-vs-demand');
+      if (el1) {
+        var allSufficient = (sufficient.length === list.length && list.length > 0);
+
+        if (allSufficient) {
+          el1.textContent = 'True';
+          el1.classList.remove('bad','warn');
+          el1.classList.add('good');
+          el1.setAttribute('data-tip','Available > Demand across all sections');
+        } else {
+          el1.textContent = '—';                 // neutral
+          el1.classList.remove('good','bad','warn');
+          el1.removeAttribute('data-tip');       // <- no tooltip
+          el1.removeAttribute('title');          // <- just in case
+        }
+      }
+
+
+      // KPI 2: Today Demand › Available Manpower (mirror – keep wording)
+      var el2 = document.getElementById('kpi-demand-vs-avail');
+      if (el2) {
+        if (insufficient.length) {
+          el2.textContent = 'Demand exceeds Avail';
+          el2.classList.remove('good'); el2.classList.add('warn');
+          el2.setAttribute('data-tip','Exceeds at: ' + insufficient.join(', '));
+        } else {
+          el2.textContent = 'Within Capacity';
+          el2.classList.remove('warn'); el2.classList.add('good');
+          el2.setAttribute('data-tip','No section exceeds availability');
+        }
+      }
+
+      // Titles for the other two KPIs (as before)
+      var gateTitle   = document.getElementById('kpi-gate-title');
+      var safetyTitle = document.getElementById('kpi-safety-title');
+      if (gateTitle)   gateTitle.textContent   = 'Forecast ≥ Demand';
+      if (safetyTitle) safetyTitle.textContent = 'Demand > Forecast';
+
+      // KPI 3 (Gate card): Forecast ≥ Demand
+      var elGate = document.getElementById('kpi-gate');
+      if (elGate){
+        var ok = meetsForecastVsDemand.length > 0;
+        elGate.textContent = ok ? 'Met' : 'Not Met';
+        elGate.classList.toggle('good', ok);
+        elGate.classList.toggle('bad', !ok);
+        elGate.setAttribute('data-tip',
+          ok ? ('Meets at: ' + meetsForecastVsDemand.join(', '))
+            : 'No section met forecast vs demand');
+      }
+
+      // KPI 4 (Safety card): Demand ≥ Forecast
+      var elSafety = document.getElementById('kpi-safety');
+      if (elSafety){
+        var occurs = demandVsForecastOccurs.length > 0;
+        elSafety.textContent = occurs ? 'Occurs' : 'Does Not Occur';
+        elSafety.classList.remove('bad'); elSafety.classList.add('warn');
+        elSafety.setAttribute('data-tip',
+          occurs ? ('Occurs at: ' + demandVsForecastOccurs.join(', '))
+                : 'Demand lower than forecast across sections');
       }
     })();
   </script>
@@ -498,5 +711,9 @@
       });
     })();
   </script>
+  <style>
+    /* 75% page scale (Chrome/Edge/Safari) */
+    html { zoom: .75; }     /* non-standard, but widely supported */
+  </style>
 </body>
 </html>
