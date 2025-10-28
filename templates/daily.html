@@ -262,6 +262,9 @@
     // Target line by cluster
     const TARGET_Y = (CLUSTER === 'P456') ? 7.4 : 9.7;
 
+    // NEW: Per-terminal target overrides
+    const TARGET_MAP = { PPT1: 12, PPT2: 10, PPT3: 9.4 }; // NEW
+
     // Take shift from payload if present, else from template
     const SHIFT = (PAYLOAD.shift || "{{ the_shift }}").toUpperCase();
 
@@ -337,7 +340,8 @@
       pointHoverRadius: 4
     };
 
-    function mkTripleConfig(series) {
+    // CHANGED: accept per-chart target value
+    function mkTripleConfig(series, targetY = TARGET_Y) {
       const labels = HOURS.slice();
       // Align arrays by hour label first (key fix)
       const aligned = remapSeries(series||{mounting:[],avg:[],offload:[]}, SRC_HRS, labels);
@@ -346,7 +350,7 @@
       const a = aligned.avg;
       const o = aligned.offload;
 
-      const targetArr = labels.map(()=>TARGET_Y);
+      const targetArr = labels.map(()=>targetY); // CHANGED
 
       // dynamic y-range
       const all = [...m, ...a, ...o].filter(v => v != null && !Number.isNaN(v));
@@ -362,7 +366,7 @@
             { ...baseLineStyle, label:'Mounting', data: m, borderColor: COLORS.mounting, tension:0.35, borderWidth:2, pointRadius:3 },
             { ...baseLineStyle, label:'Average Wait Time', data: a, borderColor: COLORS.avg, tension:0.35, borderWidth:2, pointRadius:0 },
             { ...baseLineStyle, label:'Offloading', data: o, borderColor: COLORS.offload, tension:0.35, borderWidth:2, pointRadius:3 },
-            { label:`Target (${TARGET_Y})`, data: targetArr, borderColor: COLORS.target, borderDash:[6,6], tension:0, borderWidth:2, pointRadius:0, pointHoverRadius:0, _noGlow:true,
+            { label:`Target (${targetY})`, data: targetArr, borderColor: COLORS.target, borderDash:[6,6], tension:0, borderWidth:2, pointRadius:0, pointHoverRadius:0, _noGlow:true,
               plugins: { tooltip: { enabled:false } }
             }
           ]
@@ -415,8 +419,8 @@
       };
     }
 
-    // overview
-    new Chart(document.getElementById('overview'), mkTripleConfig(OVR));
+    // overview (fixed 9.7)
+    new Chart(document.getElementById('overview'), mkTripleConfig(OVR, (CLUSTER === 'P456') ? 7.4 : 9.7)); // CHANGED
 
     // build terminal charts dynamically
     (function buildTermCharts(){
@@ -429,10 +433,11 @@
       theSet.forEach(key => {
         const card = document.createElement('div');
         card.className = 'panel baseline';
-        card.innerHTML = `<h2>${key}</h2><div style="height:200px"><canvas id="t-${key}" height="200"></canvas></div>`;
+        card.innerHTML = `<h2>${key}</h2><div style="height:300px"><canvas id="t-${key}" height="300"></canvas></div>`;
         grid.appendChild(card);
         const series = TERMS[key] || {};
-        new Chart(document.getElementById(`t-${key}`), mkTripleConfig(series));
+        const tY = (key in TARGET_MAP) ? TARGET_MAP[key] : TARGET_Y; // NEW
+        new Chart(document.getElementById(`t-${key}`), mkTripleConfig(series, tY)); // CHANGED
       });
     })();
   </script>

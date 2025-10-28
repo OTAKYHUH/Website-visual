@@ -157,8 +157,12 @@ def _si_tables():
         if callable(get_si_tables):
             try:
                 si = get_si_tables() or {}
-            except Exception:
+            except Exception as e:
+                # Show the exact failure in PythonAnywhere's web error log
+                print(f"[SI] get_si_tables() failed: {type(e).__name__}: {e}")
                 si = {}
+        else:
+            print("[SI] get_si_tables is None (import failed).")
         _SI_CACHE.update({"ts": now, "tables": si})
     return _SI_CACHE["tables"]
 
