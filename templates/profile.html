@@ -44,7 +44,7 @@
     background:linear-gradient(#0f0d22,#0f0d22) padding-box, linear-gradient(135deg,#8a2be2,#00eaff) border-box;
     box-shadow:0 0 0 1px rgba(138,43,226,.18) inset, 0 14px 32px rgba(0,0,0,.45);
     height:100%; display:flex; flex-direction:column;
-    isolation:isolate; /* ensure dropdown stacks above */
+    isolation:isolate;
   }
 
   .card{ background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
@@ -61,10 +61,8 @@
   .neo-btn{ height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center;
             font-weight:800; color:#dff9ff; border:2px solid transparent;
             background:linear-gradient(#0f0d22,#0f0d22) padding-box, linear-gradient(135deg,#00eaff,#9a56ff) border-box;
-            box-shadow:0 0 0 2px rgba(0,234,255,.2) inset; position:relative; isolation:isolate;
-            z-index: 3000;
-  }
-  .neo-btn details.multi-dd{ position:absolute; inset:0; display:block; z-index: 3001; }
+            box-shadow:0 0 0 2px rgba(0,234,255,.2) inset; position:relative; isolation:isolate; z-index:3000; }
+  .neo-btn details.multi-dd{ position:absolute; inset:0; display:block; z-index:3001; }
   .neo-btn details.multi-dd summary{
     list-style:none; cursor:pointer; user-select:none; width:100%; height:100%; border-radius:10px; border:0; outline:0;
     display:flex; align-items:center; justify-content:center; background:transparent; color:#dff9ff; font-weight:800;
@@ -106,6 +104,18 @@
   .si-block{ margin-top:14px; padding:12px; border:1px solid var(--ring); border-radius:14px; background:rgba(2,7,18,.46); }
   .si-title{ margin:0 0 8px; font-size:14px; font-weight:800; color:#cfe8ff; opacity:.9; letter-spacing:.3px; }
   .si-empty{ color:var(--muted); padding:6px 2px; }
+
+  /* Pretty select for SI dropdown */
+  .si-select{
+    width:100%; height:44px; border-radius:12px; padding:0 12px; font-weight:800;
+    background:linear-gradient(180deg, rgba(2,7,18,.60), rgba(2,7,18,.32));
+    border:1px solid var(--ring); color:var(--text);
+    box-shadow:0 0 0 1px rgba(255,255,255,.04) inset;
+    appearance:none; -webkit-appearance:none; position:relative;
+    background-image: linear-gradient(45deg,transparent 50%,#90e9ff 50%), linear-gradient(135deg,#90e9ff 50%,transparent 50%);
+    background-position: calc(100% - 18px) 18px, calc(100% - 12px) 18px;
+    background-size:6px 6px,6px 6px; background-repeat:no-repeat;
+  }
 
   .chart-wrap{ position:relative; height:420px; }
   #ywtChart{ position:absolute; inset:0; width:100% !important; height:100% !important; display:block; }
@@ -165,7 +175,6 @@
   .cons-scroller{ overflow:auto; border:1px solid var(--ring); border-radius:14px; background:rgba(2,7,18,.46); }
   .cons-grid{
     display:grid;
-    /* columns set in JS */
     border-collapse:collapse;
     min-width: 800px;
   }
@@ -197,6 +206,41 @@
     height:280px; position:relative;
   }
   .trend-card canvas{ position:absolute; inset:12px 12px 12px 12px; width:calc(100% - 24px)!important; height:calc(100% - 24px)!important; }
+  /* --- SI dropdown theming (popup + options) --- */
+  .si-select{
+    color-scheme: dark;            /* tell the UA we’re in dark mode */
+    font-family: Montserrat, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    font-weight: 800;
+    color: var(--text);
+    background: linear-gradient(180deg, rgba(2,7,18,.60), rgba(2,7,18,.32));
+    border: 1px solid var(--ring);
+  }
+  .si-select:focus{
+    outline: 2px solid var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,240,255,.18);
+  }
+
+  /* Option list (the opened popup) */
+  .si-select option{
+    background: var(--panel);
+    color: var(--text);
+    font-weight: 800;
+    padding: 10px 12px;            /* Chromium respects this */
+  }
+
+  /* Placeholder/disabled style */
+  .si-select option[disabled]{
+    color: var(--muted);
+  }
+
+  /* Selected/hovered colors (supported in FF + partially in Chromium) */
+  .si-select option:checked{
+    background: linear-gradient(180deg, rgba(0,240,255,.22), rgba(0,240,255,.08));
+    color: #dff9ff;
+  }
+  .si-select option:hover{
+    background: rgba(255,255,255,.08);
+  }
 </style>
 </head>
 <body>
@@ -254,16 +298,18 @@
           <div class="si-title">Safety Inspection Reports</div>
           <div id="siList">
             {% if si_files and si_files|length %}
-              <div class="strip vertical" style="margin-top:10px;">
+              <!-- Fallback server render: all reports as options -->
+              <select id="siDropdown" class="si-select">
+                <option value="" selected disabled>Select a report…</option>
                 {% for item in si_files %}
-                  <a class="pill" href="{{ item.href }}" target="_blank" rel="noopener"
-                     data-shiftdate="{{ item.date_label|default('', true) }}">{{ item.filename }}</a>
+                  <option value="{{ item.href }}">{{ item.filename }}</option>
                 {% endfor %}
-              </div>
+              </select>
             {% else %}
               <div class="si-empty">Pick a shift date to view its SI report.</div>
             {% endif %}
           </div>
+          <div class="muted" style="margin-top:6px;">Tip: the list narrows when you pick a shift chip.</div>
         </section>
       </aside>
 
@@ -337,9 +383,7 @@
     <section class="panel-wide cons" id="consolidation">
       <h4 class="cons-title">Consolidation Details for the whole year</h4>
       <div class="cons-scroller">
-        <div class="cons-grid" id="consGrid">
-          <!-- Header/body will be built by JS so it can follow the Month filter -->
-        </div>
+        <div class="cons-grid" id="consGrid"></div>
       </div>
     </section>
 
@@ -366,7 +410,6 @@
   <script type="application/json" id="gy-emp">{{ group_chart_empcounts|tojson }}</script>
   <script type="application/json" id="gy-useemp">{{ use_emp_bars|tojson }}</script>
   <script type="application/json" id="pc-data">{{ positive_contribs|tojson }}</script>
-  <!-- expose selected months -->
   <script type="application/json" id="sel-months">{{ selected_months|tojson }}</script>
 
   <!-- Modal -->
@@ -595,7 +638,7 @@
     })();
   </script>
 
-  <!-- Shift chips + SI filtering -->
+  <!-- Shift chips + SI filtering (now with dropdown) -->
   <script>
     (function(){
       const baseDaily = "{{ url_for('daily.index') }}";
@@ -617,29 +660,47 @@
         return acc;
       }, {});
 
+      function ensureDropdown(){
+        let dd = document.getElementById('siDropdown');
+        if (!dd){
+          siList.innerHTML = '';
+          dd = document.createElement('select');
+          dd.id = 'siDropdown'; dd.className = 'si-select';
+          siList.appendChild(dd);
+        }
+        return dd;
+      }
+
+      function fillDropdown(items){
+        const dd = ensureDropdown();
+        dd.innerHTML = '';
+        const ph = document.createElement('option');
+        ph.textContent = items && items.length ? 'Select a report…' : 'No reports';
+        ph.value = '';
+        ph.disabled = true; ph.selected = true;
+        dd.appendChild(ph);
+
+        (items||[]).forEach(it=>{
+          const opt = document.createElement('option');
+          opt.value = it.href;
+          opt.textContent = it.filename;
+          dd.appendChild(opt);
+        });
+
+        dd.onchange = () => {
+          const url = dd.value;
+          if (url) window.open(url, '_blank', 'noopener');
+          dd.selectedIndex = 0; // reset to placeholder after opening
+        };
+      }
+
       function renderSI(key){
-        siList.innerHTML = '';
-        if (!key){
-          siList.innerHTML = '<div class="si-empty">Pick a shift date to view its SI report.</div>';
+        if (!key){ // show ALL by default
+          fillDropdown(rawSi);
           return;
         }
         const items = siMap[key] || [];
-        if (!items.length){
-          siList.innerHTML = '<div class="si-empty">No SI report for this shift.</div>';
-          return;
-        }
-        const wrap = document.createElement('div');
-        wrap.className = 'strip vertical';
-        items.forEach(it=>{
-          const a = document.createElement('a');
-          a.className = 'pill';
-          a.href = it.href;
-          a.target = '_blank';
-          a.rel = 'noopener';
-          a.textContent = it.filename;
-          wrap.appendChild(a);
-        });
-        siList.appendChild(wrap);
+        fillDropdown(items);
       }
 
       function navigateWith(dateOnly, shift){
@@ -654,8 +715,8 @@
       function clearSelection(){
         btn.href = '#';
         btn.setAttribute('aria-disabled','true');
+        // keep dropdown showing ALL
         renderSI('');
-
         const params = new URLSearchParams(window.location.search);
         params.set('cluster', cluster);
         params.set('name', personName);
@@ -696,6 +757,7 @@
         btn.href = url;
         btn.setAttribute('aria-disabled','false');
       } else {
+        // No active chip → show ALL reports in dropdown
         renderSI('');
         btn.href = '#';
         btn.setAttribute('aria-disabled','true');
@@ -910,7 +972,7 @@
       const mcMax = Math.max(...mc, 1);
       const tipBar = months.map((_,i)=> i===tipMonthIndex ? Math.max(mcMax*1.1, 1) : 0);
 
-      // HA(1) -> scatter dot on the same month as Health Tips (screenshot style)
+      // HA(1) -> scatter dot on the same month as Health Tips
       const ha1Scatter = months.map((_,i)=> (CONS.ha1 && i===tipMonthIndex) ? Math.max(mcMax*1.1, 1) : null);
 
       function mkLine(id, label, data, color){
