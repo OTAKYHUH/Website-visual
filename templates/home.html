@@ -196,5 +196,29 @@
         if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
       });
     </script>
+
+    <!-- === Added: Intercept Shift submit to open Power BI in a new tab === -->
+    <script>
+      (function () {
+        const PBI_URL = 'https://app.powerbi.com/reportEmbed?reportId=da709d26-ef86-4a23-bdfe-46ca2d260554&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3';
+        const form = document.getElementById('roleForm');
+
+        if (!form) return;
+
+        form.addEventListener('submit', function (e) {
+          // Identify which button submitted the form (modern browsers)
+          const submitter = e.submitter || document.activeElement;
+
+          if (
+            submitter &&
+            submitter.name === 'role' &&
+            submitter.value === 'shift'
+          ) {
+            e.preventDefault(); // stop the POST
+            window.open(PBI_URL, '_blank', 'noopener,noreferrer');
+          }
+        });
+      })();
+    </script>
 </body>
 </html>

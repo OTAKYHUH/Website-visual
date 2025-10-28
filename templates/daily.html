@@ -20,6 +20,14 @@
                 linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
     background-attachment: fixed;
   }
+
+  /* ---- scale wrapper (replaces html { zoom:.75 }) ---- */
+  .scale75{
+    transform: scale(.75);
+    transform-origin: top left;
+    width: calc(100% / .75); /* prevent horizontal clipping */
+  }
+
   .wrap{max-width:1200px; margin:24px auto 72px; padding:0 16px}
 
   .titlebar{display:flex; align-items:center; gap:14px; margin-bottom:14px}
@@ -114,114 +122,122 @@
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="titlebar">
-      <button class="back" onclick="history.back()">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div class="h1" id="pageTitle">{{ the_date_string }} {{ the_shift }}</div>
-      <div class="sub" id="pageMeta">Daily · P123</div>
+  <!-- SCALE WRAPPER START -->
+  <div class="scale75">
+
+    <div class="wrap">
+      <div class="titlebar">
+        <button class="back" onclick="history.back()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="h1" id="pageTitle">{{ the_date_string }} {{ the_shift }}</div>
+        <div class="sub" id="pageMeta">Daily · P123</div>
+      </div>
+
+      <!-- Overview -->
+      <div class="panel baseline">
+        <h2>Overview</h2>
+        <div style="height:260px"><canvas id="overview" height="260"></canvas></div>
+      </div>
+
+      <!-- Dynamic PPT charts -->
+      <div class="term-grid" id="termGrid"><!-- built by JS --></div>
+
+      <!-- Manning & Equipment -->
+      <div class="panel" style="margin-top:24px; text-align:center">
+        <h2 style="display:inline-block; padding:6px 18px; border:2px solid #ffd65a; border-radius:999px; box-shadow:0 0 18px rgba(255,214,90,.3);">Manning &amp; Equipment</h2>
+        <div class="cards" id="manningCards"><!-- built by JS --></div>
+      </div>
     </div>
 
-    <!-- Overview -->
-    <div class="panel baseline">
-      <h2>Overview</h2>
-      <div style="height:260px"><canvas id="overview" height="260"></canvas></div>
+    <!-- KPI row -->
+    <div class="kpi-grid">
+      <div class="kpi neo-card">
+        <div class="kpi-title" id="kpi-gate-title">Gate Ops</div>
+        <div class="kpi-val" id="kpi-gate">No Problem</div>
+      </div>
+      <div class="kpi neo-card">
+        <div class="kpi-title">Available Manpower › Today Demand</div>
+        <div class="kpi-val" id="kpi-avail-vs-demand">—</div>
+      </div>
+      <div class="kpi neo-card">
+        <div class="kpi-title">Today Demand › Available Manpower</div>
+        <div class="kpi-val" id="kpi-demand-vs-avail">—</div>
+      </div>
+      <div class="kpi neo-card">
+        <div class="kpi-title" id="kpi-safety-title">Safety</div>
+        <div class="kpi-val" id="kpi-safety">No Problem</div>
+      </div>
     </div>
 
-    <!-- Dynamic PPT charts -->
-    <div class="term-grid" id="termGrid"><!-- built by JS --></div>
-
-    <!-- Manning & Equipment -->
-    <div class="panel" style="margin-top:24px; text-align:center">
-      <h2 style="display:inline-block; padding:6px 18px; border:2px solid #ffd65a; border-radius:999px; box-shadow:0 0 18px rgba(255,214,90,.3);">Manning &amp; Equipment</h2>
-      <div class="cards" id="manningCards"><!-- built by JS --></div>
-    </div>
-  </div>
-
-  <!-- KPI row -->
-  <div class="kpi-grid">
-    <div class="kpi neo-card">
-      <div class="kpi-title" id="kpi-gate-title">Gate Ops</div>
-      <div class="kpi-val" id="kpi-gate">No Problem</div>
-    </div>
-    <div class="kpi neo-card">
-      <div class="kpi-title">Available Manpower › Today Demand</div>
-      <div class="kpi-val" id="kpi-avail-vs-demand">—</div>
-    </div>
-    <div class="kpi neo-card">
-      <div class="kpi-title">Today Demand › Available Manpower</div>
-      <div class="kpi-val" id="kpi-demand-vs-avail">—</div>
-    </div>
-    <div class="kpi neo-card">
-      <div class="kpi-title" id="kpi-safety-title">Safety</div>
-      <div class="kpi-val" id="kpi-safety">No Problem</div>
-    </div>
-  </div>
-
-  <!-- HSL block -->
-  <div class="panel hsl-panel" style="margin: 18px 16px;">
-    <div class="hsl-top">
-      <div class="seg" id="hslSeg"><!-- buttons injected by JS --></div>
-      <div class="hsl-grid">
-        <div class="left">
-          <div class="donut-row">
-            <div class="donut-card neo-card">
-              <header>Mount</header>
-              <div class="donut-wrap">
-                <canvas id="donutMount" width="220" height="220"></canvas>
-                <div class="donut-legend">
-                  <div class="legend-item"><span class="dot pass"></span><span>Pass</span></div>
-                  <div class="legend-item"><span class="dot fail"></span><span>Fail</span></div>
+    <!-- HSL block -->
+    <div class="panel hsl-panel" style="margin: 18px 16px;">
+      <div class="hsl-top">
+        <div class="seg" id="hslSeg"><!-- buttons injected by JS --></div>
+        <div class="hsl-grid">
+          <div class="left">
+            <div class="donut-row">
+              <div class="donut-card neo-card">
+                <header>Mount</header>
+                <div class="donut-wrap">
+                  <canvas id="donutMount" width="220" height="220"></canvas>
+                  <div class="donut-legend">
+                    <div class="legend-item"><span class="dot pass"></span><span>Pass</span></div>
+                    <div class="legend-item"><span class="dot fail"></span><span>Fail</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="donut-card neo-card">
+                <header>Offload</header>
+                <div class="donut-wrap">
+                  <canvas id="donutOff" width="220" height="220"></canvas>
+                  <div class="donut-legend">
+                    <div class="legend-item"><span class="dot pass"></span><span>Pass</span></div>
+                    <div class="legend-item"><span class="dot fail"></span><span>Fail</span></div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="donut-card neo-card">
-              <header>Offload</header>
-              <div class="donut-wrap">
-                <canvas id="donutOff" width="220" height="220"></canvas>
-                <div class="donut-legend">
-                  <div class="legend-item"><span class="dot pass"></span><span>Pass</span></div>
-                  <div class="legend-item"><span class="dot fail"></span><span>Fail</span></div>
-                </div>
+
+            <div class="mini neo-card">
+              <header>HSL Summary</header>
+              <div class="mini-rows">
+                <div class="mini-row mini-head"><span>Type</span><span>Pass</span><span>Fail</span><span>Total</span></div>
+                <div class="mini-row"><span>Mount</span><span id="mini-m-pass">—</span><span id="mini-m-fail">—</span><span id="mini-m-total">—</span></div>
+                <div class="mini-row"><span>Offload</span><span id="mini-o-pass">—</span><span id="mini-o-fail">—</span><span id="mini-o-total">—</span></div>
               </div>
             </div>
-          </div>
 
-          <div class="mini neo-card">
-            <header>HSL Summary</header>
-            <div class="mini-rows">
-              <div class="mini-row mini-head"><span>Type</span><span>Pass</span><span>Fail</span><span>Total</span></div>
-              <div class="mini-row"><span>Mount</span><span id="mini-m-pass">—</span><span id="mini-m-fail">—</span><span id="mini-m-total">—</span></div>
-              <div class="mini-row"><span>Offload</span><span id="mini-o-pass">—</span><span id="mini-o-fail">—</span><span id="mini-o-total">—</span></div>
+            <div class="score">
+              <div class="score-label">Overall Pass Rate</div>
+              <div class="score-val" id="scorePct">0%</div>
             </div>
           </div>
 
-          <div class="score">
-            <div class="score-label">Overall Pass Rate</div>
-            <div class="score-val" id="scorePct">0%</div>
-          </div>
-        </div>
-
-        <div class="right neo-card">
-          <header>Event Log</header>
-          <div class="tbl-wrap">
-            <table class="hsl-table" id="hslTable">
-              <thead>
-                <tr>
-                  <th>GateOpsType</th><th>Start</th><th>End</th><th>Haulier</th><th>Service</th><th>Type</th><th>Location</th><th>Result</th>
-                </tr>
-              </thead>
-              <tbody><!-- filled by JS --></tbody>
-            </table>
+          <div class="right neo-card">
+            <header>Event Log</header>
+            <div class="tbl-wrap">
+              <table class="hsl-table" id="hslTable">
+                <thead>
+                  <tr>
+                    <th>GateOpsType</th><th>Start</th><th>End</th><th>Haulier</th><th>Service</th><th>Type</th><th>Location</th><th>Result</th>
+                  </tr>
+                </thead>
+                <tbody><!-- filled by JS --></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
   </div>
+  <!-- SCALE WRAPPER END -->
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <!-- Data labels plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
   <!-- ======== SERVER PAYLOAD ======== -->
   <script id="server-payload" type="application/json">
@@ -246,6 +262,16 @@
     // Target line by cluster
     const TARGET_Y = (CLUSTER === 'P456') ? 7.4 : 9.7;
 
+    // Take shift from payload if present, else from template
+    const SHIFT = (PAYLOAD.shift || "{{ the_shift }}").toUpperCase();
+
+    // Build hour buckets per shift (prevents cut-off for N shift)
+    function hoursFor(shift){
+      return (shift === 'N')
+        ? ["19:00","20:00","21:00","22:00","23:00","00:00","01:00","02:00","03:00","04:00","05:00","06:00","07:00"]
+        : ["07:00","08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00"];
+    }
+
     // --- Canonicalize keys so P56SE or PPT56SE both work ---
     function normalizeP56(obj){
       if (!obj || typeof obj!=='object') return {};
@@ -254,9 +280,7 @@
       return out;
     }
 
-    const HOURS = (PAYLOAD.hours || ['7:00','8:00','9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00']);
-    const OVR   = (PAYLOAD.overview  || {mounting:[], avg:[], offload:[]});
-    const TERMS = normalizeP56(PAYLOAD.terminals || {}); // {PPT1.., PPT4, PPT56SE}
+    // COLORS & defaults
     const THEME = getComputedStyle(document.documentElement);
     const COLORS = {
       mounting: (THEME.getPropertyValue('--accent')   || '#00F0FF').trim(),
@@ -278,36 +302,114 @@
       });
     }};
 
+    // ---- Re-index helpers (fixes cut-offs due to label order mismatches) ----
+    function HH(s){
+      const m = String(s||'').match(/^(\d{1,2})\s*:\s*(\d{2})$/);
+      if(!m) return String(s||'');
+      return (m[1].padStart(2,'0')+':'+m[2]);
+    }
+    function remapArray(values, srcLabels, destLabels){
+      const map = {};
+      (srcLabels||[]).forEach((lab, i)=>{ map[HH(lab)] = Number(values?.[i]); });
+      return (destLabels||[]).map(lab => {
+        const v = map[HH(lab)];
+        return Number.isFinite(v) ? v : null;
+      });
+    }
+    function remapSeries(series, srcLabels, destLabels){
+      return {
+        mounting: remapArray(series?.mounting||[], srcLabels, destLabels),
+        avg:      remapArray(series?.avg||[],      srcLabels, destLabels),
+        offload:  remapArray(series?.offload||[],  srcLabels, destLabels)
+      };
+    }
+
+    // Hours we will draw, and the hour order the backend used
+    const HOURS   = hoursFor(SHIFT);
+    const SRC_HRS = PAYLOAD.hours || HOURS;
+
+    const OVR   = (PAYLOAD.overview  || {mounting:[], avg:[], offload:[]});
+    const TERMS = normalizeP56(PAYLOAD.terminals || {});
+
+    // shared point interaction settings (for better hover advance)
+    const baseLineStyle = {
+      pointHitRadius: 24,
+      pointHoverRadius: 4
+    };
+
     function mkTripleConfig(series) {
-      const s = series || {mounting:[], avg:[], offload:[]};
-      const toNums = a => (a || []).map(v => (v==null ? null : Number(v)));
       const labels = HOURS.slice();
+      // Align arrays by hour label first (key fix)
+      const aligned = remapSeries(series||{mounting:[],avg:[],offload:[]}, SRC_HRS, labels);
+
+      const m = aligned.mounting;
+      const a = aligned.avg;
+      const o = aligned.offload;
+
       const targetArr = labels.map(()=>TARGET_Y);
+
+      // dynamic y-range
+      const all = [...m, ...a, ...o].filter(v => v != null && !Number.isNaN(v));
+      const yMin = all.length ? Math.max(0, Math.floor(Math.min(...all) - 1)) : 0;
+      const yMax = all.length ? Math.ceil(Math.max(...all) + 1) : 15;
 
       return {
         type: 'line',
-        plugins:[Glow],
+        plugins:[Glow, ChartDataLabels],
         data: {
           labels,
           datasets: [
-            { label:'Mounting', data: toNums(s.mounting), borderColor: COLORS.mounting, tension:0.35, borderWidth:2, pointRadius:3, pointHoverRadius:6 },
-            // Average is SOLID now
-            { label:'Average Wait Time', data: toNums(s.avg), borderColor: COLORS.avg, tension:0.35, borderWidth:2, pointRadius:0, pointHoverRadius:0 },
-            { label:'Offloading', data: toNums(s.offload), borderColor: COLORS.offload, tension:0.35, borderWidth:2, pointRadius:3, pointHoverRadius:6 },
-            // Dotted Target line
-            { label:`Target (${TARGET_Y})`, data: targetArr, borderColor: COLORS.target, borderDash:[6,6], tension:0, borderWidth:2, pointRadius:0, pointHoverRadius:0, _noGlow:true }
+            { ...baseLineStyle, label:'Mounting', data: m, borderColor: COLORS.mounting, tension:0.35, borderWidth:2, pointRadius:3 },
+            { ...baseLineStyle, label:'Average Wait Time', data: a, borderColor: COLORS.avg, tension:0.35, borderWidth:2, pointRadius:0 },
+            { ...baseLineStyle, label:'Offloading', data: o, borderColor: COLORS.offload, tension:0.35, borderWidth:2, pointRadius:3 },
+            { label:`Target (${TARGET_Y})`, data: targetArr, borderColor: COLORS.target, borderDash:[6,6], tension:0, borderWidth:2, pointRadius:0, pointHoverRadius:0, _noGlow:true,
+              plugins: { tooltip: { enabled:false } }
+            }
           ]
         },
         options: {
-          responsive:true, maintainAspectRatio:false,
-          interaction:{ mode:'nearest', intersect:false },
-          scales:{
-            x:{ grid:{ color:'rgba(255,255,255,.06)' } },
-            y:{ grid:{ color:'rgba(255,255,255,.06)' }, suggestedMin:5, suggestedMax:15, ticks:{ stepSize:1 } }
+          responsive: true,
+          maintainAspectRatio: false,
+          spanGaps: true,
+
+          // snap by x-position; no intersect needed
+          interaction: { mode: 'index', axis: 'x', intersect: false },
+
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,.06)' }, offset: true },
+            y: { grid: { color: 'rgba(255,255,255,.06)' }, min: yMin, max: yMax, ticks: { stepSize: 1 } }
           },
-          plugins:{
-            legend:{ display:true, position:'top', labels:{ boxWidth:12, boxHeight:12 } },
-            tooltip:{ mode:'nearest', intersect:false }
+
+          plugins: {
+            legend: { display: true, position: 'top', labels: { boxWidth: 12, boxHeight: 12 } },
+
+            tooltip: {
+              enabled: true,
+              mode: 'index',
+              intersect: false,
+              position: 'nearest',
+              filter: (ctx) => !/target/i.test(ctx.dataset?.label || ''),
+              callbacks: {
+                label: (ctx) => {
+                  const v = ctx.parsed?.y;
+                  if (v == null || Number.isNaN(v)) return null;
+                  return `${ctx.dataset.label}: ${Number(v).toFixed(2)}`;
+                },
+                labelColor: (ctx) => ({
+                  borderColor: ctx.dataset.borderColor,
+                  backgroundColor: ctx.dataset.borderColor
+                })
+              }
+            },
+
+            datalabels: {
+              display: (ctx) => [0, 2].includes(ctx.datasetIndex) && ctx.raw != null,
+              formatter: (v) => Number(v).toFixed(1),
+              align: 'top', offset: 6, clamp: true,
+              backgroundColor: 'rgba(0,0,0,.25)',
+              borderRadius: 6, padding: { left: 6, right: 6, top: 3, bottom: 3 },
+              font: { weight: '800', size: 10 }, color: '#EAF4FF'
+            }
           }
         }
       };
@@ -320,12 +422,11 @@
     (function buildTermCharts(){
       const grid = document.getElementById('termGrid');
       const setP123 = ['PPT1','PPT2','PPT3'];
-      const setP456 = ['PPT4','PPT56SE'];
-      const want = (CLUSTER === 'P456') ? setP456 : setP123;
+      theSet = (CLUSTER === 'P456') ? ['PPT4','PPT56SE'] : setP123;
 
-      grid.classList.toggle('two', want.length === 2);
+      grid.classList.toggle('two', theSet.length === 2);
       grid.innerHTML = '';
-      want.forEach(key => {
+      theSet.forEach(key => {
         const card = document.createElement('div');
         card.className = 'panel baseline';
         card.innerHTML = `<h2>${key}</h2><div style="height:200px"><canvas id="t-${key}" height="200"></canvas></div>`;
@@ -416,7 +517,7 @@
     })();
   </script>
 
-<!-- ======== INDICATORS (derive from Manning & Equipment) ======== -->
+  <!-- ======== INDICATORS (derive from Manning & Equipment) ======== -->
   <script>
     (function indicatorsFromManning(){
       var hasServer = PAYLOAD && Object.keys(PAYLOAD).length;
@@ -425,8 +526,6 @@
       var manningP123 = (server.manning_p123 || __FALLBACK_PAYLOAD__.manning_p123 || {});
       var manningP456 = (server.manning_p456 || server.manning || __FALLBACK_PAYLOAD__.manning_p456 || {});
 
-      // Parse a card value into an array of section numbers.
-      // "64/63+1" -> [64,64], "49 | 11" -> [49,11], "55/54+1" -> [55,55], "57" -> [57]
       function parseParts(raw){
         if (raw == null) return [];
         var s = String(raw).replace(/[^0-9|/+]/g, '').trim();
@@ -462,14 +561,12 @@
         };
       }
 
-      // Comparators (use the higher/best available when needed)
       function demandExceedsAvail(availArr, demandArr){
         if (!demandArr.length) return false;
         if (!availArr.length)  return true;
         if (availArr.length === demandArr.length){
           return demandArr.some((d,i)=> d > availArr[i]);
         }
-        // if lengths differ, compare each demand to the BEST (max) available
         const bestAvail = Math.max.apply(null, availArr);
         return demandArr.some(d => d > bestAvail);
       }
@@ -495,15 +592,14 @@
 
       function anyDemandGreaterThanForecast(demandArr, forecastArr){
         if (!demandArr.length) return false;
-        if (!forecastArr.length) return true; // no forecast → treat as occurring
+        if (!forecastArr.length) return true;
         if (demandArr.length === forecastArr.length){
           return demandArr.some((d,i)=> d > forecastArr[i]);
         }
-        const bestForecast = Math.max.apply(null, forecastArr); // take whichever is higher on forecast side
+        const bestForecast = Math.max.apply(null, forecastArr);
         return demandArr.some(d => d > bestForecast);
       }
 
-      // sections list (cluster-aware)
       var list = [];
       if (CLUSTER === 'P456') {
         var m = manningP456 || {};
@@ -517,10 +613,10 @@
         if (m.fm)   list.push(['FM',   extractSection(m.fm)]);
       }
 
-      var insufficient = [];                 // sections where demand >= avail (no longer shown as "Tight")
-      var sufficient = [];                   // sections where avail > demand
-      var meetsForecastVsDemand = [];        // forecast >= demand
-      var demandVsForecastOccurs = [];       // demand >= forecast
+      var insufficient = [];
+      var sufficient = [];
+      var meetsForecastVsDemand = [];
+      var demandVsForecastOccurs = [];
 
       list.forEach(function([name, s]){
         if (demandExceedsAvail(s.availParts, s.demandParts)) insufficient.push(name);
@@ -529,26 +625,22 @@
         if (anyDemandGreaterThanForecast(s.demandParts, s.forecastParts)) demandVsForecastOccurs.push(name);
       });
 
-      // KPI 1: Available Manpower › Today Demand (show True only; no hover when false)
       var el1 = document.getElementById('kpi-avail-vs-demand');
       if (el1) {
         var allSufficient = (sufficient.length === list.length && list.length > 0);
-
         if (allSufficient) {
           el1.textContent = 'True';
           el1.classList.remove('bad','warn');
           el1.classList.add('good');
           el1.setAttribute('data-tip','Available > Demand across all sections');
         } else {
-          el1.textContent = '—';                 // neutral
+          el1.textContent = '—';
           el1.classList.remove('good','bad','warn');
-          el1.removeAttribute('data-tip');       // <- no tooltip
-          el1.removeAttribute('title');          // <- just in case
+          el1.removeAttribute('data-tip');
+          el1.removeAttribute('title');
         }
       }
 
-
-      // KPI 2: Today Demand › Available Manpower (mirror – keep wording)
       var el2 = document.getElementById('kpi-demand-vs-avail');
       if (el2) {
         if (insufficient.length) {
@@ -562,13 +654,11 @@
         }
       }
 
-      // Titles for the other two KPIs (as before)
       var gateTitle   = document.getElementById('kpi-gate-title');
       var safetyTitle = document.getElementById('kpi-safety-title');
       if (gateTitle)   gateTitle.textContent   = 'Forecast ≥ Demand';
       if (safetyTitle) safetyTitle.textContent = 'Demand > Forecast';
 
-      // KPI 3 (Gate card): Forecast ≥ Demand
       var elGate = document.getElementById('kpi-gate');
       if (elGate){
         var ok = meetsForecastVsDemand.length > 0;
@@ -580,7 +670,6 @@
             : 'No section met forecast vs demand');
       }
 
-      // KPI 4 (Safety card): Demand ≥ Forecast
       var elSafety = document.getElementById('kpi-safety');
       if (elSafety){
         var occurs = demandVsForecastOccurs.length > 0;
@@ -595,7 +684,6 @@
 
   <!-- ======== HSL (cluster-aware tabs + donuts/table) ======== -->
   <script>
-    // Center text plugin for donuts
     var CenterText = {
       id:'centerText',
       afterDatasetsDraw: function(chart, args, opts){
@@ -624,10 +712,8 @@
       return new Chart(el, common);
     }
 
-    // HSL terminals from payload (normalize P56SE)
     var HSL_TERMS = normalizeP56((PAYLOAD && PAYLOAD.hsl && PAYLOAD.hsl.terminals) ? PAYLOAD.hsl.terminals : {});
 
-    // Build cluster-aware segmented tabs
     (function initSeg(){
       var seg = document.getElementById('hslSeg');
       var keysAll = Object.keys(HSL_TERMS);
@@ -637,7 +723,7 @@
       var keys;
       if (CLUSTER === 'P456') {
         keys = SET_P456.filter(k => keysAll.includes(k));
-        if (!keys.length) keys = SET_P456; // show tabs even if empty
+        if (!keys.length) keys = SET_P456;
       } else {
         keys = SET_P123.filter(k => keysAll.includes(k));
         if (!keys.length) keys = SET_P123;
@@ -711,9 +797,5 @@
       });
     })();
   </script>
-  <style>
-    /* 75% page scale (Chrome/Edge/Safari) */
-    html { zoom: .75; }     /* non-standard, but widely supported */
-  </style>
 </body>
 </html>

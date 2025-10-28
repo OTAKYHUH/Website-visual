@@ -1,4 +1,4 @@
-# build_H.py — Hourly + HSL bundle (Dates+Time DateTime, Shift Date everywhere, column preview)
+# build_H.py — Hourly + HSL bundle (START_DT-based Shift Date for Hourly, DateTime from Dates+Time)
 from pathlib import Path
 import pandas as pd
 import re
@@ -14,7 +14,7 @@ HSL_CANDIDATES = [
 ]
 
 # ===================== small helpers =====================
-def _norm(s): 
+def _norm(s):
     return re.sub(r"[^a-z0-9]+", "", str(s or "").lower())
 
 def _find_col_ci(df: pd.DataFrame, *cands: str) -> str | None:
@@ -83,6 +83,7 @@ def _rename_eq_cols(df: pd.DataFrame) -> pd.DataFrame:
 def _add_datetime_column_from_dates_time(df: pd.DataFrame) -> pd.DataFrame:
     """
     Build DateTime from **Dates + Time** (fallback: Date or START_DT + Time; else just the date).
+    NOTE: We keep this as-is (Dates+Time), per your request only Shift Date changes to START_DT-based.
     """
     df = df.copy()
     date_col = (
@@ -96,7 +97,6 @@ def _add_datetime_column_from_dates_time(df: pd.DataFrame) -> pd.DataFrame:
     dts = pd.to_datetime(df[date_col], errors="coerce")
     if time_col:
         d_str = dts.dt.strftime("%Y-%m-%d")
-        # FIX: use .str.strip() on Series
         t_str = df[time_col].astype(str).str.strip()
         df["DateTime"] = pd.to_datetime(d_str + " " + t_str, errors="coerce")
     else:
@@ -138,28 +138,34 @@ def read_hsl_logs() -> dict[str, pd.DataFrame]:
 def add_month_and_shiftdate_hourly(df: pd.DataFrame) -> pd.DataFrame:
     """
     Hourly:
-      - DateTime from Dates+Time
+      - DateTime from Dates+Time (unchanged)
       - Shift normalized (1->D, 2->N, G->N)
-      - Shift Date in 'dd MMM yy S' (using Dates if present)
-      - Month (from same base date)
+      - Shift Date **USING START_DT** (fallback to Dates/Date only if START_DT missing)
+      - Month derived from the **same base date as Shift Date** (i.e., START_DT preferred)
       - Rename EQMT→Mounting, EQOF→Offloading
     """
     df = df.copy()
+    # Keep existing DateTime behavior
     df = _add_datetime_column_from_dates_time(df)
 
-    # Shift + Shift Date (prefer Dates, else Date/START_DT)
+    # Normalize shift
     df = _ensure_shift_col(df)
-    df = _ensure_shift_date(df, "Dates", "Date", "START_DT", "START DT", "Start Date")
 
-    # Month from the same base date as Shift Date (prefer Dates)
+    # >>> CHANGE: build Shift Date from START_DT first <<<
+    df = _ensure_shift_date(df, "START_DT", "START DT", "Start Date", "Dates", "Date")
+
+    # Month from the same base date (prefer START_DT)
     base_date_col = (
-        _find_col_ci(df, "Dates")
+        _find_col_ci(df, "START_DT", "START DT", "Start Date")
+        or _find_col_ci(df, "Dates")
         or _find_col_ci(df, "Date")
-        or _find_col_ci(df, "START_DT", "START DT", "Start Date")
     )
     if base_date_col:
         base_dt = pd.to_datetime(df[base_date_col], errors="coerce")
         df["Month"] = base_dt.dt.strftime("%b")
+    else:
+        # If no base found, clear Month to be explicit
+        df["Month"] = ""
 
     df = _rename_eq_cols(df)
     return df
@@ -247,7 +253,7 @@ __all__ = [
 def get_tables(xlsx_path: Path = ALL_XLSX, verbose: bool = False) -> dict[str, pd.DataFrame]:
     """
     Returns transformed tables:
-      - Hourly  → DateTime (Dates+Time), Shift, **Shift Date (dd MMM yy S)**, Mounting/Offloading, Month
+      - Hourly  → DateTime (Dates+Time), Shift, **Shift Date (START_DT + Shift)**, Mounting/Offloading, Month
       - Log     → Shift, **Shift Date (dd MMM yy S)**, bucket headers normalized
       - Details → Shift, **Shift Date (dd MMM yy S)**, Start/End times
     Also returns 'Log_raw' and 'Details_raw' when available.

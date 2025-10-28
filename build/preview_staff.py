@@ -8,6 +8,6 @@ dfs_h    = h_tables()                               # Hourly, Log, Details (+ ra
 dfs_safe = safety_tables()                          # Demand, Demand_2, Safety, Terminal
 #dfs_pic  = staff_tables(r"C:\Users\ahgua\PSA International\(PSAC-CNBD)-YOD-efile - Cess\Staff Photo")  # photos_df, photos_dict
 dfs_pic  = staff_tables(r"C:\Users\ahgua\Documents\Website-visual\static\Staff Photo")
-print(dfs_safe["Safety"])
+print(dfs_data["p123_enriched"])
 demand   = dfs_safe["Demand"]
 p123     = dfs_data.get("p123_enriched")

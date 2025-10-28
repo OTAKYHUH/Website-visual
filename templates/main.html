@@ -13,6 +13,11 @@
 
     --kpi-col:160px; --kpi-gap:22px; --kpi-wrap:calc(var(--kpi-col)*4 + var(--kpi-gap)*3);
     --icon-card-h:130px; --icon-bubble:85px; --icon-size:70px;
+        /* …your existing tokens… */
+    --bad:#8B0000;                /* darkred */
+    --bad-ink:#B30000;            /* a tad brighter for text */
+    --bad-bg:rgba(139,0,0,.18);   /* background wash */
+    --bad-ring:rgba(139,0,0,.55); /* border/glow */
   }
 
   *{ box-sizing:border-box } html,body{ height:100% }
@@ -147,20 +152,32 @@
   .cell.ywt .num{ text-shadow:none; }
   .cell.ywt.pts-green{ background:rgba(0,255,160,.14); border-color:rgba(0,255,160,.45); color:#00ff9e; }
   .cell.ywt.pts-orange{ background:rgba(255,160,0,.14); border-color:rgba(255,160,0,.45); color:#ffb24a; }
-  .cell.ywt.pts-red{ background:rgba(255,70,70,.14); border-color:rgba(255,70,70,.45); color:#ff6b6b; }
+  .cell.ywt.pts-red{
+    background: var(--bad-bg);
+    border-color: var(--bad-ring);
+    color: var(--bad-ink);
+  }
 
   /* Safety cell (binary) */
   .cell.safety{ border:1px solid var(--ring); }
   .cell.safety .num{ text-shadow:none; }
   .cell.safety.pts-green{ background:rgba(0,255,160,.14); border-color:rgba(0,255,160,.45); color:#00ff9e; }
-  .cell.safety.pts-red{ background:rgba(255,70,70,.14); border-color:rgba(255,70,70,.45); color:#ff6b6b; }
+  .cell.safety.pts-red{
+    background: var(--bad-bg);
+    border-color: var(--bad-ring);
+    color: var(--bad-ink);
+  }
 
   /* HSL cell (3&2 = green, 1 = orange, 0 = red) */
   .cell.hsl{ border:1px solid var(--ring); }
   .cell.hsl .num{ text-shadow:none; }
   .cell.hsl.pts-green{ background:rgba(0,255,160,.14); border-color:rgba(0,255,160,.45); color:#00ff9e; }
   .cell.hsl.pts-orange{ background:rgba(255,160,0,.14); border-color:rgba(255,160,0,.45); color:#ffb24a; }
-  .cell.hsl.pts-red{ background:rgba(255,70,70,.14); border-color:rgba(255,70,70,.45); color:#ff6b6b; }
+  .cell.hsl.pts-red{
+    background: var(--bad-bg);
+    border-color: var(--bad-ring);
+    color: var(--bad-ink);
+  }
 
   /* Small badge inside metric cells */
   .cell .pts-badge{
@@ -177,7 +194,107 @@
     white-space: nowrap;
   }
   .cell.fish.pts-green{ background:rgba(0,255,160,.14); border-color:rgba(0,255,160,.45); color:#00ff9e; }
-  .cell.fish.pts-red{ background:rgba(255,70,70,.14); border-color:rgba(0,255,160,.45); color:#ff6b6b; }
+  .cell.fish.pts-red{
+    background: var(--bad-bg);
+    border-color: var(--bad-ring);
+    color: var(--bad-ink);
+  }
+  .icon-title{
+    font-weight:800;
+    letter-spacing:.6px;
+    font-size:14px;
+    opacity:.95;
+  }
+  /* --- Icon title contrast/visibility fix --- */
+  .icon-card .icon-title{
+    display:block;
+    margin-top:10px;
+    font-weight:800;
+    letter-spacing:.6px;
+    font-size:14px;
+    color:var(--text) !important;   /* force light text */
+    opacity:1 !important;           /* in case something set it low */
+    text-align:center;
+    text-transform:uppercase;
+    text-shadow:0 1px 0 rgba(0,0,0,.25);
+  }
+
+  /* if the card was centering only the image, make it stack nicely */
+  .icon-card{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    overflow:visible;               /* ensure label isn’t clipped */
+  }
+  /* ===== Shrink ONLY the employee rows + point system ===== */
+
+  /* list spacing */
+  #rows.rows{ gap:12px; }
+  #rows.rows .row{ gap:12px; }
+
+  /* left card (photo + name) */
+  #rows .person{
+    padding:12px;
+    border-radius:14px;
+  }
+  #rows .avatar{
+    width:56px; height:56px;
+    border-radius:10px;
+  }
+  #rows .name{
+    font-size:16px;
+    line-height:1.05;
+    margin-bottom:2px;
+  }
+  #rows .role{
+    font-size:12px;
+    opacity:.9;
+  }
+
+  /* KPI grid inside each row */
+  #rows .grid{ gap:14px; }
+
+  /* KPI tiles (YWT / Demand / HSL / Fish) */
+  #rows .cell{
+    padding:14px 8px;          /* was ~22px 10px */
+    border-radius:14px;
+  }
+
+  /* big numbers inside each tile (your markup uses `.num`) */
+  #rows .cell .num,
+  #rows .cell .value,
+  #rows .cell .val,
+  #rows .cell .big{
+    font-size:32px;            /* was ~40px */
+    line-height:1;
+  }
+
+  /* tiny “x PT(S)” badge */
+  #rows .pts-badge{
+    font-size:11px;
+    padding:2px 8px;
+    line-height:1.1;
+    transform:translateY(2px);
+  }
+
+  /* rightmost total-points pill */
+  #rows .points{
+    width:86px;                /* keep your grid col at 110px; this is inner */
+    min-width:86px;
+    padding:8px 0;
+    border-radius:14px;
+  }
+  #rows .points .num{
+    font-size:28px;            /* was 40px */
+    line-height:1;
+  }
+  #rows .points small{
+    font-size:11px;
+    letter-spacing:.6px;
+  }
+
 </style>
 </head>
 

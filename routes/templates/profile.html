@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>YOD • Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-top:#b86afd; --bg-bottom:#0b0920;
+    --panel:#0f0d22; --panel-2:#120f27; --ring:#2c2a45;
+    --text:#EAF4FF; --muted:#9aa4b2; --accent:#00F0FF; --accent-2:#B06CFF; --ok:#00ffd7;
+  }
+  *{ box-sizing:border-box } html,body{ height:100% }
+  body{
+    margin:0; color:var(--text);
+    font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    background:none; position:relative; overflow-x:hidden;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; z-index:-1;
+    background:
+      radial-gradient(1400px 700px at 12% -5%, rgba(58,10,104,0.85) 0%, rgba(58,10,104,0.55) 35%, rgba(58,10,104,0.20) 65%, rgba(58,10,104,0.00) 85%),
+      radial-gradient(1200px 650px at 90% 0%, rgba(0,240,255,0.28) 0%, rgba(0,240,255,0.16) 35%, rgba(0,240,255,0.06) 70%, rgba(0,240,255,0.00) 90%),
+      linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+    background-repeat:no-repeat;
+  }
+
+  /* page-wide 75% zoom that keeps canvas hover correct */
+  .ui-zoom{
+    transform: scale(.75);
+    transform-origin: top left;
+    width: calc(100% / .75);
+    min-height: calc(100vh / .75);
+  }
+
+  .wrap{ max-width:1400px; margin:0 auto; padding:22px 18px 36px }
+
+  /* Tabs */
+  .top{ display:flex; align-items:center; justify-content:center; margin-bottom:16px; gap:16px }
+  .tabs{ display:flex; background:rgba(255,255,255,.06); backdrop-filter:blur(6px);
+         border:1px solid var(--ring); border-radius:14px; overflow:hidden; box-shadow:0 6px 24px rgba(0,0,0,.35) }
+  .tab{ padding:12px 26px; text-decoration:none; color:var(--text); font-weight:800; letter-spacing:.3px; border-right:1px solid var(--ring); transition:all .2s }
+  .tab:last-child{ border-right:none }
+  .tab:hover{ background:rgba(255,255,255,.06) }
+  .tab.active{ background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#0c0c16 }
+
+  /* Layout – stretch makes both columns equal height */
+  .layout{
+    display:grid;
+    grid-template-columns:320px minmax(0, 1fr);
+    gap:22px;
+    align-items:stretch;
+  }
+  @media (max-width:1100px){
+    .layout{ grid-template-columns:1fr; align-items:start; }
+  }
+
+  .neo-outline{
+    position:relative; border-radius:14px; padding:16px; border:3px solid transparent;
+    background:linear-gradient(#0f0d22,#0f0d22) padding-box, linear-gradient(135deg,#8a2be2,#00eaff) border-box;
+    box-shadow:0 0 0 1px rgba(138,43,226,.18) inset, 0 14px 32px rgba(0,0,0,.45);
+    height:100%;
+    display:flex; flex-direction:column;
+  }
+
+  .card{ background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
+         border:1px solid var(--ring); border-radius:18px; padding:18px;
+         box-shadow:0 10px 35px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.02); }
+  .photo{ width:180px; height:180px; border-radius:14px; overflow:hidden; margin:8px auto 16px; display:grid; place-items:center; background:#0b0f18; border:1px solid var(--ring) }
+  .photo img{ width:100%; height:100%; object-fit:cover }
+  .name{ text-align:center; font-weight:800; font-size:20px; letter-spacing:.4px; margin:4px 0 6px }
+  .group{ text-align:center; font-weight:800; opacity:.8; letter-spacing:.3px }
+  .kpi{ margin-top:14px; display:grid; place-items:center; padding:12px; border-radius:14px; border:1px dashed rgba(255,255,255,.1) }
+  .kpi .big{ font-size:42px; font-weight:800 }
+
+  /* Month multi-select */
+  .month-block{ margin-top:14px; }
+  .neo-btn{ height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+            font-weight:800; color:#dff9ff; border:2px solid transparent;
+            background:linear-gradient(#0f0d22,#0f0d22) padding-box, linear-gradient(135deg,#00eaff,#9a56ff) border-box;
+            box-shadow:0 0 0 2px rgba(0,234,255,.2) inset; position:relative; isolation:isolate; }
+  .neo-btn details.multi-dd{ position:absolute; inset:0; display:block; }
+  .neo-btn details.multi-dd summary{
+    list-style:none; cursor:pointer; user-select:none; width:100%; height:100%; border-radius:10px; border:0; outline:0;
+    display:flex; align-items:center; justify-content:center; background:transparent; color:#dff9ff; font-weight:800;
+  }
+  .neo-btn details[open] summary{ outline:2px solid var(--accent); border-radius:10px; }
+  .multi-dd .menu{
+    position:absolute; top:calc(100% + 10px); left:0; z-index:50;
+    background: var(--panel); border:1px solid var(--ring); border-radius:14px;
+    box-shadow:0 18px 34px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.03);
+    padding:10px; min-width:240px; max-height:260px; overflow:auto;
+  }
+  .multi-dd label{ display:flex; align-items:center; gap:10px; padding:8px; border-radius:10px; font-weight:700; }
+  .multi-dd label:hover{ background:rgba(255,255,255,.08) }
+
+  .panel{
+    background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
+    border:1px solid var(--ring); border-radius:18px; padding:18px;
+    box-shadow:0 10px 35px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.02);
+    height:100%;
+    display:flex; flex-direction:column;
+  }
+  .title{ font-size:20px; font-weight:900; letter-spacing:.3px; margin:0 0 10px; text-align:center }
+
+  .strip{ margin-top:14px; display:flex; gap:10px; overflow:auto; padding:10px;
+          background:rgba(2,7,18,.46); border:1px solid var(--ring); border-radius:14px; }
+  .pill{ flex:0 0 auto; padding:10px 12px; border-radius:12px; font-weight:800;
+         background:linear-gradient(180deg, rgba(2,7,18,.60), rgba(2,7,18,.32)); border:1px solid var(--ring); white-space:nowrap; }
+  .pill.active{ outline:2px solid var(--accent); box-shadow:0 0 18px rgba(0,240,255,.25) }
+
+  .cta{ margin:22px auto 0; width:340px; height:64px; display:grid; place-items:center; border-radius:14px;
+        background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#0c0c16; font-weight:900; letter-spacing:.6px;
+        border:1px solid #3dd1ff; box-shadow:0 14px 36px rgba(0,0,0,.45); text-decoration:none; }
+  .cta[aria-disabled="true"]{ opacity:.5; pointer-events:none; filter:grayscale(0.3); }
+
+  .strip .pill, .strip .pill:visited, .strip .pill:active, .strip .pill:hover { color:#fff !important; text-decoration:none }
+  a.cta, a.cta:visited, a.cta:active, a.cta:hover { color:#fff !important; text-decoration:none }
+
+  /* SI block */
+  .si-block{ margin-top:14px; padding:12px; border:1px solid var(--ring); border-radius:14px; background:rgba(2,7,18,.46); }
+  .si-title{ margin:0 0 8px; font-size:14px; font-weight:800; color:#cfe8ff; opacity:.9; letter-spacing:.3px; }
+  .si-empty{ color:var(--muted); padding:6px 2px; }
+
+  /* Chart wrapper */
+  .chart-wrap{ position:relative; height:420px; }
+  #ywtChart{ position:absolute; inset:0; width:100% !important; height:100% !important; display:block; }
+
+  /* Month dropdown above SI */
+  .neo-btn{ position: relative; z-index: 2000; }
+  .multi-dd .menu{ z-index: 3000; }
+  .si-block{ position: relative; z-index: 0; }
+
+  .si-block .strip{ overflow: visible; flex-wrap: wrap; gap: 8px; padding: 8px; }
+  .si-block .pill{ font-size: 12px; padding: 6px 8px; white-space: normal; overflow-wrap: anywhere; line-height: 1.2; max-width: 100%; }
+
+  /* Wide full-width panel under the grid */
+  .panel-wide{
+    margin-top: 18px;
+    background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
+    border:1px solid var(--ring); border-radius:18px; padding:18px;
+    box-shadow:0 10px 35px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.02);
+  }
+
+  .gy-title { font-size:16px; font-weight:900; text-align:center; margin:0 0 12px; }
+  .muted { color:var(--muted); font-size:12px; text-align:center; margin-top:10px; }
+  .group-mix-wrap{ position:relative; height:260px; }
+  #groupMixChart{ position:absolute; inset:0; width:100% !important; height:100% !important; display:block; }
+</style>
+</head>
+<body>
+  <div class="ui-zoom">
+
+  <div class="wrap">
+    <!-- NAV -->
+    <div class="top">
+      <nav class="tabs" role="tablist">
+        <a class="tab" href="{{ url_for('main.index') }}">OVERVIEW</a>
+        <a class="tab" href="{{ url_for('nonshift.p123') }}">P123</a>
+        <a class="tab" href="{{ url_for('nonshift.p456') }}">P456</a>
+        <a class="tab active" href="#">PROFILE</a>
+        <a class="tab" href="{{ url_for('home.role_selection') }}">HOME</a>
+      </nav>
+    </div>
+
+    <!-- GRID -->
+    <div class="layout">
+      <!-- LEFT -->
+      <aside class="neo-outline">
+        <div class="card">
+          <div class="photo">
+            {% if person.photo %}<img src="{{ person.photo }}" alt="">{% endif %}
+          </div>
+          <div class="name">{{ person.name }}</div>
+          <div class="group">Group <strong>{{ person.group }}</strong></div>
+
+          <div class="kpi">
+            <div>Shifts Done</div>
+            <div class="big">{{ person.shifts_done }}</div>
+          </div>
+
+          <div class="month-block">
+            <div class="neo-btn">
+              <details class="multi-dd" id="monthDropdown">
+                <summary>
+                  Month: <span id="monthSummary">
+                    {% if selected_months and selected_months|length > 0 %}
+                      {{ selected_months|length }} selected
+                    {% else %}All{% endif %}
+                  </span>
+                </summary>
+                <div class="menu">
+                  <label><input type="checkbox" id="allMonthsBox"> Select all</label>
+                  {% for m in months %}
+                    <label><input type="checkbox" name="month" value="{{ m }}"
+                      {% if selected_months and m in selected_months %}checked{% endif %}> {{ m }}</label>
+                  {% endfor %}
+                </div>
+              </details>
+              <form id="filtersForm" method="GET"></form>
+            </div>
+          </div>
+        </div>
+
+        <section class="si-block">
+          <div class="si-title">Safety Inspection Reports</div>
+          <div id="siList">
+            {% if si_files and si_files|length %}
+              <div class="strip" style="margin-top:10px;">
+                {% for item in si_files %}
+                  <a class="pill" href="{{ item.href }}" target="_blank" rel="noopener"
+                     data-shiftdate="{{ item.date_label|default('', true) }}">{{ item.filename }}</a>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="si-empty">Pick a shift date to view its SI report.</div>
+            {% endif %}
+          </div>
+        </section>
+      </aside>
+
+      <!-- RIGHT -->
+      <section class="panel">
+        <h3 class="title">Average Waiting Time by Month</h3>
+        <div class="chart-wrap">
+          <canvas id="ywtChart"></canvas>
+        </div>
+
+        <div class="strip" id="shiftStrip" aria-label="Shift dates" role="listbox">
+          {% for sd in shift_dates %}
+            {% set is_active = (selected_date_str and (sd == (selected_date_str ~ ' ' ~ selected_shift))) %}
+            <button
+              type="button"
+              class="pill {{ 'active' if is_active else '' }}"
+              data-date="{{ sd.split(' ')[0:3]|join(' ') }}"
+              data-shift="{{ sd.split(' ')[-1] }}"
+              aria-selected="{{ 'true' if is_active else 'false' }}"
+            >{{ sd }}</button>
+          {% endfor %}
+        </div>
+
+        <a class="cta" id="deepDiveBtn"
+           href="{{ '#' if not selected_date_str else url_for('daily.index',
+                           date=selected_date_str,
+                           shift=selected_shift,
+                           cluster=(tab_hint or 'P123'),
+                           name=person.name) }}"
+           aria-disabled="{{ 'true' if not selected_date_str else 'false' }}">
+          Deep Dive
+        </a>
+      </section>
+    </div><!-- /.layout -->
+
+    <!-- FULL-WIDTH MIXED CHART -->
+    <section class="panel-wide">
+      <div class="gy-title">Avg YWT by Group (on {{ person.name }}’s shifts)</div>
+      <div class="group-mix-wrap">
+        <canvas id="groupMixChart"></canvas>
+      </div>
+      <div class="muted">Computed across all employees who worked the same shifts as {{ person.name }}{% if selected_months and selected_months|length %} (filtered by month){% endif %}.</div>
+    </section>
+
+  </div><!-- /.wrap -->
+
+  </div><!-- /.ui-zoom -->
+
+  <!-- Data payloads -->
+  <script type="application/json" id="chart-x">{{ chart_x|tojson }}</script>
+  <script type="application/json" id="chart-y">{{ chart_y|tojson }}</script>
+  <script type="application/json" id="si-data">{{ si_files|tojson }}</script>
+  <!-- group chart payloads -->
+  <script type="application/json" id="gy-labels">{{ group_chart_labels|tojson }}</script>
+  <script type="application/json" id="gy-ywt">{{ group_chart_ywt|tojson }}</script>
+  <script type="application/json" id="gy-count">{{ group_chart_counts|tojson }}</script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- YWT time-series (single-line tooltip + >11 highlights) -->
+  <script>
+    (function(){
+      const ctx    = document.getElementById('ywtChart').getContext('2d');
+      const labels = JSON.parse(document.getElementById('chart-x').textContent || '[]');
+      const data   = JSON.parse(document.getElementById('chart-y').textContent || '[]');
+
+      const clusterHint = "{{ (tab_hint or 'P123')|e }}".toUpperCase();
+      const yMin = clusterHint === 'P456' ? 6  : 8;
+      const yMax = clusterHint === 'P456' ? 10 : 13;
+
+      const THRESHOLD = 11;
+      const highlight = data.map(v => (v != null && !isNaN(v) && Number(v) > THRESHOLD) ? Number(v) : null);
+      const isHi = (c) => {
+        const v = c.raw;
+        return v != null && !isNaN(v) && Number(v) > THRESHOLD;
+      };
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Avg Wait Time',
+              data,
+              tension: 0.35,
+              borderWidth: 2,
+              pointRadius: (c) => isHi(c) ? 4 : 3,
+              pointHoverRadius: (c) => isHi(c) ? 6 : 5,
+            },
+            {
+              label: 'Above 11',
+              data: highlight,
+              showLine: false,
+              pointRadius: 7,
+              pointHoverRadius: 9,
+              pointBorderWidth: 2,
+              pointBackgroundColor: '#ff5b7a',
+              pointBorderColor: '#ffffff',
+              pointHitRadius: 12,
+              tooltip: { enabled: false }
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              mode: 'nearest',
+              intersect: false,
+              filter: (ctx) => ctx.datasetIndex === 0,
+              callbacks: {
+                label: (ctx) => `Avg Wait Time: ${ctx.formattedValue}`,
+                afterLabel: () => ''
+              }
+            }
+          },
+          scales: {
+            x: { ticks: { color: '#cfe8ff' }, grid: { color: 'rgba(255,255,255,.06)' } },
+            y: {
+              ticks: { color: '#cfe8ff', stepSize: 0.5 },
+              grid: { color: 'rgba(255,255,255,.06)' },
+              min: yMin,
+              max: yMax
+            }
+          }
+        }
+      });
+    })();
+  </script>
+
+  <!-- Mixed (bar + line) chart for Group A–E (auto-zoom YWT axis, high contrast) -->
+  <script>
+  (function(){
+    const labels = JSON.parse(document.getElementById('gy-labels').textContent || '[]');
+    const ywtRaw = JSON.parse(document.getElementById('gy-ywt').textContent || '[]');
+    const counts = JSON.parse(document.getElementById('gy-count').textContent || '[]');
+
+    const ywtVals = ywtRaw.filter(v => v !== null && !isNaN(v));
+    let minY = Math.min(...ywtVals), maxY = Math.max(...ywtVals);
+    const pad = Math.max(0.2, (maxY - minY) * 0.15);
+    minY = Math.floor((minY - pad) * 100) / 100;
+    maxY = Math.ceil((maxY + pad) * 100) / 100;
+    if (!(maxY > minY)) { minY -= 0.5; maxY += 0.5; }
+
+    const ctx = document.getElementById('groupMixChart').getContext('2d');
+
+    const BAR_BG   = 'rgba(0, 240, 255, 0.70)';
+    const BAR_BR   = '#00F0FF';
+    const LINE_CL  = '#D6B1FF';
+    const POINT_BR = '#FFFFFF';
+
+    new Chart(ctx, {
+      data: {
+        labels,
+        datasets: [
+          {
+            type: 'bar',
+            label: 'Count',
+            data: counts,
+            yAxisID: 'yCount',
+            backgroundColor: BAR_BG,
+            borderColor: BAR_BR,
+            borderWidth: 1,
+            borderRadius: 10,
+            barThickness: 44,
+            categoryPercentage: 0.7,
+            order: 0
+          },
+          {
+            type: 'line',
+            label: 'Avg YWT',
+            data: ywtRaw,
+            yAxisID: 'yYwt',
+            borderColor: LINE_CL,
+            backgroundColor: LINE_CL,
+            pointBackgroundColor: LINE_CL,
+            pointBorderColor: POINT_BR,
+            pointBorderWidth: 2,
+            pointRadius: 6,
+            tension: 0.15,
+            borderWidth: 3,
+            order: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        plugins: {
+          legend: {
+            display: true,
+            labels: { color: '#cfe8ff', usePointStyle: true, pointStyle: 'rectRounded', boxWidth: 14 }
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              label: (ctx) => (ctx.dataset.type === 'bar' ? `Count: ${ctx.raw}` : `Avg YWT: ${ctx.formattedValue}`)
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: '#cfe8ff' },
+            grid: { color: 'rgba(255,255,255,.10)' }
+          },
+          yCount: {
+            type: 'linear',
+            position: 'left',
+            beginAtZero: true,
+            ticks: { color: '#cfe8ff', precision: 0 },
+            grid: { color: 'rgba(255,255,255,.06)' }
+          },
+          yYwt: {
+            type: 'linear',
+            position: 'right',
+            min: minY,
+            max: maxY,
+            ticks: { color: '#cfe8ff' },
+            grid: { drawOnChartArea: false }
+          }
+        }
+      }
+    });
+  })();
+  </script>
+
+  <!-- Month multi-select -->
+  <script>
+    (function(){
+      const dd   = document.getElementById('monthDropdown');
+      const all  = document.getElementById('allMonthsBox');
+      const boxes= Array.from(dd.querySelectorAll('input[name="month"]'));
+      const sum  = document.getElementById('monthSummary');
+
+      const cluster = "{{ (tab_hint or 'P123')|e }}";
+      const personName = "{{ person.name|e }}";
+
+      function updateSummary(){
+        const n = boxes.filter(b=>b.checked).length;
+        sum.textContent = (n === 0 || n === boxes.length) ? 'All' : `${n} selected`;
+      }
+      function apply(){
+        const params = new URLSearchParams(window.location.search);
+        params.set('cluster', cluster);
+        params.set('name', personName);
+
+        const chosen = boxes.filter(b => b.checked).map(b => b.value);
+        params.delete('month');
+        if (chosen.length > 0 && chosen.length < boxes.length) {
+          chosen.forEach(v => params.append('month', v));
+        }
+        const url = `${window.location.pathname}?${params.toString()}`;
+        window.location.assign(url);
+      }
+      all.addEventListener('change', () => { boxes.forEach(b => b.checked = all.checked); updateSummary(); apply(); });
+      boxes.forEach(b => b.addEventListener('change', () => {
+        if (!b.checked) all.checked = false; else if (boxes.every(x => x.checked)) all.checked = true;
+        updateSummary(); apply();
+      }));
+      all.checked = boxes.length > 0 && boxes.every(b => b.checked);
+      updateSummary();
+
+      document.addEventListener('click', (e)=>{ if (!dd.contains(e.target)) dd.removeAttribute('open'); });
+    })();
+  </script>
+
+  <!-- Shift chips → navigate with ?date= & ?shift= + SI filtering -->
+  <script>
+    (function(){
+      const baseDaily = "{{ url_for('daily.index') }}";
+      const strip = document.getElementById('shiftStrip');
+      const btn   = document.getElementById('deepDiveBtn');
+      const siList= document.getElementById('siList');
+
+      const cluster = "{{ (tab_hint or 'P123')|e }}";
+      const personName = "{{ person.name|e }}";
+
+      const rawSi = (()=>{ try { return JSON.parse(document.getElementById('si-data').textContent||'[]'); } catch(e){ return []; }})();
+      const siMap = rawSi.reduce((acc, it) => {
+        const key = (it.date_label || '').trim();
+        if (!key) return acc;
+        (acc[key] ||= []).push(it);
+        return acc;
+      }, {});
+
+      function renderSI(key){
+        siList.innerHTML = '';
+        if (!key){
+          siList.innerHTML = '<div class="si-empty">Pick a shift date to view its SI report.</div>';
+          return;
+        }
+        const items = siMap[key] || [];
+        if (!items.length){
+          siList.innerHTML = '<div class="si-empty">No SI report for this shift.</div>';
+          return;
+        }
+        const wrap = document.createElement('div');
+        wrap.className = 'strip';
+        items.forEach(it=>{
+          const a = document.createElement('a');
+          a.className = 'pill';
+          a.href = it.href;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.textContent = it.filename;
+          wrap.appendChild(a);
+        });
+        siList.appendChild(wrap);
+      }
+
+      function navigateTo(dateOnly, shift){
+        const params = new URLSearchParams(window.location.search);
+        params.set('cluster', cluster);
+        params.set('name', personName);
+        params.set('date', dateOnly);
+        params.set('shift', shift || 'D');
+        window.location.assign(`${window.location.pathname}?${params.toString()}`);
+      }
+
+      function setActiveAndGo(el){
+        const dateLabel = el.textContent.trim();
+        const dateOnly  = el.dataset.date;
+        const shift     = el.dataset.shift || 'D';
+
+        // Update deep dive link immediately
+        const url = `${baseDaily}?date=${encodeURIComponent(dateOnly)}&shift=${encodeURIComponent(shift)}&cluster=${encodeURIComponent(cluster)}&name=${encodeURIComponent(personName)}`;
+        btn.href = url;
+        btn.setAttribute('aria-disabled','false');
+
+        // Show SI and navigate to recompute group chart on server
+        renderSI(dateLabel);
+        navigateTo(dateOnly, shift);
+      }
+
+      strip.addEventListener('click', (e)=>{
+        const b = e.target.closest('.pill'); if(!b) return;
+        setActiveAndGo(b);
+      });
+
+      // On load, if a pill is already active (from query), sync SI + deep dive
+      const active = strip.querySelector('.pill.active');
+      if (active){
+        renderSI(active.textContent.trim());
+        const dateOnly = active.dataset.date;
+        const shift    = active.dataset.shift || 'D';
+        const url = `${baseDaily}?date=${encodeURIComponent(dateOnly)}&shift=${encodeURIComponent(shift)}&cluster=${encodeURIComponent(cluster)}&name=${encodeURIComponent(personName)}`;
+        btn.href = url;
+        btn.setAttribute('aria-disabled','false');
+      } else {
+        renderSI('');
+        btn.href = '#';
+        btn.setAttribute('aria-disabled','true');
+      }
+    })();
+  </script>
+</body>
+</html>

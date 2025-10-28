@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>YOD • Daily Deep Dive</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-top:#2b0050; --bg-bottom:#0b0920;
+    --panel:#0f0d22; --panel-2:#120f27;
+    --text:#EAF4FF; --muted:#9aa4b2;
+    --accent:#00F0FF; --accent-2:#B06CFF; --ring:#2c2a45;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:Montserrat,system-ui,Arial;
+    color:var(--text);
+    background: radial-gradient(1200px 600px at 20% -10%, #5a1da6 0%, transparent 60%),
+                linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+    background-attachment: fixed;
+  }
+
+  /* ---- scale wrapper (replaces html { zoom:.75 }) ---- */
+  .scale75{
+    transform: scale(.75);
+    transform-origin: top left;
+    width: calc(100% / .75); /* prevent horizontal clipping */
+  }
+
+  .wrap{max-width:1200px; margin:24px auto 72px; padding:0 16px}
+
+  .titlebar{display:flex; align-items:center; gap:14px; margin-bottom:14px}
+  .back{width:40px; height:40px; border-radius:999px; display:grid; place-items:center;
+        background:transparent; border:2px solid var(--ring); color:var(--text);
+        cursor:pointer; transition:.2s transform}
+  .back:hover{transform:translateX(-2px)}
+  .h1{font-weight:800; font-size:28px; letter-spacing:.5px; text-shadow:0 0 20px rgba(0,240,255,.25)}
+  .sub{color:var(--muted); margin-left:auto; font-weight:600}
+
+  .panel{
+    margin-top:18px; background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.0)), var(--panel);
+    border:1px solid var(--ring); border-radius:18px; padding:18px;
+    box-shadow: 0 6px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(0,0,0,.25);
+  }
+
+  /* charts */
+  canvas{height:auto; display:block}
+  .baseline{position:relative}
+  .baseline:before{content:""; position:absolute; left:0; right:0; top:50%; border-top:1px dashed rgba(255,255,255,.15)}
+  .term-grid{display:grid; gap:16px; grid-template-columns:1fr; margin-top:8px}
+  @media (min-width:900px){ .term-grid{grid-template-columns:repeat(3,1fr)} }
+  .term-grid.two { grid-template-columns:1fr }
+  @media (min-width:900px){ .term-grid.two{ grid-template-columns:repeat(2,1fr) } }
+
+  /* manning cards */
+  .cards{display:grid; gap:16px; grid-template-columns:1fr; margin-top:18px}
+  @media (min-width:900px){ .cards{grid-template-columns:repeat(4,1fr)} }
+  .cards.two{ grid-template-columns:1fr }
+  @media (min-width:900px){ .cards.two{ grid-template-columns:repeat(2,1fr) } }
+  .card{background:var(--panel-2); border:1px solid var(--ring); border-radius:16px; overflow:hidden}
+  .card header{padding:12px 14px; font-weight:800; border-bottom:1px solid var(--ring)}
+  .rows{padding:8px 0}
+  .row{display:grid; grid-template-columns:1.4fr .8fr; padding:8px 14px; gap:10px; align-items:center}
+  .row:nth-child(odd){background:rgba(255,255,255,.02)}
+  .row span:first-child{color:var(--muted)}
+  .row span:last-child{justify-self:end; font-weight:700}
+
+  /* segmented control */
+  .seg{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px}
+  .seg-btn{
+    background:#151332; border:1px solid var(--ring); color:#EAF4FF;
+    padding:10px 14px; border-radius:12px; font-weight:800; letter-spacing:.3px;
+    box-shadow:inset 0 0 0 1px rgba(176,108,255,.18); cursor:pointer
+  }
+  .seg-btn.active{ outline:2px solid var(--accent); box-shadow:0 0 16px rgba(0,240,255,.25) }
+
+  /* kpis / HSL block */
+  .kpi-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin: 0 16px }
+  .neo-card{ background:var(--panel-2); border:1px solid var(--ring); border-radius:14px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.15) }
+  .kpi{ padding:16px }
+  .kpi-title{ color:var(--muted); font-weight:700; font-size:12px }
+  .kpi-val{ margin-top:6px; font-weight:800; font-size:16px }
+  .kpi-val.good{ color:#6DFFBD } .kpi-val.warn{ color:#FFD65A } .kpi-val.bad{ color:#FF647C }
+  .kpi [data-tip]{ position:relative; cursor:help }
+  .kpi [data-tip]:hover:after{
+    content:attr(data-tip);
+    position:absolute; left:14px; bottom:110%;
+    background:#111028; color:#cfd5e3; border:1px solid var(--ring);
+    padding:8px 10px; font-size:12px; border-radius:8px; white-space:pre-line;
+    box-shadow:0 8px 20px rgba(0,0,0,.35);
+  }
+
+  .hsl-grid{ display:grid; gap:18px; grid-template-columns:1fr; margin-top:16px }
+  @media (min-width:980px){ .hsl-grid{ grid-template-columns: 1.1fr 1.4fr } }
+  .left{ display:flex; flex-direction:column; gap:16px }
+  .donut-row{ display:grid; grid-template-columns:1fr 1fr; gap:14px }
+  .donut-card header{ padding:12px 14px; border-bottom:1px solid var(--ring); font-weight:800 }
+  .donut-wrap{ display:flex; align-items:center; gap:14px; padding:12px 14px }
+  .donut-legend{ display:flex; flex-direction:column; gap:8px; font-size:13px;}
+  .dot{ display:inline-block; width:10px; height:10px; border-radius:999px; margin-right:8px }
+  .dot.pass{ background:#43FF93; box-shadow:0 0 12px rgba(67,255,147,.45) }
+  .dot.fail{ background:#FF647C; box-shadow:0 0 12px rgba(255,100,124,.45) }
+  .donut-wrap canvas{ width: 240px !important; height: 240px !important; flex: 0 0 240px; }
+  .mini header{ padding:10px 14px; border-bottom:1px solid var(--ring); font-weight:800 }
+  .mini-rows{ padding:8px 14px }
+  .mini-row{ display:grid; grid-template-columns:1.1fr .7fr .7fr .7fr; padding:8px 0; align-items:center }
+  .mini-row span:first-child{ color:var(--muted) }
+  .mini-row span:not(:first-child){ justify-self:end; font-weight:700 }
+  .mini-row.mini-head{ color:#B9C2D0; font-weight:800; border-bottom:1px solid rgba(255,255,255,.08); padding-bottom:6px; margin-bottom:6px }
+  .score{ text-align:center; padding:6px 0 4px }
+  .score-label{ color:#9aa4b2; font-weight:700; letter-spacing:.3px }
+  .score-val{ font-weight:900; font-size:44px; letter-spacing:1px; color:#FFD65A; text-shadow: 0 0 20px rgba(255,214,90,.35) }
+  .right header{ padding:12px 14px; border-bottom:1px solid var(--ring); font-weight:800 }
+  .tbl-wrap{ max-height:420px; overflow:auto }
+  .hsl-table{ width:100%; border-collapse:separate; border-spacing:0 }
+  .hsl-table thead th{ position:sticky; top:0; background:#161432; z-index:1; font-size:12px; text-align:left; padding:10px 12px; color:#B9C2D0; border-bottom:1px solid var(--ring) }
+  .hsl-table tbody td{ padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.06); font-size:13px }
+  .badge{ padding:3px 8px; border-radius:999px; font-weight:800; font-size:11px; letter-spacing:.4px }
+  .badge.pass{ background:rgba(67,255,147,.12); color:#43FF93; border:1px solid rgba(67,255,147,.35) }
+  .badge.fail{ background:rgba(255,100,124,.12); color:#FF647C; border:1px solid rgba(255,100,124,.35) }
+</style>
+</head>
+<body>
+  <!-- SCALE WRAPPER START -->
+  <div class="scale75">
+
+    <div class="wrap">
+      <div class="titlebar">
+        <button class="back" onclick="history.back()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="h1" id="pageTitle">{{ the_date_string }} {{ the_shift }}</div>
+        <div class="sub" id="pageMeta">Daily · P123</div>
+      </div>
+
+      <!-- Overview -->
+      <div class="panel baseline">
+        <h2>Overview</h2>
+        <div style="height:260px"><canvas id="overview" height="260"></canvas></div>
+      </div>
+
+      <!-- Dynamic PPT charts -->
+      <div class="term-grid" id="termGrid"><!-- built by JS --></div>
+
+      <!-- Manning & Equipment -->
+      <div class="panel" style="margin-top:24px; text-align:center">
+        <h2 style="display:inline-block; padding:6px 18px; border:2px solid #ffd65a; border-radius:999px; box-shadow:0 0 18px rgba(255,214,90,.3);">Manning &amp; Equipment</h2>
+        <div class="cards" id="manningCards"><!-- built by JS --></div>
+      </div>
+    </div>
+
+    <!-- KPI row -->
+    <div class="kpi-grid">
+      <div class="kpi neo-card">
+        <div class="kpi-title" id="kpi-gate-title">Gate Ops</div>
+        <div class="kpi-val" id="kpi-gate">No Problem</div>
+      </div>
+      <div class="kpi neo-card">
+        <div class="kpi-title">Available Manpower › Today Demand</div>
+        <div class="kpi-val" id="kpi-avail-vs-demand">—</div>
+      </div>
+      <div class="kpi neo-card">
+        <div class="kpi-title">Today Demand › Available Manpower</div>
+        <div class="kpi-val" id="kpi-demand-vs-avail">—</div>
+      </div>
+      <div class="kpi neo-card">
+        <div class="kpi-title" id="kpi-safety-title">Safety</div>
+        <div class="kpi-val" id="kpi-safety">No Problem</div>
+      </div>
+    </div>
+
+    <!-- HSL block -->
+    <div class="panel hsl-panel" style="margin: 18px 16px;">
+      <div class="hsl-top">
+        <div class="seg" id="hslSeg"><!-- buttons injected by JS --></div>
+        <div class="hsl-grid">
+          <div class="left">
+            <div class="donut-row">
+              <div class="donut-card neo-card">
+                <header>Mount</header>
+                <div class="donut-wrap">
+                  <canvas id="donutMount" width="220" height="220"></canvas>
+                  <div class="donut-legend">
+                    <div class="legend-item"><span class="dot pass"></span><span>Pass</span></div>
+                    <div class="legend-item"><span class="dot fail"></span><span>Fail</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="donut-card neo-card">
+                <header>Offload</header>
+                <div class="donut-wrap">
+                  <canvas id="donutOff" width="220" height="220"></canvas>
+                  <div class="donut-legend">
+                    <div class="legend-item"><span class="dot pass"></span><span>Pass</span></div>
+                    <div class="legend-item"><span class="dot fail"></span><span>Fail</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mini neo-card">
+              <header>HSL Summary</header>
+              <div class="mini-rows">
+                <div class="mini-row mini-head"><span>Type</span><span>Pass</span><span>Fail</span><span>Total</span></div>
+                <div class="mini-row"><span>Mount</span><span id="mini-m-pass">—</span><span id="mini-m-fail">—</span><span id="mini-m-total">—</span></div>
+                <div class="mini-row"><span>Offload</span><span id="mini-o-pass">—</span><span id="mini-o-fail">—</span><span id="mini-o-total">—</span></div>
+              </div>
+            </div>
+
+            <div class="score">
+              <div class="score-label">Overall Pass Rate</div>
+              <div class="score-val" id="scorePct">0%</div>
+            </div>
+          </div>
+
+          <div class="right neo-card">
+            <header>Event Log</header>
+            <div class="tbl-wrap">
+              <table class="hsl-table" id="hslTable">
+                <thead>
+                  <tr>
+                    <th>GateOpsType</th><th>Start</th><th>End</th><th>Haulier</th><th>Service</th><th>Type</th><th>Location</th><th>Result</th>
+                  </tr>
+                </thead>
+                <tbody><!-- filled by JS --></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- SCALE WRAPPER END -->
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <!-- Data labels plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+  <!-- ======== SERVER PAYLOAD ======== -->
+  <script id="server-payload" type="application/json">
+    {{ payload | tojson }}
+  </script>
+
+  <!-- ======== CORE JS (cluster-aware + targets + legend) ======== -->
+  <script>
+    const _srvEl = document.getElementById('server-payload');
+    let PAYLOAD = {};
+    try { PAYLOAD = JSON.parse((_srvEl.textContent || '').trim() || '{}'); } catch(e){ PAYLOAD = {}; }
+
+    // cluster
+    const qs = new URLSearchParams(location.search);
+    let CLUSTER = (qs.get('cluster') || 'P123').toUpperCase();
+    if (CLUSTER !== 'P123' && CLUSTER !== 'P456') CLUSTER = 'P123';
+    (function () {
+      var meta = document.getElementById('pageMeta');
+      if (meta) meta.textContent = 'Daily · ' + CLUSTER;
+    })();
+
+    // Target line by cluster
+    const TARGET_Y = (CLUSTER === 'P456') ? 7.4 : 9.7;
+
+    // Take shift from payload if present, else from template
+    const SHIFT = (PAYLOAD.shift || "{{ the_shift }}").toUpperCase();
+
+    // Build hour buckets per shift (prevents cut-off for N shift)
+    function hoursFor(shift){
+      return (shift === 'N')
+        ? ["19:00","20:00","21:00","22:00","23:00","00:00","01:00","02:00","03:00","04:00","05:00","06:00","07:00"]
+        : ["07:00","08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00"];
+    }
+
+    // --- Canonicalize keys so P56SE or PPT56SE both work ---
+    function normalizeP56(obj){
+      if (!obj || typeof obj!=='object') return {};
+      const out = {...obj};
+      if (obj['P56SE'] && !obj['PPT56SE']) out['PPT56SE'] = obj['P56SE'];
+      return out;
+    }
+
+    // COLORS & defaults
+    const THEME = getComputedStyle(document.documentElement);
+    const COLORS = {
+      mounting: (THEME.getPropertyValue('--accent')   || '#00F0FF').trim(),
+      offload:  (THEME.getPropertyValue('--accent-2') || '#B06CFF').trim(),
+      avg:      '#FFD65A',
+      target:   (THEME.getPropertyValue('--muted')    || '#9aa4b2').trim()
+    };
+    Chart.defaults.color = '#cfd5e3';
+    Chart.defaults.borderColor = 'rgba(255,255,255,0.08)';
+
+    // Glow plugin (skip glow on target line)
+    const Glow = { id:'glow', afterDatasetsDraw(chart){
+      const ctx = chart.ctx;
+      (chart.data.datasets||[]).forEach((ds,i)=>{
+        if (ds._noGlow) return;
+        const meta = chart.getDatasetMeta(i); if(!meta || !meta.dataset) return;
+        ctx.save(); ctx.shadowColor = ds.borderColor||COLORS.mounting; ctx.shadowBlur = 18;
+        ctx.lineWidth = ds.borderWidth||2; meta.dataset.draw(ctx); ctx.restore();
+      });
+    }};
+
+    // ---- Re-index helpers (fixes cut-offs due to label order mismatches) ----
+    function HH(s){
+      const m = String(s||'').match(/^(\d{1,2})\s*:\s*(\d{2})$/);
+      if(!m) return String(s||'');
+      return (m[1].padStart(2,'0')+':'+m[2]);
+    }
+    function remapArray(values, srcLabels, destLabels){
+      const map = {};
+      (srcLabels||[]).forEach((lab, i)=>{ map[HH(lab)] = Number(values?.[i]); });
+      return (destLabels||[]).map(lab => {
+        const v = map[HH(lab)];
+        return Number.isFinite(v) ? v : null;
+      });
+    }
+    function remapSeries(series, srcLabels, destLabels){
+      return {
+        mounting: remapArray(series?.mounting||[], srcLabels, destLabels),
+        avg:      remapArray(series?.avg||[],      srcLabels, destLabels),
+        offload:  remapArray(series?.offload||[],  srcLabels, destLabels)
+      };
+    }
+
+    // Hours we will draw, and the hour order the backend used
+    const HOURS   = hoursFor(SHIFT);
+    const SRC_HRS = PAYLOAD.hours || HOURS;
+
+    const OVR   = (PAYLOAD.overview  || {mounting:[], avg:[], offload:[]});
+    const TERMS = normalizeP56(PAYLOAD.terminals || {});
+
+    // shared point interaction settings (for better hover advance)
+    const baseLineStyle = {
+      pointHitRadius: 24,
+      pointHoverRadius: 4
+    };
+
+    function mkTripleConfig(series) {
+      const labels = HOURS.slice();
+      // Align arrays by hour label first (key fix)
+      const aligned = remapSeries(series||{mounting:[],avg:[],offload:[]}, SRC_HRS, labels);
+
+      const m = aligned.mounting;
+      const a = aligned.avg;
+      const o = aligned.offload;
+
+      const targetArr = labels.map(()=>TARGET_Y);
+
+      // dynamic y-range
+      const all = [...m, ...a, ...o].filter(v => v != null && !Number.isNaN(v));
+      const yMin = all.length ? Math.max(0, Math.floor(Math.min(...all) - 1)) : 0;
+      const yMax = all.length ? Math.ceil(Math.max(...all) + 1) : 15;
+
+      return {
+        type: 'line',
+        plugins:[Glow, ChartDataLabels],
+        data: {
+          labels,
+          datasets: [
+            { ...baseLineStyle, label:'Mounting', data: m, borderColor: COLORS.mounting, tension:0.35, borderWidth:2, pointRadius:3 },
+            { ...baseLineStyle, label:'Average Wait Time', data: a, borderColor: COLORS.avg, tension:0.35, borderWidth:2, pointRadius:0 },
+            { ...baseLineStyle, label:'Offloading', data: o, borderColor: COLORS.offload, tension:0.35, borderWidth:2, pointRadius:3 },
+            { label:`Target (${TARGET_Y})`, data: targetArr, borderColor: COLORS.target, borderDash:[6,6], tension:0, borderWidth:2, pointRadius:0, pointHoverRadius:0, _noGlow:true,
+              plugins: { tooltip: { enabled:false } }
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          spanGaps: true,
+
+          // snap by x-position; no intersect needed
+          interaction: { mode: 'index', axis: 'x', intersect: false },
+
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,.06)' }, offset: true },
+            y: { grid: { color: 'rgba(255,255,255,.06)' }, min: yMin, max: yMax, ticks: { stepSize: 1 } }
+          },
+
+          plugins: {
+            legend: { display: true, position: 'top', labels: { boxWidth: 12, boxHeight: 12 } },
+
+            tooltip: {
+              enabled: true,
+              mode: 'index',
+              intersect: false,
+              position: 'nearest',
+              filter: (ctx) => !/target/i.test(ctx.dataset?.label || ''),
+              callbacks: {
+                label: (ctx) => {
+                  const v = ctx.parsed?.y;
+                  if (v == null || Number.isNaN(v)) return null;
+                  return `${ctx.dataset.label}: ${Number(v).toFixed(2)}`;
+                },
+                labelColor: (ctx) => ({
+                  borderColor: ctx.dataset.borderColor,
+                  backgroundColor: ctx.dataset.borderColor
+                })
+              }
+            },
+
+            datalabels: {
+              display: (ctx) => [0, 2].includes(ctx.datasetIndex) && ctx.raw != null,
+              formatter: (v) => Number(v).toFixed(1),
+              align: 'top', offset: 6, clamp: true,
+              backgroundColor: 'rgba(0,0,0,.25)',
+              borderRadius: 6, padding: { left: 6, right: 6, top: 3, bottom: 3 },
+              font: { weight: '800', size: 10 }, color: '#EAF4FF'
+            }
+          }
+        }
+      };
+    }
+
+    // overview
+    new Chart(document.getElementById('overview'), mkTripleConfig(OVR));
+
+    // build terminal charts dynamically
+    (function buildTermCharts(){
+      const grid = document.getElementById('termGrid');
+      const setP123 = ['PPT1','PPT2','PPT3'];
+      theSet = (CLUSTER === 'P456') ? ['PPT4','PPT56SE'] : setP123;
+
+      grid.classList.toggle('two', theSet.length === 2);
+      grid.innerHTML = '';
+      theSet.forEach(key => {
+        const card = document.createElement('div');
+        card.className = 'panel baseline';
+        card.innerHTML = `<h2>${key}</h2><div style="height:200px"><canvas id="t-${key}" height="200"></canvas></div>`;
+        grid.appendChild(card);
+        const series = TERMS[key] || {};
+        new Chart(document.getElementById(`t-${key}`), mkTripleConfig(series));
+      });
+    })();
+  </script>
+
+  <!-- ======== FALLBACK DUMMY (P123 manning only) ======== -->
+  <script>
+    var __FALLBACK_PAYLOAD__ = (function(){
+      var hours = ['7:00','8:00','9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00'];
+      function S(a){ return a.slice(); }
+      var overview = {
+        mounting: S([12.8,10.2, 9.9,11.5,12.3,11.8, 9.6, 8.7,12.8,11.6,10.3, 7.9,12.5]),
+        offload:  S([12.8,11.3,14.5,12.8,12.3,11.5, 8.6, 9.7,12.8,11.4,10.3, 6.5,12.8]),
+        avg:      S([11.2,10.1,10.3,11.0,11.8,10.8, 9.3, 9.9,11.2,10.7,10.6, 8.4,12.0])
+      };
+      function pack(m,o,a){ return { mounting:S(m), offload:S(o), avg:S(a) }; }
+
+      return {
+        hours: hours,
+        overview: overview,
+        terminals: {
+          PPT1: pack([11,9,12,8,10,14,13,12,9,8,7,5,6],
+                     [ 9,10,8,12,11,10,13,12,12,9,8,7,10],
+                     [10,9.5,10,9.8,10.5,10.6,9.9,10.1,10.3,9.9,9.8,9.7,10.2]),
+          PPT2: pack([13,12,9,9,8,9,10,11,10,10,11,13,14],
+                     [12, 9,8,10,10,9,10,11,12,11,12,12,10],
+                     [ 9.5,9.2,9.0,9.3,9.6,9.8,9.7,9.9,10.3,10.2,10.1,10.0,10.4]),
+          PPT3: pack([12,15,13,12,11,10,9,11,12,13,14,15,13],
+                     [10,11, 9, 8, 9,10,12,13,10,12,11,12,12],
+                     [ 9.8,9.9,10.2,10.5,10.1, 9.7,9.5,10.0,10.4,10.7,10.9,11.2,10.8])
+        },
+        // Dummy manning ONLY for P123
+        manning_p123:{
+          bc:   [["Adjusted Deployment","11"],["Available Manpower","11"],["Max Deployable Fleet","12"],["Previous Forecast","11"],["Today Demand","13"]],
+          ppt2: [["Adjusted Deployment","48/47+1 SAMSUNG | 11"],["Available Manpower","64/63+1 SAMSUNG"],["Max Deployable Fleet","49 | 11"],["Previous Forecast","51 | 13"],["Today Demand","51 | 13"]],
+          ppt3: [["Adjusted Deployment","58/57+1 DOOSAN"],["Available Manpower","55/54+1 DOOSAN"],["Max Deployable Fleet","58"],["Previous Forecast","57"],["Today Demand","57"]],
+          fm:   [["Adjusted Deployment","15+4 EDO"],["Available Manpower","19"],["Max Deployable Fleet","21 +1 TLOAN"],["Previous Forecast","24"],["Today Demand","19"]]
+        }
+      };
+    })();
+  </script>
+
+  <!-- ======== HYDRATE MANNING CARDS (cluster-aware) ======== -->
+  <script>
+    (function () {
+      var server = PAYLOAD && Object.keys(PAYLOAD).length ? PAYLOAD : __FALLBACK_PAYLOAD__;
+      var cardsWrap = document.getElementById('manningCards');
+
+      function fillRows(id, rowsArr){
+        var c=document.getElementById(id); if(!c) return; c.innerHTML='';
+        (rowsArr||[]).forEach(function(p){
+          var r=document.createElement('div'); r.className='row';
+          r.innerHTML='<span>'+p[0]+'</span><span>'+p[1]+'</span>';
+          c.appendChild(r);
+        });
+      }
+
+      if (CLUSTER === 'P456') {
+        // only PPT4 & PPT56SE cards
+        cardsWrap.classList.add('two');
+        cardsWrap.innerHTML =
+          '<div class="card"><header>PPT4</header><div class="rows" id="card-ppt4"></div></div>'+
+          '<div class="card"><header>PPT56SE</header><div class="rows" id="card-ppt56se"></div></div>';
+        var m = (server.manning_p456 || server.manning || {});
+        if (m.ppt4 || m.PPT4)     fillRows('card-ppt4',     m.ppt4 || m.PPT4);
+        var m56 = m.ppt56se || m.PPT56SE || m.p56se || m.P56SE || [];
+        fillRows('card-ppt56se', m56);
+      } else {
+        // P123: use dummy
+        cardsWrap.classList.remove('two');
+        cardsWrap.innerHTML =
+          '<div class="card"><header>BC</header><div class="rows" id="card-bc"></div></div>'+
+          '<div class="card"><header>PPT2 (Sect 1 / 2)</header><div class="rows" id="card-ppt2"></div></div>'+
+          '<div class="card"><header>PPT3</header><div class="rows" id="card-ppt3"></div></div>'+
+          '<div class="card"><header>FM</header><div class="rows" id="card-fm"></div></div>';
+
+        var m = (server.manning_p123 || __FALLBACK_PAYLOAD__.manning_p123 || {});
+        fillRows('card-bc',  m.bc);
+        fillRows('card-ppt2',m.ppt2);
+        fillRows('card-ppt3',m.ppt3);
+        fillRows('card-fm',  m.fm);
+      }
+    })();
+  </script>
+
+  <!-- ======== INDICATORS (derive from Manning & Equipment) ======== -->
+  <script>
+    (function indicatorsFromManning(){
+      var hasServer = PAYLOAD && Object.keys(PAYLOAD).length;
+      var server = hasServer ? PAYLOAD : __FALLBACK_PAYLOAD__;
+
+      var manningP123 = (server.manning_p123 || __FALLBACK_PAYLOAD__.manning_p123 || {});
+      var manningP456 = (server.manning_p456 || server.manning || __FALLBACK_PAYLOAD__.manning_p456 || {});
+
+      function parseParts(raw){
+        if (raw == null) return [];
+        var s = String(raw).replace(/[^0-9|/+]/g, '').trim();
+        if (!s) return [];
+        var groups = s.includes('|') ? s.split('|') : [s];
+
+        function sumPlus(x){
+          var m = String(x).match(/\d+/g);
+          return m ? m.map(Number).reduce((a,b)=>a+b,0) : 0;
+        }
+
+        let parts = [];
+        groups.forEach(g=>{
+          if (g.includes('/')){
+            g.split('/').forEach(seg => parts.push(sumPlus(seg)));
+          } else {
+            parts.push(sumPlus(g));
+          }
+        });
+        return parts.filter(n=>!isNaN(n));
+      }
+
+      function extractSection(rows){
+        rows = rows || [];
+        function getRaw(label){
+          var r = rows.find(x => String(x[0]).toLowerCase().includes(label));
+          return r ? r[1] : null;
+        }
+        return {
+          availParts:    parseParts(getRaw('available manpower')),
+          demandParts:   parseParts(getRaw('today demand')),
+          forecastParts: parseParts(getRaw('previous forecast'))
+        };
+      }
+
+      function demandExceedsAvail(availArr, demandArr){
+        if (!demandArr.length) return false;
+        if (!availArr.length)  return true;
+        if (availArr.length === demandArr.length){
+          return demandArr.some((d,i)=> d > availArr[i]);
+        }
+        const bestAvail = Math.max.apply(null, availArr);
+        return demandArr.some(d => d > bestAvail);
+      }
+
+      function allAvailGreaterThanDemand(availArr, demandArr){
+        if (!demandArr.length) return false;
+        if (!availArr.length)  return false;
+        if (availArr.length === demandArr.length){
+          return demandArr.every((d,i)=> availArr[i] > d);
+        }
+        const bestAvail = Math.max.apply(null, availArr);
+        return demandArr.every(d => bestAvail > d);
+      }
+
+      function anyForecastMeetsOrExceedsDemand(forecastArr, demandArr){
+        if (!demandArr.length || !forecastArr.length) return false;
+        if (forecastArr.length === demandArr.length){
+          return demandArr.every((d,i)=> forecastArr[i] >= d);
+        }
+        const bestForecast = Math.max.apply(null, forecastArr);
+        return demandArr.every(d => bestForecast >= d);
+      }
+
+      function anyDemandGreaterThanForecast(demandArr, forecastArr){
+        if (!demandArr.length) return false;
+        if (!forecastArr.length) return true;
+        if (demandArr.length === forecastArr.length){
+          return demandArr.some((d,i)=> d > forecastArr[i]);
+        }
+        const bestForecast = Math.max.apply(null, forecastArr);
+        return demandArr.some(d => d > bestForecast);
+      }
+
+      var list = [];
+      if (CLUSTER === 'P456') {
+        var m = manningP456 || {};
+        if (m.ppt4 || m.PPT4)       list.push(['PPT4',     extractSection(m.ppt4 || m.PPT4)]);
+        if (m.ppt56se || m.PPT56SE) list.push(['PPT56SE',  extractSection(m.ppt56se || m.PPT56SE)]);
+      } else {
+        var m = manningP123 || {};
+        if (m.bc)   list.push(['BC',   extractSection(m.bc)]);
+        if (m.ppt2) list.push(['PPT2', extractSection(m.ppt2)]);
+        if (m.ppt3) list.push(['PPT3', extractSection(m.ppt3)]);
+        if (m.fm)   list.push(['FM',   extractSection(m.fm)]);
+      }
+
+      var insufficient = [];
+      var sufficient = [];
+      var meetsForecastVsDemand = [];
+      var demandVsForecastOccurs = [];
+
+      list.forEach(function([name, s]){
+        if (demandExceedsAvail(s.availParts, s.demandParts)) insufficient.push(name);
+        if (allAvailGreaterThanDemand(s.availParts, s.demandParts)) sufficient.push(name);
+        if (anyForecastMeetsOrExceedsDemand(s.forecastParts, s.demandParts)) meetsForecastVsDemand.push(name);
+        if (anyDemandGreaterThanForecast(s.demandParts, s.forecastParts)) demandVsForecastOccurs.push(name);
+      });
+
+      var el1 = document.getElementById('kpi-avail-vs-demand');
+      if (el1) {
+        var allSufficient = (sufficient.length === list.length && list.length > 0);
+        if (allSufficient) {
+          el1.textContent = 'True';
+          el1.classList.remove('bad','warn');
+          el1.classList.add('good');
+          el1.setAttribute('data-tip','Available > Demand across all sections');
+        } else {
+          el1.textContent = '—';
+          el1.classList.remove('good','bad','warn');
+          el1.removeAttribute('data-tip');
+          el1.removeAttribute('title');
+        }
+      }
+
+      var el2 = document.getElementById('kpi-demand-vs-avail');
+      if (el2) {
+        if (insufficient.length) {
+          el2.textContent = 'Demand exceeds Avail';
+          el2.classList.remove('good'); el2.classList.add('warn');
+          el2.setAttribute('data-tip','Exceeds at: ' + insufficient.join(', '));
+        } else {
+          el2.textContent = 'Within Capacity';
+          el2.classList.remove('warn'); el2.classList.add('good');
+          el2.setAttribute('data-tip','No section exceeds availability');
+        }
+      }
+
+      var gateTitle   = document.getElementById('kpi-gate-title');
+      var safetyTitle = document.getElementById('kpi-safety-title');
+      if (gateTitle)   gateTitle.textContent   = 'Forecast ≥ Demand';
+      if (safetyTitle) safetyTitle.textContent = 'Demand > Forecast';
+
+      var elGate = document.getElementById('kpi-gate');
+      if (elGate){
+        var ok = meetsForecastVsDemand.length > 0;
+        elGate.textContent = ok ? 'Met' : 'Not Met';
+        elGate.classList.toggle('good', ok);
+        elGate.classList.toggle('bad', !ok);
+        elGate.setAttribute('data-tip',
+          ok ? ('Meets at: ' + meetsForecastVsDemand.join(', '))
+            : 'No section met forecast vs demand');
+      }
+
+      var elSafety = document.getElementById('kpi-safety');
+      if (elSafety){
+        var occurs = demandVsForecastOccurs.length > 0;
+        elSafety.textContent = occurs ? 'Occurs' : 'Does Not Occur';
+        elSafety.classList.remove('bad'); elSafety.classList.add('warn');
+        elSafety.setAttribute('data-tip',
+          occurs ? ('Occurs at: ' + demandVsForecastOccurs.join(', '))
+                : 'Demand lower than forecast across sections');
+      }
+    })();
+  </script>
+
+  <!-- ======== HSL (cluster-aware tabs + donuts/table) ======== -->
+  <script>
+    var CenterText = {
+      id:'centerText',
+      afterDatasetsDraw: function(chart, args, opts){
+        var ctx = chart.ctx, v = opts && opts.text ? String(opts.text) : '';
+        if (!v) return;
+        ctx.save();
+        ctx.font = '800 22px Montserrat, Arial, sans-serif';
+        ctx.fillStyle = '#EAF4FF';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        var p = chart.getDatasetMeta(0).data[0];
+        if (!p) { ctx.restore(); return; }
+        ctx.fillText(v, p.x, p.y);
+        ctx.restore();
+      }
+    };
+
+    function makeDonut(id, passCount, failCount, pctText){
+      var el = document.getElementById(id); if(!el) return null;
+      var existing = Chart.getChart(el);
+      var data = { labels:['Pass','Fail'], datasets:[{ data:[passCount, failCount], backgroundColor:['#43FF93','#FF647C'], hoverOffset:4, borderWidth:0 }] };
+      var common = { type:'doughnut', data:data, plugins:[CenterText],
+        options:{ cutout:'62%', animation:{ animateRotate:true, animateScale:true, duration:900, easing:'easeOutQuart' }, plugins:{ legend:{ display:false }, centerText:{ text:pctText } } }
+      };
+      if (existing){ existing.options.plugins.centerText.text = pctText; existing.data = data; existing.update(); return existing; }
+      return new Chart(el, common);
+    }
+
+    var HSL_TERMS = normalizeP56((PAYLOAD && PAYLOAD.hsl && PAYLOAD.hsl.terminals) ? PAYLOAD.hsl.terminals : {});
+
+    (function initSeg(){
+      var seg = document.getElementById('hslSeg');
+      var keysAll = Object.keys(HSL_TERMS);
+      var SET_P123 = ['PPT1','PPT2','PPT3'];
+      var SET_P456 = ['PPT4','PPT56SE'];
+
+      var keys;
+      if (CLUSTER === 'P456') {
+        keys = SET_P456.filter(k => keysAll.includes(k));
+        if (!keys.length) keys = SET_P456;
+      } else {
+        keys = SET_P123.filter(k => keysAll.includes(k));
+        if (!keys.length) keys = SET_P123;
+      }
+
+      seg.innerHTML = '';
+      keys.forEach(function(k, idx){
+        var b = document.createElement('button');
+        b.className = 'seg-btn' + (idx===0 ? ' active' : '');
+        b.dataset.key = k;
+        b.textContent = k + ' HSL';
+        seg.appendChild(b);
+      });
+
+      var first = seg.querySelector('.seg-btn');
+      if (first) { fillMiniAndTable(first.dataset.key); }
+    })();
+
+    function fillMiniAndTable(key){
+      var d = HSL_TERMS[key] || null;
+      if (!d){ d = { mount:{pass:0, fail:0, total:0}, off:{pass:0, fail:0, total:0}, rows:[], pass_rate:0 }; }
+      var mPass = Number(d.mount?.pass||0), mFail = Number(d.mount?.fail||0), mTot = Number(d.mount?.total|| (mPass+mFail));
+      var oPass = Number(d.off?.pass||0),   oFail = Number(d.off?.fail||0),   oTot = Number(d.off?.total|| (oPass+oFail));
+
+      document.getElementById('mini-m-pass').textContent = mPass;
+      document.getElementById('mini-m-fail').textContent = mFail;
+      document.getElementById('mini-m-total').textContent = mTot;
+      document.getElementById('mini-o-pass').textContent = oPass;
+      document.getElementById('mini-o-fail').textContent = oFail;
+      document.getElementById('mini-o-total').textContent = oTot;
+
+      var mPct = mTot ? Math.round((mPass/mTot)*100) : 0;
+      var oPct = oTot ? Math.round((oPass/oTot)*100) : 0;
+      makeDonut('donutMount', mPass, mFail, mPct + '%');
+      makeDonut('donutOff',   oPass, oFail, oPct + '%');
+
+      var allTot = mTot + oTot, allPass = mPass + oPass;
+      var allPct = allTot ? Math.round((allPass/allTot)*1000)/10 : 0;
+      document.getElementById('scorePct').textContent = allPct.toFixed(1) + '%';
+
+      var tb = document.querySelector('#hslTable tbody');
+      tb.innerHTML = '';
+      var rows = Array.isArray(d.rows) ? d.rows : [];
+      if (!rows.length){
+        var other = Object.keys(HSL_TERMS).find(t => (HSL_TERMS[t]?.rows||[]).length);
+        if (other) rows = HSL_TERMS[other].rows;
+      }
+      rows.forEach(function(r){
+        var tr = document.createElement('tr');
+        var resPass = String(r.result||'').toLowerCase()==='pass';
+        tr.innerHTML =
+          '<td>'+ (r.type||'')   +'</td>'+
+          '<td>'+ (r.start||'')  +'</td>'+
+          '<td>'+ (r.end||'')    +'</td>'+
+          '<td>'+ (r.haulier||'')+'</td>'+
+          '<td>'+ (r.svc||'')    +'</td>'+
+          '<td>'+ (r.ctype||'')  +'</td>'+
+          '<td>'+ (r.loc||'')    +'</td>'+
+          '<td><span class="badge '+(resPass?'pass':'fail')+'">'+(resPass?'Pass':'Fail')+'</span></td>';
+        tb.appendChild(tr);
+      });
+    }
+
+    (function wireSeg(){
+      var seg = document.getElementById('hslSeg');
+      seg.addEventListener('click', function(e){
+        var b = e.target.closest('.seg-btn'); if(!b) return;
+        Array.prototype.forEach.call(seg.children, function(x){ x.classList.remove('active'); });
+        b.classList.add('active');
+        fillMiniAndTable(b.dataset.key);
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -171,9 +171,13 @@ def _build_ywt_payload(shift_date_str: str) -> Dict[str, Any]:
                 return low[key]
         return None
 
-    col_avg = pick(sub, "ywt")
-    col_mount = pick(sub, "mounting", "eqmt")
-    col_off = pick(sub, "offloading", "eqof")
+    # tolerant, case-insensitive lookups
+    time_col = pick(sub, "time", "hour", "eventtime", "event_time", "event hour")
+    col_avg  = pick(sub,
+                    "ywt", "avg", "average", "averagewaittime",
+                    "avg wait time", "avg_ywt", "avg ywt")
+    col_mount = pick(sub, "mounting", "eqmt", "mount")
+    col_off   = pick(sub, "offloading", "eqof", "offload")
 
     def agg_series(col: Optional[str]) -> List[Optional[float]]:
         if not col or col not in sub.columns:

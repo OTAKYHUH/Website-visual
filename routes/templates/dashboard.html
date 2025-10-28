@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shift Team Overview</title>
+    <style>
+        body { font-family: Arial; padding: 30px; background: #f7f7f7; }
+        label { margin-right: 10px; }
+        form { margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <!-- For DataFrame Table -->
+    <!--<h2>YWT Excel Data</h2>
+    {{ table|safe }} -->
+    <!-- <nav style="background:#eee; padding:0.5em 1em; margin-bottom:1em;">
+        <a href="{{ url_for('dashboard.index') }}">Home</a> |
+        <a href="{{ url_for('entry.entry_form') }}">Entry</a>
+    </nav> -->
+     <!-- <h2>YWT Line Chart</h2>
+
+    <form method="POST" id="filterForm" style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px;">
+    <div>
+        <label for="date_filter"><strong>Select Date:</strong></label>
+        <input type="date" name="date_filter"
+               value="{{ selected_date }}"
+               min="{{ min_date }}"
+               max="{{ max_date }}"
+               onchange="submitForm()">
+    </div>
+
+    <div>
+        <label for="shift_filter"><strong>Select Shift:</strong></label>
+        <select name="shift_filter" onchange="submitForm()">
+            <option value="">All</option>
+            {% for shift in shifts %}
+                <option value="{{ shift }}" {% if selected_shift == shift %}selected{% endif %}>{{ shift }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    </form> -->
+
+    <!-- <script>
+    function submitForm() {
+        document.getElementById('filterForm').submit();
+    }
+    </script>
+
+    {% if chart_html %}
+        {{ chart_html | safe }}
+    {% else %}
+        <p>No data available for the selected filters.</p>
+    {% endif %} -->
+</body>
+<body>
+    <h2>Shift Dashboard</h2>
+    <div style="position: relative; padding-top: 56.25%; height: 0; overflow: hidden;">
+    <iframe title="Individual"
+          src="https://app.powerbi.com/reportEmbed?reportId=da709d26-ef86-4a23-bdfe-46ca2d260554&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
+          allowfullscreen="true">
+    </iframe>
+</div>
+
+</body>
+</html>

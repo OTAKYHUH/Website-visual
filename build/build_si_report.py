@@ -8,15 +8,16 @@ Build SI Report from all PDFs under static/SI and expose it like other build mod
 - Output Excel: .../static/Automated Data/SI Report.xlsx
 - Appends and drops duplicates (by Filename + Name; Name dedup ignores case/spaces)
 - Shift is computed from the HH:MM on the "Inspected on ..." line
-- Shift Date is taken from the SAME "Inspected on ..." line (the date before the time),
-  formatted as ddmmyyyy (e.g., 01092025) – NOT from the filename.
+- Shift Date is taken from the FILENAME: the text AFTER the last underscore "_".
+  If Shift == "N", the Shift Date is (filename date - 1 day).
+  Shift Date is stored as ddmmyyyy.
 
 API (like your other builders): get_tables() -> {"SI Report": DataFrame}
 """
 
 from __future__ import annotations
 from pathlib import Path
-from datetime import time as dtime
+from datetime import datetime, date, time as dtime, timedelta
 import re
 import pdfplumber
 import pandas as pd
@@ -42,6 +43,79 @@ def _page1_lines(pdf_path: Path) -> list[str]:
         text = (pdf.pages[0].extract_text() or "")
     return [_clean_line(x) for x in text.splitlines() if _clean_line(x)]
 
+# ---------- filename date helpers ----------
+_MON_MAP = {
+    "JAN":"01","FEB":"02","MAR":"03","APR":"04","MAY":"05","JUN":"06",
+    "JUL":"07","AUG":"08","SEP":"09","OCT":"10","NOV":"11","DEC":"12",
+}
+
+def _to_ddmmyyyy_from_token(token: str) -> str | None:
+    """
+    Try to parse a date token into ddmmyyyy.
+    Supports:
+      - ddmmyyyy (with or without separators)
+      - ddmmyyyy (digits with any non-digits stripped)
+      - 01Sep2025 / 1Sep2025 (case-insensitive; spaces ignored)
+    Returns ddmmyyyy or None.
+    """
+    raw = token.strip()
+
+    # First, try any digits in order: want exactly 8 digits -> ddmmyyyy
+    digits = re.sub(r"\D", "", raw)
+    if len(digits) == 8:
+        dd, mm, yyyy = digits[:2], digits[2:4], digits[4:]
+        try:
+            # validate
+            datetime.strptime(f"{dd}{mm}{yyyy}", "%d%m%Y")
+            return f"{dd}{mm}{yyyy}"
+        except ValueError:
+            pass
+
+    # Try 01Sep2025 or 1Sep2025 (spaces removed)
+    compact = re.sub(r"\s+", "", raw)
+    m = re.match(r"(?i)^(?P<d>\d{1,2})(?P<mon>[A-Za-z]{3})(?P<y>\d{4})$", compact)
+    if m:
+        dd = f"{int(m.group('d')):02d}"
+        mm = _MON_MAP.get(m.group("mon").upper())
+        yyyy = m.group("y")
+        if mm:
+            try:
+                datetime.strptime(f"{dd}{mm}{yyyy}", "%d%m%Y")
+                return f"{dd}{mm}{yyyy}"
+            except ValueError:
+                pass
+
+    return None
+
+def shift_date_from_filename(pdf_path: Path) -> str | None:
+    """
+    Extract date token from filename stem after the LAST underscore, and convert to ddmmyyyy.
+    Example: ABC_123_01092025.pdf -> 01092025
+             ABC_1Sep2025.pdf     -> 01092025
+    """
+    stem = pdf_path.stem
+    if "_" not in stem:
+        # Take whole stem as token if no underscore
+        token = stem
+    else:
+        token = stem.rsplit("_", 1)[-1]
+    return _to_ddmmyyyy_from_token(token)
+
+def adjust_for_night_shift(shift: str | None, ddmmyyyy: str | None) -> str | None:
+    """
+    If shift == 'N' and date is present, subtract one day; else return original.
+    """
+    if not ddmmyyyy:
+        return None
+    if shift != "N":
+        return ddmmyyyy
+    try:
+        dt = datetime.strptime(ddmmyyyy, "%d%m%Y").date()
+        dt2 = dt - timedelta(days=1)
+        return dt2.strftime("%d%m%Y")
+    except ValueError:
+        return ddmmyyyy
+
 # ---------- parsing ----------
 def parse_report_number(lines: list[str]) -> str:
     for ln in lines:
@@ -53,18 +127,16 @@ def parse_report_number(lines: list[str]) -> str:
             return m.group(0) if m else ""
     return ""
 
-def parse_shift_and_date(lines: list[str]) -> tuple[str | None, str | None]:
+def parse_shift(lines: list[str]) -> str | None:
     """
-    Extract HH:MM and the date that precedes it from the 'Inspected on' text.
-    Handles compact 'Inspectedon:01Sep202511:57' and spaced variants.
-    Returns (shift, shift_date_ddmmyyyy)
+    Determine shift purely from the 'Inspected on ... HH:MM' time.
+    Returns 'D' or 'N' (or None if time not found).
     """
     joined = " ".join(lines)
 
-    # Capture date + time in either compact or spaced form
-    # e.g., 01Sep2025 11:57  or  01 Sep 2025 11:57
+    # Capture time near "Inspected on"
     pat = re.compile(
-        r"Inspected\s*on\s*:?\s*.*?\b(?P<d1>\d{2}\s*[A-Za-z]{3}\s*\d{4})\s*(?P<t1>\d{2}:\d{2})",
+        r"Inspected\s*on\s*:?.*?\b(?P<d1>\d{1,2}\s*[A-Za-z]{3}\s*\d{4})?\s*(?P<t1>\d{2}:\d{2})",
         re.IGNORECASE,
     )
     m = pat.search(joined)
@@ -75,30 +147,43 @@ def parse_shift_and_date(lines: list[str]) -> tuple[str | None, str | None]:
             if m:
                 break
     if not m:
-        return None, None
+        return None
 
     hh, mm = m.group("t1").split(":")
     t = dtime(int(hh), int(mm))
-    shift = "N" if (t >= dtime(19, 30) or t < dtime(7, 30)) else "D"
+    return "N" if (t >= dtime(19, 30) or t < dtime(7, 30)) else "D"
 
-    # Normalize date token into ddmmyyyy
-    dtoken = re.sub(r"\s+", "", m.group("d1"))  # 01Sep2025 or 01Sep2025 (no spaces)
-    # Map month
-    mon_map = {
-        "JAN":"01","FEB":"02","MAR":"03","APR":"04","MAY":"05","JUN":"06",
-        "JUL":"07","AUG":"08","SEP":"09","OCT":"10","NOV":"11","DEC":"12",
-    }
-    m2 = re.match(r"(?P<dd>\d{2})(?P<mon>[A-Za-z]{3})(?P<yyyy>\d{4})", dtoken)
-    shift_date = None
-    if m2:
-        dd = m2.group("dd")
-        mm2 = mon_map.get(m2.group("mon").upper(), None)
-        yyyy = m2.group("yyyy")
-        if mm2:
-            shift_date = f"{dd}{mm2}{yyyy}"
+# ---------- append + de-dupe ----------
+def _norm_name(s: str) -> str:
+    return re.sub(r"\s+", "", (s or "")).upper()
 
-    return shift, shift_date
+def append_and_dedupe(out_xlsx: Path, new_rows: pd.DataFrame) -> None:
+    cols = ["Filename", "Report Number", "Shift", "Name", "Shift Date"]
+    new_rows = new_rows[cols].copy()
+    new_rows["_key_file"] = new_rows["Filename"].astype(str)
+    new_rows["_key_name"] = new_rows["Name"].astype(str).map(_norm_name)
 
+    if out_xlsx.exists():
+        try:
+            existing = pd.read_excel(out_xlsx, dtype=str)
+        except Exception:
+            existing = pd.DataFrame(columns=cols)
+        existing = existing.astype(str)
+        existing["_key_file"] = existing["Filename"].astype(str)
+        existing["_key_name"] = existing["Name"].astype(str).map(_norm_name)
+        combined = pd.concat([existing, new_rows], ignore_index=True)
+    else:
+        combined = new_rows
+
+    # Keep the latest copy per (Filename, Name)
+    combined = combined.drop_duplicates(subset=["_key_file", "_key_name"], keep="last")
+    combined = combined[cols]
+
+    out_xlsx.parent.mkdir(parents=True, exist_ok=True)
+    with pd.ExcelWriter(out_xlsx, engine="openpyxl", mode="w") as xlw:
+        combined.to_excel(xlw, index=False, sheet_name="SI Report")
+
+# ---------- inspectors parsing (unchanged) ----------
 def _candidate_chunks(text: str) -> list[str]:
     return [c for c in (re.split(r"\s{2,}", text.strip()) or [text.strip()]) if c]
 
@@ -145,41 +230,16 @@ def parse_inspectors(lines: list[str]) -> list[str]:
             break
     return [n.strip() for n in names if n.strip()]
 
-# ---------- append + de-dupe ----------
-def _norm_name(s: str) -> str:
-    return re.sub(r"\s+", "", (s or "")).upper()
-
-def append_and_dedupe(out_xlsx: Path, new_rows: pd.DataFrame) -> None:
-    cols = ["Filename", "Report Number", "Shift", "Name", "Shift Date"]
-    new_rows = new_rows[cols].copy()
-    new_rows["_key_file"] = new_rows["Filename"].astype(str)
-    new_rows["_key_name"] = new_rows["Name"].astype(str).map(_norm_name)
-
-    if out_xlsx.exists():
-        try:
-            existing = pd.read_excel(out_xlsx, dtype=str)
-        except Exception:
-            existing = pd.DataFrame(columns=cols)
-        existing = existing.astype(str)
-        existing["_key_file"] = existing["Filename"].astype(str)
-        existing["_key_name"] = existing["Name"].astype(str).map(_norm_name)
-        combined = pd.concat([existing, new_rows], ignore_index=True)
-    else:
-        combined = new_rows
-
-    # Keep the latest copy per (Filename, Name)
-    combined = combined.drop_duplicates(subset=["_key_file", "_key_name"], keep="last")
-    combined = combined[cols]
-
-    out_xlsx.parent.mkdir(parents=True, exist_ok=True)
-    with pd.ExcelWriter(out_xlsx, engine="openpyxl", mode="w") as xlw:
-        combined.to_excel(xlw, index=False, sheet_name="SI Report")
-
 # ---------- one PDF -> DataFrame ----------
 def process_pdf(pdf_path: Path) -> pd.DataFrame:
     lines = _page1_lines(pdf_path)
     report_number = parse_report_number(lines)
-    shift, shift_date = parse_shift_and_date(lines)
+    shift = parse_shift(lines)
+
+    # New logic: take date from filename (after last "_"), adjust if Night
+    fn_ddmmyyyy = shift_date_from_filename(pdf_path)
+    shift_date = adjust_for_night_shift(shift, fn_ddmmyyyy)
+
     inspectors = parse_inspectors(lines)
 
     base = {

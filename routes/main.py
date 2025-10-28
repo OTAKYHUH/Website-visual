@@ -436,6 +436,9 @@ def _get_people(selected_months: List[str], terminal: str | None) -> List[Dict[s
     if group_c:
         base = _filter_to_abcd(base, group_c)
 
+    # Remove 'Rahimi' exactly (case-insensitive) from dataset
+    base = base[~base[name_c].astype(str).str.contains(r"(^|\s)rahimi(\s|$)", case=False, regex=True)]
+
     # Month filter (FIX: do not parse per value; Month is already %b)
     if selected_months:
         keep = set(selected_months)

@@ -1,0 +1,321 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SO Performance — Non-Shift</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+  :root{
+    --bg1:#2b0050; --bg2:#0b0920;
+    --panel:#0f0d22; --panel-2:#120f27; --ring:#2c2a45;
+    --text:#EAF4FF; --muted:#9aa4b2;
+    --accent:#00F0FF; --accent-2:#B06CFF; --glow:rgba(108,249,255,.16);
+
+    /* layout sizing */
+    --left-col: 240px;
+    --card-min: 290px; /* avoid wrapping long labels */
+  }
+
+  *{ box-sizing:border-box }
+  html,body{ height:100% }
+
+  /* ---- Seamless background (fixed layer) ---- */
+  html{ background: var(--bg2); }
+  body{
+    margin:0; color:var(--text);
+    font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    background:none;               /* keep body transparent */
+    position:relative;
+    backface-visibility:hidden;
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0; z-index:-1;
+    background:
+      radial-gradient(1400px 700px at 15% 15%,
+        rgba(176,108,255,.25) 0%,
+        rgba(176,108,255,.10) 40%,
+        rgba(176,108,255,0)   70%),
+      radial-gradient(1200px 800px at 85% 10%,
+        rgba(0,240,255,.18) 0%,
+        rgba(0,240,255,.08) 40%,
+        rgba(0,240,255,0)   75%),
+      linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 100%);
+    background-repeat:no-repeat;
+    will-change: transform;
+  }
+
+  .wrap{ max-width:1400px; margin:0 auto; padding:22px 18px 36px }
+
+  /* ---- NAV (same look as Main) ---- */
+  .top{ display:flex; align-items:center; justify-content:center; margin-bottom:14px; gap:16px }
+  .tabs{
+    display:flex; background:rgba(255,255,255,.06); backdrop-filter:blur(6px);
+    border:1px solid var(--ring); border-radius:14px; overflow:hidden;
+    box-shadow:0 6px 24px rgba(0,0,0,.35)
+  }
+  .tab{ padding:12px 26px; text-decoration:none; color:var(--text); font-weight:800; letter-spacing:.3px; border-right:1px solid var(--ring); transition:all .2s }
+  .tab:last-child{ border-right:none }
+  .tab:hover{ background:rgba(255,255,255,.06) }
+  .tab.active{ background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#0c0c16 }
+
+  /* ---- MAIN LAYOUT ---- */
+  .layout{
+    display:grid; grid-template-columns:var(--left-col) minmax(0, 1fr);
+    gap:22px; align-items:start;
+  }
+  @media (max-width:1100px){ .layout{ grid-template-columns:1fr } }
+
+  /* ---- LEFT: smaller logo + month filter ---- */
+  .panel-left{ display:flex; flex-direction:column; gap:14px; }
+  .neo-outline{
+    position:relative; border-radius:14px; padding:12px; border:3px solid transparent;
+    background:linear-gradient(#0f0d22,#0f0d22) padding-box,
+               linear-gradient(135deg,#8a2be2,#00eaff) border-box;
+    box-shadow:0 0 0 1px rgba(138,43,226,.18) inset, 0 14px 32px rgba(0,0,0,.45);
+  }
+  .logo-block{
+    padding:12px; display:flex; align-items:center; justify-content:center;
+    min-height:180px;
+  }
+  .logo-img{ max-width:80%; height:auto; display:block; }
+
+  .month-block{ padding:10px }
+  .neo-btn{
+    height:46px;
+    border-radius:10px; display:flex; align-items:center; justify-content:center;
+    font-weight:800; letter-spacing:1.0px; font-size:14px;
+    color:#dff9ff; border:2px solid transparent;
+    background:linear-gradient(#0f0d22,#0f0d22) padding-box,
+               linear-gradient(135deg,#00eaff,#9a56ff) border-box;
+    box-shadow:0 0 0 2px rgba(0,234,255,.2) inset;
+    position:relative;
+  }
+  /* Month multi-select sits on top of the neon button */
+  .neo-btn details.multi-dd{ position:absolute; inset:0; display:block; }
+  .neo-btn details.multi-dd summary{
+    list-style:none; cursor:pointer; user-select:none;
+    width:100%; height:100%; border-radius:10px; border:none; outline:none;
+    display:flex; align-items:center; justify-content:center;
+    background:transparent; color:#dff9ff; font-weight:800;
+  }
+  .neo-btn details[open] summary{ outline:2px solid var(--accent); border-radius:10px; }
+  .multi-dd .menu{
+    position:absolute; top:calc(100% + 10px); left:0; z-index:20;
+    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    border:1px solid var(--ring); border-radius:14px;
+    box-shadow:0 12px 28px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.02);
+    padding:10px; min-width:220px; max-height:260px; overflow:auto;
+  }
+  .multi-dd label{ display:flex; align-items:center; gap:10px; padding:8px; border-radius:10px; font-weight:700; }
+  .multi-dd label:hover{ background:rgba(255,255,255,.05) }
+  .multi-dd input[type="checkbox"]{ width:16px; height:16px }
+
+  /* ---- RIGHT: Title ---- */
+  .header{ display:flex; justify-content:center; align-items:center; margin:0 0 10px }
+  .title{
+    font-size:clamp(26px,3.2vw,42px);
+    font-weight:800; letter-spacing:.4px; margin:0; text-align:center;
+    text-shadow:0 0 24px rgba(0,240,255,.18);
+  }
+
+  /* ---- Content grid (cards + search) ---- */
+  .content-grid{ display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:18px; }
+  @media (max-width:1100px){ .content-grid{ grid-template-columns:1fr } }
+
+  /* Cards wide enough to avoid label wrapping */
+  .cards{ display:grid; grid-template-columns:repeat(auto-fit, minmax(var(--card-min), 1fr)); gap:18px }
+  .card{
+    background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
+    padding:18px; border-radius:22px; min-height:520px; font-size:.95rem;
+    border:1px solid var(--ring);
+    box-shadow:0 10px 35px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.02);
+  }
+  .photo{
+    width:150px; height:150px; border-radius:50%;
+    background:radial-gradient(90px 90px at 40% 30%, rgba(0,240,255,.15), rgba(176,108,255,.12)), #0b0f18;
+    border:3px solid var(--ring);
+    display:grid; place-items:center; overflow:hidden; margin:8px auto 14px;
+    box-shadow:0 0 20px var(--glow);
+  }
+  .photo img{ width:100%; height:100%; object-fit:cover }
+  .photo span{ font-size:44px }
+  .name{ text-align:center; font-size:1.15rem; font-weight:800; margin:8px 0 2px }
+  .role{ text-align:center; font-weight:700; color:var(--muted); margin-bottom:14px }
+
+  /* KPI rows */
+  .row{
+    display:flex; align-items:center; gap:12px;
+    padding:10px 0; border-bottom:1px dashed rgba(255,255,255,.08); font-weight:700;
+  }
+  .row:last-child{ border-bottom:none }
+  .row > div:first-child{ white-space:nowrap; } /* keep label one line */
+  .row .val{
+    margin-left:auto; display:inline-flex; gap:6px; white-space:nowrap; text-align:right; justify-content:flex-end;
+    font-variant-numeric:tabular-nums; font-feature-settings:"tnum";
+    min-width:100px;
+  }
+
+  .side{
+    position:sticky; top:18px;
+    background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
+    padding:18px; border-radius:18px; max-height:calc(100vh - 36px); overflow:auto;
+    border:1px solid var(--ring);
+    box-shadow:0 10px 35px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.02);
+  }
+  .side h4{ margin:4px 0 12px; font-weight:900; letter-spacing:.3px }
+  #nameSearch{
+    width:100%; padding:12px 14px; margin-bottom:12px;
+    border-radius:12px; border:1px solid var(--ring);
+    background:rgba(15,13,34,.55); color:var(--text); font-weight:700; box-shadow:0 6px 22px rgba(0,0,0,.3); outline:none;
+  }
+  .list{ display:flex; flex-direction:column; gap:10px }
+  .pill{
+    background:linear-gradient(180deg, rgba(2,7,18,.60), rgba(2,7,18,.32));
+    border:1px solid var(--ring); border-radius:12px; padding:10px 12px; font-weight:700;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
+  }
+  /* ADDED: make the inner link look like the pill text */
+  .pill a{ display:block; color:inherit; text-decoration:none; }
+  .pill a:hover{ filter:brightness(1.06); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- NAVBAR (above title) -->
+    <div class="top">
+      <nav class="tabs" role="tablist">
+        <a class="tab" href="{{ url_for('main.index') }}">OVERVIEW</a>
+        <a class="tab {{ 'active' if current_tab=='P123' else '' }}" href="{{ url_for('nonshift.p123') }}">P123</a>
+        <a class="tab {{ 'active' if current_tab=='P456' else '' }}" href="{{ url_for('nonshift.p456') }}">P456</a>
+        <a class="tab" href="{{ url_for('home.role_selection') }}">HOME</a>
+      </nav>
+    </div>
+
+    <div class="layout">
+
+      <!-- LEFT: smaller logo + month filter -->
+      <aside class="panel-left">
+        <div class="logo-block neo-outline">
+          <img class="logo-img" src="{{ url_for('static', filename='Neon Logo.png') }}" alt="SO logo" onerror="this.style.display='none';">
+        </div>
+
+        <div class="neo-outline month-block">
+          <div class="neo-btn">
+            <details class="multi-dd" id="monthDropdown">
+              <summary>Month: <span id="monthSummary">
+                {% if selected_months and selected_months|length > 0 %}{{ selected_months|length }} selected{% else %}All{% endif %}
+              </span></summary>
+              <div class="menu">
+                <label><input type="checkbox" id="allMonthsBox"> Select all</label>
+                {% for m in months %}
+                  <label><input type="checkbox" name="month" value="{{ m }}"
+                    {% if selected_months and m in selected_months %}checked{% endif %}> {{ m }}</label>
+                {% endfor %}
+              </div>
+            </details>
+            <form id="filtersForm" method="GET"></form>
+          </div>
+        </div>
+      </aside>
+
+      <!-- RIGHT: Title + content -->
+      <section>
+        <div class="header"><div class="title">SO Performance Dashboard</div></div>
+
+        <div class="content-grid">
+          <!-- Cards -->
+          <div class="cards">
+            {% for c in cards %}
+            <div class="card">
+              <div class="photo">
+                {% if c.photo %}<img src="{{ c.photo }}" alt="">{% else %}<span>🧑‍💼</span>{% endif %}
+              </div>
+              <div class="name">{{ c.name }}</div>
+              <div class="role">Group&nbsp;<strong>{{ c.group }}</strong></div>
+
+              <div class="row"><div>Shift Worked</div><div class="val">{{ c.shift_worked }}</div></div>
+              <div class="row"><div>Monthly Avg Wait Time</div><div class="val"><span>{{ c.avg_wait }}</span><span>mins</span></div></div>
+              <div class="row"><div>Star Ratings</div><div class="val">★×{{ c.stars }}</div></div>
+              <div class="row"><div>Attendance</div><div class="val">{{ c.attendance }}%</div></div>
+              <div class="row"><div>SI</div><div class="val">{{ c.si }}</div></div>
+              <div class="row"><div>NISR</div><div class="val">{{ c.nisr }}</div></div>
+              <div class="row"><div>SBR</div><div class="val">{{ c.sbr }}</div></div>
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- RIGHT: name search -->
+          <aside class="side">
+            <h4>Name</h4>
+            <input id="nameSearch" type="text" placeholder="Search name…">
+            <div class="list" id="nameList">
+              {% for c in cards %}
+                <div class="pill">
+                  <!-- ADDED: link to Profile while preserving tab + months -->
+                  <a href="{{ url_for('profile.person', raw_name=c.name) }}?tab={{ active_tab }}{% if month_qs %}&{{ month_qs }}{% endif %}">
+                    {{ c.name }}
+                  </a>
+                </div>
+              {% endfor %}
+            </div>
+          </aside>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // --- Month multi-select (auto-apply) ---
+    (function(){
+      const dd   = document.getElementById('monthDropdown');
+      const all  = document.getElementById('allMonthsBox');
+      const boxes= Array.from(dd.querySelectorAll('input[name="month"]'));
+      const sum  = document.getElementById('monthSummary');
+
+      function updateSummary(){
+        const n = boxes.filter(b=>b.checked).length;
+        sum.textContent = n === 0 ? 'All' : `${n} selected`;
+      }
+      function autoSubmit(){
+        const params = new URLSearchParams(window.location.search);
+        params.delete('month');
+        boxes.filter(b=>b.checked).forEach(b=>params.append('month', b.value));
+        window.location.assign(`${window.location.pathname}?${params.toString()}`);
+      }
+
+      all.addEventListener('change', () => {
+        boxes.forEach(b => b.checked = all.checked);
+        updateSummary(); autoSubmit();
+      });
+      boxes.forEach(b => b.addEventListener('change', () => {
+        if (!b.checked) all.checked = false; else if (boxes.every(x=>x.checked)) all.checked = true;
+        updateSummary(); autoSubmit();
+      }));
+
+      all.checked = boxes.length > 0 && boxes.every(b => b.checked);
+      updateSummary();
+      document.addEventListener('click', (e)=>{ if (!dd.contains(e.target)) dd.removeAttribute('open'); });
+    })();
+
+    // --- Live name search (hides non-matching pills) ---
+    (function(){
+      const input = document.getElementById('nameSearch');
+      const list  = document.getElementById('nameList');
+      if (!input || !list) return;
+      input.addEventListener('input', function(){
+        const q = this.value.trim().toLowerCase();
+        for (const pill of list.querySelectorAll('.pill')) {
+          const show = pill.textContent.toLowerCase().includes(q);
+          pill.style.display = show ? '' : 'none';
+        }
+      });
+    })();
+  </script>
+  <style>
+    /* 75% page scale (Chrome/Edge/Safari) */
+    html { zoom: .75; }     /* non-standard, but widely supported */
+  </style>
+</body>
+</html>

@@ -12,7 +12,11 @@
     --text:#EAF4FF; --muted:#9aa4b2; --accent:#00F0FF; --accent-2:#B06CFF; --ok:#00ffd7;
   }
   *{ box-sizing:border-box } html,body{ height:100% }
-  body{ margin:0; color:var(--text); font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:none; position:relative; }
+  body{
+    margin:0; color:var(--text);
+    font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    background:none; position:relative; overflow-x:hidden;
+  }
   body::before{
     content:""; position:fixed; inset:0; z-index:-1;
     background:
@@ -21,9 +25,10 @@
       linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
     background-repeat:no-repeat;
   }
+
+  .ui-zoom{ transform: scale(.75); transform-origin: top left; width: calc(100% / .75); min-height: calc(100vh / .75); }
   .wrap{ max-width:1400px; margin:0 auto; padding:22px 18px 36px }
 
-  /* Tabs */
   .top{ display:flex; align-items:center; justify-content:center; margin-bottom:16px; gap:16px }
   .tabs{ display:flex; background:rgba(255,255,255,.06); backdrop-filter:blur(6px);
          border:1px solid var(--ring); border-radius:14px; overflow:hidden; box-shadow:0 6px 24px rgba(0,0,0,.35) }
@@ -32,14 +37,14 @@
   .tab:hover{ background:rgba(255,255,255,.06) }
   .tab.active{ background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#0c0c16 }
 
-  /* Layout */
-  .layout{ display:grid; grid-template-columns:320px minmax(0, 1fr); gap:22px; align-items:start }
-  @media (max-width:1100px){ .layout{ grid-template-columns:1fr } }
+  .layout{ display:grid; grid-template-columns:320px minmax(0, 1fr); gap:22px; align-items:stretch; }
+  @media (max-width:1100px){ .layout{ grid-template-columns:1fr; align-items:start; } }
 
-  .neo-outline{
-    position:relative; border-radius:14px; padding:16px; border:3px solid transparent;
+  .neo-outline{ position:relative; border-radius:14px; padding:16px; border:3px solid transparent;
     background:linear-gradient(#0f0d22,#0f0d22) padding-box, linear-gradient(135deg,#8a2be2,#00eaff) border-box;
     box-shadow:0 0 0 1px rgba(138,43,226,.18) inset, 0 14px 32px rgba(0,0,0,.45);
+    height:100%; display:flex; flex-direction:column;
+    isolation:isolate; /* ensure dropdown stacks above */
   }
 
   .card{ background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
@@ -52,53 +57,151 @@
   .kpi{ margin-top:14px; display:grid; place-items:center; padding:12px; border-radius:14px; border:1px dashed rgba(255,255,255,.1) }
   .kpi .big{ font-size:42px; font-weight:800 }
 
-  /* Month multi-select */
   .month-block{ margin-top:14px; }
   .neo-btn{ height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center;
             font-weight:800; color:#dff9ff; border:2px solid transparent;
             background:linear-gradient(#0f0d22,#0f0d22) padding-box, linear-gradient(135deg,#00eaff,#9a56ff) border-box;
-            box-shadow:0 0 0 2px rgba(0,234,255,.2) inset; position:relative; }
-  .neo-btn details.multi-dd{ position:absolute; inset:0; display:block; }
+            box-shadow:0 0 0 2px rgba(0,234,255,.2) inset; position:relative; isolation:isolate;
+            z-index: 3000;
+  }
+  .neo-btn details.multi-dd{ position:absolute; inset:0; display:block; z-index: 3001; }
   .neo-btn details.multi-dd summary{
     list-style:none; cursor:pointer; user-select:none; width:100%; height:100%; border-radius:10px; border:0; outline:0;
     display:flex; align-items:center; justify-content:center; background:transparent; color:#dff9ff; font-weight:800;
   }
   .neo-btn details[open] summary{ outline:2px solid var(--accent); border-radius:10px; }
   .multi-dd .menu{
-    position:absolute; top:calc(100% + 10px); left:0; z-index:50;
-    background: var(--panel); border:1px solid var(--ring); border-radius:14px;
+    position:absolute; top:calc(100% + 10px); left:0; z-index:100000;
+    background: var(--panel) !important; color: var(--text) !important;
+    backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+    border:1px solid var(--ring); border-radius:14px;
     box-shadow:0 18px 34px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.03);
     padding:10px; min-width:240px; max-height:260px; overflow:auto;
   }
   .multi-dd label{ display:flex; align-items:center; gap:10px; padding:8px; border-radius:10px; font-weight:700; }
   .multi-dd label:hover{ background:rgba(255,255,255,.08) }
 
-  .panel{ background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.015)); border:1px solid var(--ring);
-          border-radius:18px; padding:18px; box-shadow:0 10px 35px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.02); }
+  .panel{
+    background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
+    border:1px solid var(--ring); border-radius:18px; padding:18px;
+    box-shadow:0 10px 35px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.02);
+    height:100%; display:flex; flex-direction:column;
+  }
   .title{ font-size:20px; font-weight:900; letter-spacing:.3px; margin:0 0 10px; text-align:center }
 
   .strip{ margin-top:14px; display:flex; gap:10px; overflow:auto; padding:10px;
           background:rgba(2,7,18,.46); border:1px solid var(--ring); border-radius:14px; }
+  .strip.vertical{ flex-direction:column; align-items:stretch; gap:8px; }
+  .strip.vertical .pill{ width:100%; text-align:left; }
+
   .pill{ flex:0 0 auto; padding:10px 12px; border-radius:12px; font-weight:800;
          background:linear-gradient(180deg, rgba(2,7,18,.60), rgba(2,7,18,.32)); border:1px solid var(--ring); white-space:nowrap; }
+  .pill.active{ outline:2px solid var(--accent); box-shadow:0 0 18px rgba(0,240,255,.25) }
 
   .cta{ margin:22px auto 0; width:340px; height:64px; display:grid; place-items:center; border-radius:14px;
         background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#0c0c16; font-weight:900; letter-spacing:.6px;
         border:1px solid #3dd1ff; box-shadow:0 14px 36px rgba(0,0,0,.45); text-decoration:none; }
-  .pill.active{ outline:2px solid var(--accent); box-shadow:0 0 18px rgba(0,240,255,.25) }
+  .cta[aria-disabled="true"]{ opacity:.5; pointer-events:none; filter:grayscale(0.3); }
 
-  .strip .pill, .strip .pill:visited, .strip .pill:active, .strip .pill:hover { color:#fff !important; text-decoration:none }
-  a.cta, a.cta:visited, a.cta:active, a.cta:hover { color:#fff !important; text-decoration:none }
-
-  /* NEW: SI block */
-  .si-block{ margin-top:16px; padding:12px; border:1px solid var(--ring); border-radius:14px; background:rgba(2,7,18,.46); }
+  .si-block{ margin-top:14px; padding:12px; border:1px solid var(--ring); border-radius:14px; background:rgba(2,7,18,.46); }
   .si-title{ margin:0 0 8px; font-size:14px; font-weight:800; color:#cfe8ff; opacity:.9; letter-spacing:.3px; }
   .si-empty{ color:var(--muted); padding:6px 2px; }
+
+  .chart-wrap{ position:relative; height:420px; }
+  #ywtChart{ position:absolute; inset:0; width:100% !important; height:100% !important; display:block; }
+
+  .panel-wide{
+    margin-top: 18px;
+    background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
+    border:1px solid var(--ring); border-radius:18px; padding:18px;
+    box-shadow:0 10px 35px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.02);
+  }
+  .gy-title { font-size:16px; font-weight:900; text-align:center; margin:0 0 12px; }
+  .muted { color:var(--muted); font-size:12px; text-align:center; margin-top:10px; }
+  .group-mix-wrap{ position:relative; height:260px; }
+  #groupMixChart{ position:absolute; inset:0; width:100% !important; height:100% !important; display:block; }
+
+  /* Positive Contribution */
+  .pc-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+  .pc-title{ font-size:16px; font-weight:900; text-align:left; margin:0 }
+  .pc-add{ height:44px; padding:0 14px; border-radius:12px; font-weight:900; border:1px solid #34d7ff;
+           background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#0c0c16; cursor:pointer; }
+  .pc-bubbles{ display:flex; flex-wrap:wrap; gap:8px; padding:10px; background:rgba(2,7,18,.46); border:1px solid var(--ring); border-radius:14px; min-height:62px; }
+  .pc-bubble{ padding:8px 10px; border-radius:999px; background:linear-gradient(180deg, rgba(2,7,18,.60), rgba(2,7,18,.32)); border:1px solid var(--ring); font-weight:700; max-width:100%; overflow-wrap:anywhere; }
+
+  .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; z-index:5000; }
+  .modal{ width:min(560px, 92vw); background:var(--panel); border:1px solid var(--ring); border-radius:18px; box-shadow:0 14px 36px rgba(0,0,0,.55); padding:16px; }
+  .modal h4{ margin:0 0 12px; font-size:18px; font-weight:900; }
+  .modal textarea{ width:100%; min-height:110px; resize:vertical; border-radius:12px; border:1px solid var(--ring); background:rgba(255,255,255,.04); color:var(--text); padding:10px; font-family:inherit; font-size:14px; }
+  .modal .row{ display:flex; gap:10px; justify-content:flex-end; margin-top:12px; }
+  .btn{ height:40px; padding:0 14px; border-radius:10px; font-weight:800; border:1px solid var(--ring); background:rgba(255,255,255,.06); color:var(--text); cursor:pointer; }
+  .btn.primary{ border-color:#34d7ff; background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#0c0c16; }
+  .modal-backdrop.show{ display:flex; }
+  .pill,
+  .pill:link,
+  .pill:visited { color:#fff; }
+
+  /* --- MC/UL/Turnout panel --- */
+  .mut { margin-top:18px; }
+  .mut h4{ margin:0 0 10px; font-weight:800; letter-spacing:.3px; }
+  .mut-row{ display:grid; grid-template-columns:repeat(3, 1fr); gap:28px; align-items:center; }
+  .mut-item{ display:flex; align-items:center; gap:16px; }
+  .mut-label{ font-weight:700; color:var(--text); opacity:.9; white-space:nowrap; }
+  .mut-chip{
+    min-width:120px; text-align:center; font-weight:800;
+    border-radius:12px; padding:10px 16px;
+    background:linear-gradient(180deg,#2aa4f6,#0a6abf);
+    color:#fff; box-shadow:inset 0 -2px rgba(0,0,0,.25);
+  }
+  .mut-sep{
+    margin:16px 0 18px 0; height:10px; border:0; border-radius:999px;
+    background:linear-gradient(90deg,#6eb4d6 0%, #2a9bbd 40%, #1b4d62 100%);
+    opacity:.45;
+  }
+
+  /* --- Consolidation Details table-like grid --- */
+  .cons { margin-top:18px; }
+  .cons-title{ font-size:16px; font-weight:900; margin:0 0 12px; }
+  .cons-scroller{ overflow:auto; border:1px solid var(--ring); border-radius:14px; background:rgba(2,7,18,.46); }
+  .cons-grid{
+    display:grid;
+    /* columns set in JS */
+    border-collapse:collapse;
+    min-width: 800px;
+  }
+  .cons-cell{
+    padding:12px 10px;
+    border-right:1px solid rgba(255,255,255,.08);
+    border-top:1px solid rgba(255,255,255,.08);
+    font-weight:700;
+  }
+  .cons-head{
+    background:linear-gradient(180deg, rgba(0,240,255,.14), rgba(0,240,255,.04));
+    color:#d9f6ff; text-align:center; font-weight:900;
+    border-top:none;
+  }
+  .cons-month{ white-space:nowrap; }
+  .cons-body{ color:#EAF4FF; font-weight:700; }
+  .cons-body .item{ display:block; margin:2px 0; text-align:center; opacity:.95; }
+  .cons-dot{ display:inline-block; width:10px; height:10px; border-radius:999px; background:#9adcf7; vertical-align:middle; box-shadow:0 0 0 2px rgba(255,255,255,.2) inset; }
+
+  /* --- Monthly Trend charts --- */
+  .trend{ margin-top:18px; }
+  .trend-title{ font-size:16px; font-weight:900; margin:0 0 12px; text-align:center; }
+  .trend-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  @media (max-width:1100px){ .trend-grid{ grid-template-columns:1fr; } }
+  .trend-card{
+    background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
+    border:1px solid var(--ring); border-radius:14px; padding:12px;
+    box-shadow:0 10px 35px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.02);
+    height:280px; position:relative;
+  }
+  .trend-card canvas{ position:absolute; inset:12px 12px 12px 12px; width:calc(100% - 24px)!important; height:calc(100% - 24px)!important; }
 </style>
 </head>
 <body>
+  <div class="ui-zoom">
   <div class="wrap">
-    <!-- NAV -->
     <div class="top">
       <nav class="tabs" role="tablist">
         <a class="tab" href="{{ url_for('main.index') }}">OVERVIEW</a>
@@ -146,16 +249,32 @@
             </div>
           </div>
         </div>
+
+        <section class="si-block">
+          <div class="si-title">Safety Inspection Reports</div>
+          <div id="siList">
+            {% if si_files and si_files|length %}
+              <div class="strip vertical" style="margin-top:10px;">
+                {% for item in si_files %}
+                  <a class="pill" href="{{ item.href }}" target="_blank" rel="noopener"
+                     data-shiftdate="{{ item.date_label|default('', true) }}">{{ item.filename }}</a>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="si-empty">Pick a shift date to view its SI report.</div>
+            {% endif %}
+          </div>
+        </section>
       </aside>
 
       <!-- RIGHT -->
       <section class="panel">
         <h3 class="title">Average Waiting Time by Month</h3>
-        <canvas id="ywtChart" height="120"></canvas>
+        <div class="chart-wrap"><canvas id="ywtChart"></canvas></div>
 
         <div class="strip" id="shiftStrip" aria-label="Shift dates" role="listbox">
           {% for sd in shift_dates %}
-            {% set is_active = (sd == (selected_date_str ~ ' ' ~ selected_shift)) %}
+            {% set is_active = (selected_date_str and (sd == (selected_date_str ~ ' ' ~ selected_shift))) %}
             <button
               type="button"
               class="pill {{ 'active' if is_active else '' }}"
@@ -167,66 +286,162 @@
         </div>
 
         <a class="cta" id="deepDiveBtn"
-          href="{{ url_for('daily.index',
+           href="{{ '#' if not selected_date_str else url_for('daily.index',
                            date=selected_date_str,
                            shift=selected_shift,
                            cluster=(tab_hint or 'P123'),
-                           name=person.name) }}">
+                           name=person.name) }}"
+           aria-disabled="{{ 'true' if not selected_date_str else 'false' }}">
           Deep Dive
         </a>
-
-        <!-- ========== NEW: Safety Inspection filenames (below Deep Dive) ========== -->
-        <div class="si-block">
-          <div class="si-title">Safety Inspection Reports</div>
-          {% if si_files and si_files|length %}
-            <div class="strip" style="margin-top:10px;">
-              {% for item in si_files %}
-                <a class="pill" href="{{ item.href }}" target="_blank" rel="noopener">{{ item.filename }}</a>
-              {% endfor %}
-            </div>
-          {% else %}
-            <div class="si-empty">No SI reports found for this profile.</div>
-          {% endif %}
-        </div>
-        <!-- ======================================================================= -->
       </section>
-    </div>
-  </div>
+    </div><!-- /.layout -->
+
+    <!-- FULL-WIDTH MIXED CHART -->
+    <section class="panel-wide">
+      <div class="gy-title">Avg YWT by Group (on {{ person.name }}’s shifts)</div>
+      <div class="group-mix-wrap"><canvas id="groupMixChart"></canvas></div>
+      <div class="muted">Computed across all employees who worked the same shifts as {{ person.name }}{% if selected_months and selected_months|length %} (filtered by month){% endif %}.</div>
+    </section>
+
+    <!-- POSITIVE CONTRIBUTION -->
+    <section class="panel-wide" id="positiveContribution">
+      <div class="pc-head">
+        <h4 class="pc-title">Positive Contribution</h4>
+        <button class="pc-add" id="pcAddBtn" type="button">+ Add</button>
+      </div>
+      <div class="pc-bubbles" id="pcList"></div>
+      <div class="muted" id="pcEmpty" style="display:none;">No contributions yet. Add one!</div>
+    </section>
+
+    <!-- MC / UL / Turnout (elements, dummy data) -->
+    <section class="panel-wide mut" id="mut">
+      <h4>MC, UL &amp; Turnout for the month of <span id="mut-month">Oct</span></h4>
+      <div class="mut-row">
+        <div class="mut-item"><div class="mut-label" id="mut-mc-label">Oct MC:</div> <div class="mut-chip" id="mut-mc">1</div></div>
+        <div class="mut-item"><div class="mut-label" id="mut-ul-label">Oct UL:</div> <div class="mut-chip" id="mut-ul">0</div></div>
+        <div class="mut-item"><div class="mut-label" id="mut-to-label">Oct Turnout:</div> <div class="mut-chip" id="mut-to">0</div></div>
+      </div>
+
+      <div class="mut-sep"></div>
+
+      <h4>MC, UL &amp; Turnout for the whole year</h4>
+      <div class="mut-row">
+        <div class="mut-item"><div class="mut-label">Total MC:</div> <div class="mut-chip" id="mut-tot-mc">9</div></div>
+        <div class="mut-item"><div class="mut-label">Total UL:</div> <div class="mut-chip" id="mut-tot-ul">1</div></div>
+        <div class="mut-item"><div class="mut-label">Total Turnout:</div> <div class="mut-chip" id="mut-tot-to">5</div></div>
+      </div>
+    </section>
+
+    <!-- CONSOLIDATION DETAILS -->
+    <section class="panel-wide cons" id="consolidation">
+      <h4 class="cons-title">Consolidation Details for the whole year</h4>
+      <div class="cons-scroller">
+        <div class="cons-grid" id="consGrid">
+          <!-- Header/body will be built by JS so it can follow the Month filter -->
+        </div>
+      </div>
+    </section>
+
+    <!-- MONTHLY TRENDS -->
+    <section class="panel-wide trend" id="monthlyTrends">
+      <h4 class="trend-title">MC, UL &amp; Turnout Monthly Trend</h4>
+      <div class="trend-grid">
+        <div class="trend-card"><canvas id="mcTrend"></canvas></div>
+        <div class="trend-card"><canvas id="ulTrend"></canvas></div>
+        <div class="trend-card"><canvas id="toTrend"></canvas></div>
+      </div>
+    </section>
+
+  </div><!-- /.wrap -->
+  </div><!-- /.ui-zoom -->
 
   <!-- Data payloads -->
   <script type="application/json" id="chart-x">{{ chart_x|tojson }}</script>
   <script type="application/json" id="chart-y">{{ chart_y|tojson }}</script>
+  <script type="application/json" id="si-data">{{ si_files|tojson }}</script>
+  <script type="application/json" id="gy-labels">{{ group_chart_labels|tojson }}</script>
+  <script type="application/json" id="gy-ywt">{{ group_chart_ywt|tojson }}</script>
+  <script type="application/json" id="gy-count">{{ group_chart_counts|tojson }}</script>
+  <script type="application/json" id="gy-emp">{{ group_chart_empcounts|tojson }}</script>
+  <script type="application/json" id="gy-useemp">{{ use_emp_bars|tojson }}</script>
+  <script type="application/json" id="pc-data">{{ positive_contribs|tojson }}</script>
+  <!-- expose selected months -->
+  <script type="application/json" id="sel-months">{{ selected_months|tojson }}</script>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" id="pcModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pcTitle">
+      <h4 id="pcTitle">Add Positive Contribution for {{ person.name }}</h4>
+      <textarea id="pcInput" placeholder="Type the positive contribution…"></textarea>
+      <div class="row">
+        <button class="btn" id="pcCancel" type="button">Cancel</button>
+        <button class="btn primary" id="pcSave" type="button">Save</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-  <!-- YWT chart with cluster-specific bounds + 0.5 ticks -->
+  <!-- YWT line -->
   <script>
     (function(){
       const ctx    = document.getElementById('ywtChart').getContext('2d');
-      const labels = JSON.parse(document.getElementById('chart-x').textContent);
-      const data   = JSON.parse(document.getElementById('chart-y').textContent);
+      const labels = JSON.parse(document.getElementById('chart-x').textContent || '[]');
+      const data   = JSON.parse(document.getElementById('chart-y').textContent || '[]');
 
       const clusterHint = "{{ (tab_hint or 'P123')|e }}".toUpperCase();
-      const yMin = clusterHint === 'P456' ? 6  : 8;   // floor
-      const yMax = clusterHint === 'P456' ? 10 : 13;  // ceiling
+      const yMin = clusterHint === 'P456' ? 6  : 8;
+      const yMax = clusterHint === 'P456' ? 10 : 13;
+
+      const THRESHOLD = 11;
+      const highlight = data.map(v => (v != null && !isNaN(v) && Number(v) > THRESHOLD) ? Number(v) : null);
+      const isHi = (c) => {
+        const v = c.raw;
+        return v != null && !isNaN(v) && Number(v) > THRESHOLD;
+      };
 
       new Chart(ctx, {
         type: 'line',
         data: {
           labels,
-          datasets: [{
-            label: 'Avg Wait Time',
-            data,
-            tension: 0.35,
-            pointRadius: 4,
-            pointHoverRadius: 6,
-            borderWidth: 2,
-          }]
+          datasets: [
+            {
+              label: 'Avg Wait Time',
+              data,
+              tension: 0.35,
+              borderWidth: 2,
+              pointRadius: (c) => isHi(c) ? 4 : 3,
+              pointHoverRadius: (c) => isHi(c) ? 6 : 5,
+            },
+            {
+              label: 'Above 11',
+              data: highlight,
+              showLine: false,
+              pointRadius: 7,
+              pointHoverRadius: 9,
+              pointBorderWidth: 2,
+              pointBackgroundColor: '#ff5b7a',
+              pointBorderColor: '#ffffff',
+              pointHitRadius: 12,
+              tooltip: { enabled: false }
+            }
+          ]
         },
         options: {
           responsive: true,
-          plugins: { legend: { display: false }, tooltip: { mode: 'nearest', intersect: false } },
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              mode: 'nearest',
+              intersect: false,
+              filter: (ctx) => ctx.datasetIndex === 0,
+              callbacks: { label: (ctx) => `Avg Wait Time: ${ctx.formattedValue}` }
+            }
+          },
           scales: {
             x: { ticks: { color: '#cfe8ff' }, grid: { color: 'rgba(255,255,255,.06)' } },
             y: {
@@ -241,7 +456,107 @@
     })();
   </script>
 
-  <!-- Month multi-select (robust URL handling + param persistence) -->
+  <!-- Mixed bar/line (group chart) -->
+  <script>
+  (function(){
+    const labels = JSON.parse(document.getElementById('gy-labels').textContent || '[]');
+    const ywtRaw = JSON.parse(document.getElementById('gy-ywt').textContent || '[]');
+    const counts = JSON.parse(document.getElementById('gy-count').textContent || '[]');
+    const emps   = JSON.parse(document.getElementById('gy-emp').textContent || '[]');
+    const useEmp = JSON.parse(document.getElementById('gy-useemp').textContent || 'false');
+
+    const barData  = useEmp ? emps : counts;
+    const barLabel = useEmp ? 'Employees' : 'Shifts';
+
+    const ywtVals = ywtRaw.filter(v => v !== null && !isNaN(v));
+    let minY = Math.min(...ywtVals), maxY = Math.max(...ywtVals);
+    const pad = Math.max(0.2, (maxY - minY) * 0.15);
+    minY = Math.floor((minY - pad) * 100) / 100;
+    maxY = Math.ceil((maxY + pad) * 100) / 100;
+    if (!(maxY > minY)) { minY -= 0.5; maxY += 0.5; }
+
+    const ctx = document.getElementById('groupMixChart').getContext('2d');
+
+    const BAR_BG   = 'rgba(0, 240, 255, 0.70)';
+    const BAR_BR   = '#00F0FF';
+    const LINE_CL  = '#D6B1FF';
+    const POINT_BR = '#FFFFFF';
+
+    new Chart(ctx, {
+      data: {
+        labels,
+        datasets: [
+          {
+            type: 'bar',
+            label: barLabel,
+            data: barData,
+            yAxisID: 'yCount',
+            backgroundColor: BAR_BG,
+            borderColor: BAR_BR,
+            borderWidth: 1,
+            borderRadius: 10,
+            barThickness: 44,
+            categoryPercentage: 0.7,
+            order: 0
+          },
+          {
+            type: 'line',
+            label: 'Avg YWT',
+            data: ywtRaw,
+            yAxisID: 'yYwt',
+            borderColor: LINE_CL,
+            backgroundColor: LINE_CL,
+            pointBackgroundColor: LINE_CL,
+            pointBorderColor: POINT_BR,
+            pointBorderWidth: 2,
+            pointRadius: 6,
+            tension: 0.15,
+            borderWidth: 3,
+            order: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            display: true,
+            labels: { color: '#cfe8ff', usePointStyle: true, pointStyle: 'rectRounded', boxWidth: 14 }
+          },
+          tooltip: {
+            displayColors: true,
+            callbacks: {
+              title: (items) => `Group ${items[0].label}`,
+              label: (ctx) => {
+                if (ctx.dataset.type === 'bar')  return `${barLabel}: ${ctx.formattedValue}`;
+                if (ctx.dataset.type === 'line') return `Avg YWT: ${Number(ctx.raw).toFixed(2)}`;
+                return ctx.formattedValue;
+              },
+              footer: (items) => {
+                const idx = items[0].dataIndex;
+                if (useEmp) {
+                  return `Shifts: ${counts[idx] ?? 0}`;
+                } else {
+                  return `Employees: ${emps[idx] ?? 0}`;
+                }
+              }
+            }
+          }
+        },
+        scales: {
+          x: { ticks: { color: '#cfe8ff' }, grid: { color: 'rgba(255,255,255,.10)' } },
+          yCount: { position: 'left', beginAtZero: true, ticks: { color: '#cfe8ff', precision: 0 }, grid: { color: 'rgba(255,255,255,.06)' } },
+          yYwt: { position: 'right', min: minY, max: maxY, ticks: { color: '#cfe8ff' }, grid: { drawOnChartArea: false } }
+        }
+      }
+    });
+  })();
+  </script>
+
+  <!-- Month multi-select -->
   <script>
     (function(){
       const dd   = document.getElementById('monthDropdown');
@@ -249,7 +564,6 @@
       const boxes= Array.from(dd.querySelectorAll('input[name="month"]'));
       const sum  = document.getElementById('monthSummary');
 
-      // persist context so reload keeps cluster/name
       const cluster = "{{ (tab_hint or 'P123')|e }}";
       const personName = "{{ person.name|e }}";
 
@@ -257,38 +571,23 @@
         const n = boxes.filter(b=>b.checked).length;
         sum.textContent = (n === 0 || n === boxes.length) ? 'All' : `${n} selected`;
       }
-
       function apply(){
         const params = new URLSearchParams(window.location.search);
-
-        // Always keep cluster + name
         params.set('cluster', cluster);
         params.set('name', personName);
-
-        // Only include month when a strict subset is chosen
         const chosen = boxes.filter(b => b.checked).map(b => b.value);
         params.delete('month');
         if (chosen.length > 0 && chosen.length < boxes.length) {
           chosen.forEach(v => params.append('month', v));
         }
-
         const url = `${window.location.pathname}?${params.toString()}`;
         window.location.assign(url);
       }
-
-      all.addEventListener('change', () => {
-        boxes.forEach(b => b.checked = all.checked);
-        updateSummary();
-        apply();
-      });
-
+      all.addEventListener('change', () => { boxes.forEach(b => b.checked = all.checked); updateSummary(); apply(); });
       boxes.forEach(b => b.addEventListener('change', () => {
-        if (!b.checked) all.checked = false;
-        else if (boxes.every(x => x.checked)) all.checked = true;
-        updateSummary();
-        apply();
+        if (!b.checked) all.checked = false; else if (boxes.every(x => x.checked)) all.checked = true;
+        updateSummary(); apply();
       }));
-
       all.checked = boxes.length > 0 && boxes.every(b => b.checked);
       updateSummary();
 
@@ -296,40 +595,401 @@
     })();
   </script>
 
-  <!-- Shift chips → Deep Dive link sync -->
+  <!-- Shift chips + SI filtering -->
   <script>
     (function(){
       const baseDaily = "{{ url_for('daily.index') }}";
       const strip = document.getElementById('shiftStrip');
       const btn   = document.getElementById('deepDiveBtn');
+      const siList= document.getElementById('siList');
 
       const cluster = "{{ (tab_hint or 'P123')|e }}";
       const personName = "{{ person.name|e }}";
 
-      function setActive(el){
-        [...strip.querySelectorAll('.pill')].forEach(x=>{
-          x.classList.remove('active'); x.setAttribute('aria-selected','false');
-        });
-        el.classList.add('active'); el.setAttribute('aria-selected','true');
+      const currDate  = "{{ selected_date_str|e }}";
+      const currShift = "{{ selected_shift|e }}";
 
-        const date  = el.dataset.date;
-        const shift = el.dataset.shift || "{{ selected_shift }}";
-        const url = `${baseDaily}?date=${encodeURIComponent(date)}&shift=${encodeURIComponent(shift)}&cluster=${encodeURIComponent(cluster)}&name=${encodeURIComponent(personName)}`;
+      const rawSi = (()=>{ try { return JSON.parse(document.getElementById('si-data').textContent||'[]'); } catch(e){ return []; }})();
+      const siMap = rawSi.reduce((acc, it) => {
+        const key = (it.date_label || '').trim();
+        if (!key) return acc;
+        (acc[key] ||= []).push(it);
+        return acc;
+      }, {});
+
+      function renderSI(key){
+        siList.innerHTML = '';
+        if (!key){
+          siList.innerHTML = '<div class="si-empty">Pick a shift date to view its SI report.</div>';
+          return;
+        }
+        const items = siMap[key] || [];
+        if (!items.length){
+          siList.innerHTML = '<div class="si-empty">No SI report for this shift.</div>';
+          return;
+        }
+        const wrap = document.createElement('div');
+        wrap.className = 'strip vertical';
+        items.forEach(it=>{
+          const a = document.createElement('a');
+          a.className = 'pill';
+          a.href = it.href;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.textContent = it.filename;
+          wrap.appendChild(a);
+        });
+        siList.appendChild(wrap);
+      }
+
+      function navigateWith(dateOnly, shift){
+        const params = new URLSearchParams(window.location.search);
+        params.set('cluster', cluster);
+        params.set('name', personName);
+        params.set('date', dateOnly);
+        params.set('shift', (shift || 'D'));
+        window.location.assign(`${window.location.pathname}?${params.toString()}`);
+      }
+
+      function clearSelection(){
+        btn.href = '#';
+        btn.setAttribute('aria-disabled','true');
+        renderSI('');
+
+        const params = new URLSearchParams(window.location.search);
+        params.set('cluster', cluster);
+        params.set('name', personName);
+        params.delete('date');
+        params.delete('shift');
+        window.location.assign(`${window.location.pathname}?${params.toString()}`);
+      }
+
+      function handleClick(el){
+        const dateLabel = el.textContent.trim();
+        const dateOnly  = el.dataset.date;
+        const shift     = (el.dataset.shift || 'D').toUpperCase();
+
+        const isCurrentlyActive = (currDate && currDate === dateOnly && currShift === shift);
+        if (isCurrentlyActive){
+          clearSelection();
+          return;
+        }
+
+        const url = `${baseDaily}?date=${encodeURIComponent(dateOnly)}&shift=${encodeURIComponent(shift)}&cluster=${encodeURIComponent(cluster)}&name=${encodeURIComponent(personName)}`;
         btn.href = url;
+        btn.setAttribute('aria-disabled','false');
+        renderSI(dateLabel);
+        navigateWith(dateOnly, shift);
       }
 
       strip.addEventListener('click', (e)=>{
         const b = e.target.closest('.pill'); if(!b) return;
-        setActive(b);
+        handleClick(b);
       });
 
-      const init = strip.querySelector('.pill.active') || strip.querySelector('.pill');
-      if (init) setActive(init);
+      const active = strip.querySelector('.pill.active');
+      if (active){
+        renderSI(active.textContent.trim());
+        const dateOnly = active.dataset.date;
+        const shift    = active.dataset.shift || 'D';
+        const url = `${baseDaily}?date=${encodeURIComponent(dateOnly)}&shift=${encodeURIComponent(shift)}&cluster=${encodeURIComponent(cluster)}&name=${encodeURIComponent(personName)}`;
+        btn.href = url;
+        btn.setAttribute('aria-disabled','false');
+      } else {
+        renderSI('');
+        btn.href = '#';
+        btn.setAttribute('aria-disabled','true');
+      }
     })();
   </script>
-  <style>
-    /* 75% page scale (Chrome/Edge/Safari) */
-    html { zoom: .75; }     /* non-standard, but widely supported */
-  </style>
+
+  <!-- Positive Contribution logic -->
+  <script>
+    (function(){
+      const data = (()=>{ try { return JSON.parse(document.getElementById('pc-data').textContent || '[]'); } catch(e){ return []; }})();
+      const list = document.getElementById('pcList');
+      const empty = document.getElementById('pcEmpty');
+
+      function render(){
+        list.innerHTML = '';
+        if (!data || data.length === 0){
+          empty.style.display = '';
+          return;
+        }
+        empty.style.display = 'none';
+        data.forEach(d=>{
+          const chip = document.createElement('div');
+          chip.className = 'pc-bubble';
+          chip.textContent = d.Description || d.description || '';
+          list.appendChild(chip);
+        });
+      }
+      render();
+
+      // Modal
+      const modal = document.getElementById('pcModal');
+      const btnAdd = document.getElementById('pcAddBtn');
+      const btnCancel = document.getElementById('pcCancel');
+      const btnSave = document.getElementById('pcSave');
+      const input = document.getElementById('pcInput');
+      function open(){ modal.classList.add('show'); input.value=''; input.focus(); }
+      function close(){ modal.classList.remove('show'); }
+      btnAdd.addEventListener('click', open);
+      btnCancel.addEventListener('click', close);
+      modal.addEventListener('click', (e)=>{ if(e.target === modal) close(); });
+
+      btnSave.addEventListener('click', async ()=>{
+        const desc = (input.value || '').trim();
+        if (!desc) { input.focus(); return; }
+        btnSave.disabled = true;
+
+        try{
+          const resp = await fetch("{{ url_for('profile.add_contribution') }}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: "{{ person.name|e }}", description: desc })
+          });
+          const payload = await resp.json().catch(()=> ({}));
+          if (!resp.ok) {
+            alert(payload.error || 'Could not save contribution. Please try again.');
+            return;
+          }
+          if (payload && payload.items){
+            data.splice(0, data.length, ...payload.items);
+            render();
+          }
+          close();
+        } catch(err){
+          alert('Network error. Please try again.');
+        } finally{
+          btnSave.disabled = false;
+        }
+      });
+    })();
+  </script>
+
+  <!-- MC/UL/Turnout dummy data renderer -->
+  <script>
+    (function(){
+      const MUT_DATA = {
+        byMonth: {
+          Jan:{MC:2, UL:0, Turnout:1}, Feb:{MC:2, UL:0, Turnout:1}, Mar:{MC:1, UL:0, Turnout:0},
+          Apr:{MC:1, UL:0, Turnout:0}, May:{MC:1, UL:0, Turnout:0}, Jun:{MC:1, UL:1, Turnout:0},
+          Jul:{MC:0, UL:0, Turnout:1}, Aug:{MC:1, UL:0, Turnout:1}, Sep:{MC:0, UL:1, Turnout:0},
+          Oct:{MC:1, UL:0, Turnout:0}, Nov:{MC:0, UL:0, Turnout:0}, Dec:{MC:0, UL:0, Turnout:0}
+        },
+        totals: { MC:9, UL:3, Turnout:5 }
+      };
+
+      // expose for trend charts
+      window.__MUT_DATA__ = MUT_DATA;
+
+      function renderMUT(month='Oct'){
+        const m = MUT_DATA.byMonth[month] || {MC:0, UL:0, Turnout:0};
+        document.getElementById('mut-month').textContent = month;
+        document.getElementById('mut-mc').textContent = m.MC;
+        document.getElementById('mut-ul').textContent = m.UL;
+        document.getElementById('mut-to').textContent = m.Turnout;
+        document.getElementById('mut-mc-label').textContent = `${month} MC:`;
+        document.getElementById('mut-ul-label').textContent = `${month} UL:`;
+        document.getElementById('mut-to-label').textContent = `${month} Turnout:`;
+        document.getElementById('mut-tot-mc').textContent = MUT_DATA.totals.MC;
+        document.getElementById('mut-tot-ul').textContent = MUT_DATA.totals.UL;
+        document.getElementById('mut-tot-to').textContent = MUT_DATA.totals.Turnout;
+      }
+
+      renderMUT();
+    })();
+  </script>
+
+  <!-- Consolidation Details renderer (filters by selected months) -->
+  <script>
+    (function(){
+      const DATA = {
+        months: {
+          Jan: [],
+          Feb: ["13 – Flu (1 Day)", "20 – Cough, Headache (1 Day)"],
+          Mar: ["1 – Cough (1 Day)", "16 – Headache (1 Day)"],
+          Apr: ["14 – Fever (1 Day)"],
+          May: ["16 – Headache, Neck Pain (1 Day)"],
+          Jun: [],
+          Jul: [],
+          Aug: ["14 – Fever (1 Day)"],
+          Sep: ["–"],
+          Oct: ["10 – Fever (1 Day)"],
+          Nov: [],
+          Dec: []
+        },
+        healthTips: "23/6/2025",
+        ha1: true,
+        ha2: true,
+        remarks: "–"
+      };
+
+      window.__CONSOLIDATION__ = DATA; // for trend (health tips / HA)
+
+      const sel = (()=>{ try { return JSON.parse(document.getElementById('sel-months').textContent||'[]'); } catch(e){ return []; }})();
+      const ALL = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      const activeMonths = (sel && sel.length>0) ? sel : ALL;
+
+      const grid = document.getElementById('consGrid');
+      grid.innerHTML = '';
+      const colDefs = [...activeMonths.map(()=> 'minmax(120px,1fr)'), '160px','110px','110px','160px'];
+      grid.style.gridTemplateColumns = colDefs.join(' ');
+
+      activeMonths.forEach(m=>{
+        const h = document.createElement('div');
+        h.className = 'cons-cell cons-head cons-month';
+        h.textContent = m;
+        grid.appendChild(h);
+      });
+      ["Health Tips","H.A. (1)","H.A. (2)","Remarks"].forEach(t=>{
+        const h = document.createElement('div');
+        h.className = 'cons-cell cons-head';
+        h.textContent = t;
+        grid.appendChild(h);
+      });
+
+      activeMonths.forEach(m=>{
+        const cell = document.createElement('div');
+        cell.className = 'cons-cell cons-body';
+        const items = DATA.months[m] || [];
+        if (!items.length){
+          cell.innerHTML = '<span class="item">–</span>';
+        } else {
+          items.forEach(t=>{
+            const span = document.createElement('span');
+            span.className = 'item';
+            span.textContent = t;
+            cell.appendChild(span);
+          });
+        }
+        grid.appendChild(cell);
+      });
+      const tip = document.createElement('div');
+      tip.className = 'cons-cell cons-body';
+      tip.innerHTML = `<span class="item">${DATA.healthTips || "–"}</span>`;
+      grid.appendChild(tip);
+
+      const ha1 = document.createElement('div');
+      ha1.className = 'cons-cell cons-body';
+      ha1.innerHTML = DATA.ha1 ? '<span class="cons-dot" title="completed"></span>' : '<span class="item">–</span>';
+      grid.appendChild(ha1);
+
+      const ha2 = document.createElement('div');
+      ha2.className = 'cons-cell cons-body';
+      ha2.innerHTML = DATA.ha2 ? '<span class="cons-dot" title="completed"></span>' : '<span class="item">–</span>';
+      grid.appendChild(ha2);
+
+      const rem = document.createElement('div');
+      rem.className = 'cons-cell cons-body';
+      rem.innerHTML = `<span class="item">${DATA.remarks || "–"}</span>`;
+      grid.appendChild(rem);
+    })();
+  </script>
+
+  <!-- Monthly Trend charts -->
+  <script>
+    (function(){
+      const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      const MUT = window.__MUT_DATA__ || { byMonth:{} };
+      const CONS = window.__CONSOLIDATION__ || {};
+
+      const mc = months.map(m=> (MUT.byMonth[m]?.MC) ?? 0);
+      const ul = months.map(m=> (MUT.byMonth[m]?.UL) ?? 0);
+      const to = months.map(m=> (MUT.byMonth[m]?.Turnout) ?? 0);
+
+      // Health Tips month -> bar
+      let tipMonthIndex = -1;
+      if (CONS && CONS.healthTips){
+        const parts = (CONS.healthTips+'').split(/[\/\-]/); // d/m/yyyy
+        if (parts.length>=2){
+          const m = parseInt(parts[1],10); if (!isNaN(m)) tipMonthIndex = Math.min(Math.max(m-1,0),11);
+        }
+      }
+      const mcMax = Math.max(...mc, 1);
+      const tipBar = months.map((_,i)=> i===tipMonthIndex ? Math.max(mcMax*1.1, 1) : 0);
+
+      // HA(1) -> scatter dot on the same month as Health Tips (screenshot style)
+      const ha1Scatter = months.map((_,i)=> (CONS.ha1 && i===tipMonthIndex) ? Math.max(mcMax*1.1, 1) : null);
+
+      function mkLine(id, label, data, color){
+        const ctx = document.getElementById(id).getContext('2d');
+        return new Chart(ctx,{
+          type:'line',
+          data:{ labels: months, datasets:[
+            { type:'line', label, data, borderColor:color, backgroundColor:color, pointBackgroundColor:color, pointBorderColor:'#fff', pointBorderWidth:2, tension:.2, borderWidth:3 }
+          ]},
+          options:{
+            responsive:true, maintainAspectRatio:false, animation:false,
+            plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ title:(it)=>it[0].label } } },
+            scales:{ x:{ ticks:{color:'#cfe8ff'} , grid:{color:'rgba(255,255,255,.06)'}},
+                     y:{ beginAtZero:true, ticks:{color:'#cfe8ff', precision:0}, grid:{color:'rgba(255,255,255,.06)'} } }
+          }
+        });
+      }
+
+      // MC chart with overlays
+      (function(){
+        const ctx = document.getElementById('mcTrend').getContext('2d');
+        new Chart(ctx,{
+          data:{
+            labels: months,
+            datasets:[
+              {
+                type:'bar',
+                label:'Health Tips',
+                data: tipBar,
+                backgroundColor:'rgba(255,140,0,.85)',
+                borderColor:'rgba(255,140,0,1)',
+                borderWidth:1,
+                borderRadius:6,
+                barThickness:18,
+                order:0
+              },
+              {
+                type:'scatter',
+                label:'HA (1)',
+                data: ha1Scatter,
+                pointRadius:6,
+                pointBackgroundColor:'#aeeaff',
+                pointBorderColor:'#ffffff',
+                pointBorderWidth:2,
+                showLine:false,
+                order:1
+              },
+              {
+                type:'line',
+                label:'Monthly MC',
+                data: mc,
+                borderColor:'#4ce37a',
+                backgroundColor:'#4ce37a',
+                pointBackgroundColor:'#4ce37a',
+                pointBorderColor:'#ffffff',
+                pointBorderWidth:2,
+                tension:.2,
+                borderWidth:3,
+                order:2
+              }
+            ]
+          },
+          options:{
+            responsive:true, maintainAspectRatio:false, animation:false,
+            plugins:{
+              legend:{ display:true, labels:{ color:'#cfe8ff' } },
+              tooltip:{ intersect:false, mode:'index' }
+            },
+            scales:{
+              x:{ ticks:{ color:'#cfe8ff' }, grid:{ color:'rgba(255,255,255,.06)' } },
+              y:{ beginAtZero:true, ticks:{ color:'#cfe8ff', precision:0 }, grid:{ color:'rgba(255,255,255,.06)' } }
+            }
+          }
+        });
+      })();
+
+      mkLine('ulTrend','Monthly UL', ul, '#52e2ff');
+      mkLine('toTrend','Monthly Turnout', to, '#e0ff6e');
+    })();
+  </script>
 </body>
 </html>
