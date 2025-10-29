@@ -124,6 +124,7 @@ def _pc_for_name(name: str) -> List[dict]:
 
 # ========= helpers =========
 PHOTO_DIR = Path(__file__).resolve().parents[1] / "static" / "Staff Photo"
+SI_DIR = Path(__file__).resolve().parents[1] / "static" / "SI"  # <— added: mirror photos path pattern
 MONTHS_ORDER = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
 
@@ -156,10 +157,11 @@ def _si_tables():
         si = {}
         if callable(get_si_tables):
             try:
-                si = get_si_tables() or {}
+                # mirror photos: pass the folder path in
+                si = get_si_tables(SI_DIR) or {}
             except Exception as e:
                 # Show the exact failure in PythonAnywhere's web error log
-                print(f"[SI] get_si_tables() failed: {type(e).__name__}: {e}")
+                print(f"[SI] get_si_tables({SI_DIR}) failed: {type(e).__name__}: {e}")
                 si = {}
         else:
             print("[SI] get_si_tables is None (import failed).")
@@ -446,7 +448,8 @@ def person(raw_name: str):
 
             if (name_col in si_df.columns) and (file_col in si_df.columns):
                 me_key_nospace = _name_key_nospace(raw_name)
-                sub = si_df[si_df[name_col].astype(str).str.upper() == me_key_nospace].copy()
+                # normalize both sides (match how names are stored for SI)
+                sub = si_df[si_df[name_col].astype(str).map(_name_key_nospace) == me_key_nospace].copy()
 
                 if date_col_si in sub.columns:
                     sub["_DT_"] = pd.to_datetime(sub[date_col_si].astype(str), format="%d%m%Y", errors="coerce")
