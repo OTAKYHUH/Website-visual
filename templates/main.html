@@ -11,20 +11,21 @@
     --panel:#0f0d22; --panel-2:#120f27; --ring:#2c2a45;
     --text:#EAF4FF; --muted:#9aa4b2; --accent:#00F0FF; --accent-2:#B06CFF;
 
-    --kpi-col:160px; --kpi-gap:22px; --kpi-wrap:calc(var(--kpi-col)*4 + var(--kpi-gap)*3);
+    --kpi-col:160px;
+    --kpi-gap:18px;
+
     --icon-card-h:130px; --icon-bubble:85px; --icon-size:70px;
-        /* …your existing tokens… */
-    --bad:#8B0000;                /* darkred */
-    --bad-ink:#B30000;            /* a tad brighter for text */
-    --bad-bg:rgba(139,0,0,.18);   /* background wash */
-    --bad-ring:rgba(139,0,0,.55); /* border/glow */
+
+    --bad:#8B0000;
+    --bad-ink:#B30000;
+    --bad-bg:rgba(139,0,0,.18);
+    --bad-ring:rgba(139,0,0,.55);
   }
 
   *{ box-sizing:border-box } html,body{ height:100% }
   body{
     margin:0; color:var(--text);
     font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-    background:none; position:relative;
   }
   body::before{
     content:""; position:fixed; inset:0; z-index:-1;
@@ -49,7 +50,7 @@
 
   .layout{ display:grid; grid-template-columns:340px minmax(0, 1fr); gap:26px; align-items:start; }
 
-  .panel-left{ display:flex; flex-direction:column; gap:18px; position:relative; z-index:10; }
+  .panel-left{ display:flex; flex-direction:column; gap:18px; }
   .neo-outline{
     position:relative; border-radius:14px; padding:16px; border:3px solid transparent;
     background:linear-gradient(#0f0d22,#0f0d22) padding-box, linear-gradient(135deg,#8a2be2,#00eaff) border-box;
@@ -57,14 +58,14 @@
   .logo-block{ padding:20px; display:flex; align-items:center; justify-content:center; min-height:260px; }
   .logo-img{ max-width:90%; height:auto; display:block; }
 
-  .month-block{ padding:18px; position:relative; z-index:30; }
+  .month-block{ padding:18px; }
   .neo-btn{
     height:56px; border-radius:10px; display:flex; align-items:center; justify-content:center;
     font-weight:800; letter-spacing:1.2px; color:#dff9ff; border:2px solid transparent;
     background:linear-gradient(#0f0d22,#0f0d22) padding-box, linear-gradient(135deg,#00eaff,#9a56ff) border-box;
-    position:relative; z-index:40;
+    position:relative;
   }
-  .neo-btn details.multi-dd{ position:absolute; inset:0; display:block; z-index:50; }
+  .neo-btn details.multi-dd{ position:absolute; inset:0; display:block; }
   .neo-btn details.multi-dd summary{
     list-style:none; cursor:pointer; user-select:none;
     width:100%; height:100%; border-radius:10px; border:0; outline:0;
@@ -79,9 +80,7 @@
   }
   .multi-dd label{ display:flex; align-items:center; gap:10px; padding:8px; border-radius:10px; font-weight:700; }
   .multi-dd label:hover{ background:rgba(255,255,255,.05) }
-  .multi-dd input[type="checkbox"]{ width:16px; height:16px }
 
-  /* Terminal button group */
   .term-filter{ display:flex; gap:10px; margin-top:12px; }
   .pill{
     flex:0 0 auto; padding:10px 14px; border-radius:12px; font-weight:800; letter-spacing:.3px;
@@ -93,46 +92,184 @@
     box-shadow:0 0 18px rgba(0,240,255,.25);
   }
 
-  .criteria-block{ padding:18px; position:relative; z-index:0; }
+  .criteria-block{ padding:18px; }
   .criteria-title{ margin:0 0 14px 0; font-weight:900; letter-spacing:2px; text-transform:uppercase; color:#b9c3d0; padding-bottom:8px; border-bottom:3px solid #8a2be2; }
   .criteria{ background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid var(--ring); border-radius:16px; padding:16px; }
   .crit-section{ margin:0 0 14px 0; }
-  .crit-section:not(:last-child){ padding-bottom:10px; border-bottom:2px solid rgba(255,255,255,.04); }
   .crit-head{ color:var(--accent); font-weight:900; letter-spacing:.6px; margin:6px 0 8px; }
   .crit-item{ color:#dbe7ff; font-weight:700; line-height:1.25; margin:6px 0 0 0; }
   .crit-pts{ color:#e9f6ff; font-weight:900; text-decoration:underline; text-underline-offset:4px; text-decoration-thickness:3px; margin-right:6px; }
 
+  /* RIGHT SIDE */
   .right{ display:grid; grid-auto-rows:auto; gap:14px; min-width:0; }
-  .header{ display:grid; grid-template-columns: 1fr var(--kpi-wrap) 110px; gap:18px; align-items:start; }
-  .kpi-grid{ display:grid; grid-template-columns:repeat(4, var(--kpi-col)); gap:var(--kpi-gap) }
-  .icons{ grid-column:2; justify-self:start; width:var(--kpi-wrap) }
 
-  /* make icons act like buttons + show active state */
-  .icon-card{ width:var(--kpi-col); height:var(--icon-card-h); background:var(--panel); border:1px solid var(--ring); border-radius:18px; padding:12px 14px; display:grid; place-items:center; gap:8px; }
-  .sort-btn{ cursor:pointer; }
-  .sort-btn.active{ outline:2px solid var(--accent); box-shadow:0 0 16px rgba(0,240,255,.35) inset, 0 0 16px rgba(0,240,255,.25) }
+  /* header: 6 metric columns on the right side */
+  .header{
+    display:grid;
+    grid-template-columns: 1fr calc(160px*6 + 18px*5) 110px;
+    gap:18px;
+    align-items:start;
+  }
 
-  .ico{ width:var(--icon-bubble); height:var(--icon-bubble); border-radius:50%; display:grid; place-items:center; }
+  /* icons: 5 tiles now (Safety, Contribution, Operations, Reliability, Excellence) */
+  .icons{
+    display:grid;
+    grid-template-columns:repeat(6, 160px);
+    gap:18px;
+  }
+
+  .icon-card{
+    background:var(--panel); border:1px solid var(--ring); border-radius:18px;
+    padding:12px 14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+    color:#fff; height:130px;
+  }
+  .icon-card.ops{
+    grid-column:3 / span 2;
+    flex-direction:row;
+    justify-content:flex-start;
+    gap:14px;
+  }
+  .icon-card.ops .right-labels{ display:flex; flex-direction:column; gap:6px; }
+
+  .ico{ width:var(--icon-bubble); height:var(--icon-bubble); display:grid; place-items:center; }
   .icon-img{ width:var(--icon-size); height:var(--icon-size); object-fit:contain; display:block; }
+  .icon-title{
+    font-weight:800;
+    letter-spacing:.6px;
+    font-size:14px;
+    text-transform:uppercase;
+    color:#fff !important;
+    text-shadow:0 1px 2px rgba(0,0,0,.35);
+  }
+  .mini-tag{
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:999px;
+    padding:3px 10px 2px;
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+  }
 
-  .searchline{ display:grid; grid-template-columns: 1fr var(--kpi-wrap) 110px; gap:18px; align-items:center; }
-  .searchline .box{ grid-column:1 / 4; display:flex; align-items:center; gap:14px; background:var(--panel); border:1px solid var(--ring); border-radius:16px; padding:14px 16px; }
+  .searchline{ display:grid; grid-template-columns: 1fr; gap:12px; align-items:center; }
+  .searchline .box{ display:flex; align-items:center; gap:14px; background:var(--panel); border:1px solid var(--ring); border-radius:16px; padding:14px 16px; }
   #searchBox{ flex:1; background:transparent; border:0; outline:none; color:#fff; font-size:14px; }
   .searchline .count{ font-weight:800; color:#cdd6f5; opacity:.85; white-space:nowrap; }
 
-  .rows{ display:flex; flex-direction:column; gap:18px }
-  .row{ display:grid; grid-template-columns: 1fr var(--kpi-wrap) 110px; gap:18px; align-items:stretch }
+  .rows{ display:flex; flex-direction:column; gap:14px }
+
+  /* rows: 6 columns area on the right */
+  .row{
+    display:grid;
+    grid-template-columns: 1fr calc(160px*6 + 18px*5) 110px;
+    gap:18px;
+    align-items:stretch
+  }
+
   .person{ display:flex; gap:14px; align-items:center; background:var(--panel); border:1px solid var(--ring); border-radius:16px; padding:16px; }
-  .avatar{ width:74px; height:74px; border-radius:12px; background:#131128; display:grid; place-items:center; overflow:hidden; }
+  .avatar{ width:74px; height:74px; border-radius:50%; background:#131128; display:grid; place-items:center; overflow:hidden; }
   .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
   .who{ display:flex; flex-direction:column }
   .name{ font-weight:800; font-size:18px; letter-spacing:.3px }
-  .name .grp{ font-weight:700; opacity:.75; margin-left:6px; letter-spacing:.3px; }
+  .name .grp{ font-weight:700; opacity:.75; margin-left:6px; }
   .role{ opacity:.85 }
 
-  .grid{ display:grid; grid-template-columns:repeat(4, var(--kpi-col)); gap:var(--kpi-gap); width:var(--kpi-wrap) }
-  .cell{ display:grid; place-items:center; background:var(--panel); border:1px dashed rgba(255,255,255,.08); border-radius:16px; padding:22px 10px; }
-  .num{ font-size:40px; font-weight:800; text-shadow:0 0 18px rgba(41,216,255,.35) }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(6, 160px); /* safety, contribution, excellence, ops(2), reliability */
+    gap:18px;
+  }
+
+  .cell{ display:grid; place-items:center; background:var(--panel); border:1px solid var(--ring); border-radius:16px; padding:16px 10px; }
+  .cell .num{ font-size:30px; font-weight:800; text-shadow:none; }
+
+  .cell.safety.pts-green{ background:rgba(0,255,160,.14); border-color:rgba(0,255,160,.45); color:#00ff9e; }
+  .cell.safety.pts-red{ background: var(--bad-bg); border-color: var(--bad-ring); color: var(--bad-ink); }
+
+  .cell.positive.pts-green{ background:rgba(0,255,160,.14); border-color:rgba(0,255,160,.45); color:#00ff9e; }
+  .cell.positive.pts-orange{ background:rgba(255,160,0,.14); border-color:rgba(255,160,0,.45); color:#ffb24a; }
+  .cell.positive.pts-red{ background: var(--bad-bg); border-color: var(--bad-ring); color: var(--bad-ink); }
+
+  /* Excellence styles */
+  .cell.excellence.pts-green{
+    background:rgba(0,255,160,.14);
+    border-color:rgba(0,255,160,.45);
+    color:#00ff9e;
+  }
+  .cell.excellence.pts-orange{
+    background:rgba(255,160,0,.14);
+    border-color:rgba(255,160,0,.45);
+    color:#ffb24a;
+  }
+  .cell.excellence.pts-red{
+    background:var(--bad-bg);
+    border-color:var(--bad-ring);
+    color:var(--bad-ink);
+  }
+
+  .cell.operations{
+    grid-column:span 2;
+    background:var(--panel);
+    border:1px solid var(--ring);
+    border-radius:16px;
+    padding:10px;
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0,1fr));
+    gap:12px;
+    align-items:stretch;
+  }
+
+  /* Reliability styles */
+  .cell.reliability.pts-green{
+    background:rgba(0,255,160,.14);
+    border-color:rgba(0,255,160,.45);
+    color:#00ff9e;
+  }
+  .cell.reliability.pts-orange{
+    background:rgba(255,160,0,.14);
+    border-color:rgba(255,160,0,.45);
+    color:#ffb24a;
+  }
+  .cell.reliability.pts-red{
+    background:var(--bad-bg);
+    border-color:var(--bad-ring);
+    color:var(--bad-ink);
+  }
+
+  .ops-pill{
+    background:rgba(3,5,10,.35);
+    border:1px solid rgba(255,255,255,.04);
+    border-radius:14px;
+    padding:14px 10px 10px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    width:100%;
+    min-height:90px;
+  }
+
+  .ops-pill .num{ font-size:20px; font-weight:800; }
+  .ops-pill .pts-badge{
+    font-size:10px;
+    padding:3px 7px;
+    border-radius:999px;
+    border:1px solid currentColor;
+    background:rgba(255,255,255,.03);
+  }
+  .ops-pill.ywt.pts-green{ background:rgba(0,255,160,.12); border-color:rgba(0,255,160,.4); color:#00ff9e; }
+  .ops-pill.ywt.pts-orange{ background:rgba(255,160,0,.12); border-color:rgba(255,160,0,.4); color:#ffb24a; }
+  .ops-pill.ywt.pts-red{ background:var(--bad-bg); border-color:var(--bad-ring); color:var(--bad-ink); }
+
+  .ops-pill.hsl.pts-green{ background:rgba(0,255,160,.12); border-color:rgba(0,255,160,.4); color:#00ff9e; }
+  .ops-pill.hsl.pts-orange{ background:rgba(255,160,0,.12); border-color:rgba(255,160,0,.4); color:#ffb24a; }
+  .ops-pill.hsl.pts-red{ background:var(--bad-bg); border-color:var(--bad-ring); color:var(--bad-ink); }
+
+  .cell .pts-badge{
+    margin-top:6px; padding:3px 8px; display:inline-block;
+    font-size:12px; font-weight:800; letter-spacing:.6px; text-transform:uppercase;
+    border-radius:999px; border:1px solid currentColor; background:rgba(255,255,255,.03);
+  }
 
   .points{ background:var(--panel); border:1px solid var(--ring); border-radius:16px; display:grid; place-items:center; padding:10px 0; }
   .points .num{ font-size:40px }
@@ -141,163 +278,13 @@
   @media (max-width:1100px){
     .layout{ grid-template-columns:1fr }
     .header{ grid-template-columns:1fr }
-    .icons{ grid-column:1; justify-self:center }
+    .icons{ grid-template-columns:1fr }
     .row{ grid-template-columns:1fr }
-    .searchline{ grid-template-columns:1fr }
-    .searchline .box{ grid-column:auto }
   }
 
-  /* YWT cell colors */
-  .cell.ywt{ border:1px solid var(--ring); }
-  .cell.ywt .num{ text-shadow:none; }
-  .cell.ywt.pts-green{ background:rgba(0,255,160,.14); border-color:rgba(0,255,160,.45); color:#00ff9e; }
-  .cell.ywt.pts-orange{ background:rgba(255,160,0,.14); border-color:rgba(255,160,0,.45); color:#ffb24a; }
-  .cell.ywt.pts-red{
-    background: var(--bad-bg);
-    border-color: var(--bad-ring);
-    color: var(--bad-ink);
-  }
-
-  /* Safety cell (binary) */
-  .cell.safety{ border:1px solid var(--ring); }
-  .cell.safety .num{ text-shadow:none; }
-  .cell.safety.pts-green{ background:rgba(0,255,160,.14); border-color:rgba(0,255,160,.45); color:#00ff9e; }
-  .cell.safety.pts-red{
-    background: var(--bad-bg);
-    border-color: var(--bad-ring);
-    color: var(--bad-ink);
-  }
-
-  /* HSL cell (3&2 = green, 1 = orange, 0 = red) */
-  .cell.hsl{ border:1px solid var(--ring); }
-  .cell.hsl .num{ text-shadow:none; }
-  .cell.hsl.pts-green{ background:rgba(0,255,160,.14); border-color:rgba(0,255,160,.45); color:#00ff9e; }
-  .cell.hsl.pts-orange{ background:rgba(255,160,0,.14); border-color:rgba(255,160,0,.45); color:#ffb24a; }
-  .cell.hsl.pts-red{
-    background: var(--bad-bg);
-    border-color: var(--bad-ring);
-    color: var(--bad-ink);
-  }
-
-  /* Small badge inside metric cells */
-  .cell .pts-badge{
-    margin-top:6px; padding:3px 8px; display:inline-block;
-    font-size:12px; font-weight:800; letter-spacing:.6px; text-transform:uppercase;
-    border-radius:999px; border:1px solid currentColor; background:rgba(255,255,255,.06); opacity:.95;
-  }
-  /* FISH cell (binary) */
-  .cell.fish{ border:1px solid var(--ring); }
-  .cell.fish .num{
-    text-shadow:none;
-    font-size: clamp(20px, 2.4vw, 40px);
-    line-height: 1.05;
-    white-space: nowrap;
-  }
-  .cell.fish.pts-green{ background:rgba(0,255,160,.14); border-color:rgba(0,255,160,.45); color:#00ff9e; }
-  .cell.fish.pts-red{
-    background: var(--bad-bg);
-    border-color: var(--bad-ring);
-    color: var(--bad-ink);
-  }
-  .icon-title{
-    font-weight:800;
-    letter-spacing:.6px;
-    font-size:14px;
-    opacity:.95;
-  }
-  /* --- Icon title contrast/visibility fix --- */
-  .icon-card .icon-title{
-    display:block;
-    margin-top:10px;
-    font-weight:800;
-    letter-spacing:.6px;
-    font-size:14px;
-    color:var(--text) !important;   /* force light text */
-    opacity:1 !important;           /* in case something set it low */
-    text-align:center;
-    text-transform:uppercase;
-    text-shadow:0 1px 0 rgba(0,0,0,.25);
-  }
-
-  /* if the card was centering only the image, make it stack nicely */
-  .icon-card{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    overflow:visible;               /* ensure label isn’t clipped */
-  }
-  /* ===== Shrink ONLY the employee rows + point system ===== */
-
-  /* list spacing */
-  #rows.rows{ gap:12px; }
-  #rows.rows .row{ gap:12px; }
-
-  /* left card (photo + name) */
-  #rows .person{
-    padding:12px;
-    border-radius:14px;
-  }
-  #rows .avatar{
-    width:56px; height:56px;
-    border-radius:10px;
-  }
-  #rows .name{
-    font-size:16px;
-    line-height:1.05;
-    margin-bottom:2px;
-  }
-  #rows .role{
-    font-size:12px;
-    opacity:.9;
-  }
-
-  /* KPI grid inside each row */
-  #rows .grid{ gap:14px; }
-
-  /* KPI tiles (YWT / Demand / HSL / Fish) */
-  #rows .cell{
-    padding:14px 8px;          /* was ~22px 10px */
-    border-radius:14px;
-  }
-
-  /* big numbers inside each tile (your markup uses `.num`) */
-  #rows .cell .num,
-  #rows .cell .value,
-  #rows .cell .val,
-  #rows .cell .big{
-    font-size:32px;            /* was ~40px */
-    line-height:1;
-  }
-
-  /* tiny “x PT(S)” badge */
-  #rows .pts-badge{
-    font-size:11px;
-    padding:2px 8px;
-    line-height:1.1;
-    transform:translateY(2px);
-  }
-
-  /* rightmost total-points pill */
-  #rows .points{
-    width:86px;                /* keep your grid col at 110px; this is inner */
-    min-width:86px;
-    padding:8px 0;
-    border-radius:14px;
-  }
-  #rows .points .num{
-    font-size:28px;            /* was 40px */
-    line-height:1;
-  }
-  #rows .points small{
-    font-size:11px;
-    letter-spacing:.6px;
-  }
-
+  html { zoom: .75; }
 </style>
 </head>
-
 <body>
   <div class="wrap">
     <!-- TOP NAV -->
@@ -361,24 +348,26 @@
           <h3 class="criteria-title">CRITERIA</h3>
           <div class="criteria">
             <div class="crit-section">
+              <div class="crit-head">SAFETY :</div>
+              <div class="crit-item"><span class="crit-pts">3pts</span>- If every shift worked has 1 SI</div>
+            </div>
+            <div class="crit-section">
+              <div class="crit-head">CONTRIBUTION :</div>
+              <div class="crit-item"><span class="crit-pts">2pts</span>- 4 or more contributions</div>
+              <div class="crit-item"><span class="crit-pts">1pt</span>- 2 to 3 contributions</div>
+              <div class="crit-item"><span class="crit-pts">0pt</span>- 0 to 1 contribution</div>
+            </div>
+            <div class="crit-section">
               <div class="crit-head">YWT :</div>
               <div class="crit-item"><span class="crit-pts">6pts</span>- For P123, below 9.5. For P456 below 7.4</div>
               <div class="crit-item"><span class="crit-pts">4pts</span>- For P123, 9.5-9.7. For P456 7.4-7.6</div>
               <div class="crit-item"><span class="crit-pts">2pts</span>- For P123, 9.7-10. For P456 7.6-7.9</div>
             </div>
             <div class="crit-section">
-              <div class="crit-head">SAFETY :</div>
-              <div class="crit-item"><span class="crit-pts">3pts</span>- If every shift worked has 1 SI</div>
-            </div>
-            <div class="crit-section">
               <div class="crit-head">HSL :</div>
               <div class="crit-item"><span class="crit-pts">3pts</span>- Average across all terminal &gt; 90%</div>
               <div class="crit-item"><span class="crit-pts">2pts</span>- Average across all terminal 85-90%</div>
-              <div class="crit-item"><span class="crit-pts">1pts</span>- Average across all terminal 80-85%</div>
-            </div>
-            <div class="crit-section">
-              <div class="crit-head">FISH :</div>
-              <div class="crit-item"><span class="crit-pts">1pts</span>- if give/receive fish</div>
+              <div class="crit-item"><span class="crit-pts">1pt</span>- Average across all terminal 80-85%</div>
             </div>
           </div>
         </div>
@@ -389,23 +378,31 @@
         <!-- Icon header -->
         <div class="header">
           <div></div>
-          <div class="icons kpi-grid" aria-label="Key metric icons">
-            <!-- make these buttons and tag each with a sort key -->
-            <button class="icon-card icon-plain sort-btn" type="button" data-key="ywt" title="Sort by YWT">
-              <div class="ico"><img class="icon-img" src="{{ url_for('static', filename='YWT.jpg') }}" alt="YWT"></div>
-              <div class="icon-title">YWT</div>
-            </button>
-            <button class="icon-card icon-plain sort-btn" type="button" data-key="safety" title="Sort by Safety">
-              <div class="ico"><img class="icon-img" src="{{ url_for('static', filename='Safety.jpg') }}" alt="Safety"></div>
+          <div class="icons" aria-label="Key metric icons">
+            <button class="icon-card sort-btn" type="button" data-key="safety" title="Sort by Safety">
+              <div class="ico"><img class="icon-img" src="{{ url_for('static', filename='Safety.png') }}" alt="Safety"></div>
               <div class="icon-title">SAFETY</div>
             </button>
-            <button class="icon-card icon-plain sort-btn" type="button" data-key="hsl" title="Sort by HSL">
-              <div class="ico"><img class="icon-img" src="{{ url_for('static', filename='HSL.jpg') }}" alt="HSL"></div>
-              <div class="icon-title">HSL</div>
+            <button class="icon-card sort-btn" type="button" data-key="pc" title="Sort by Positive Contribution">
+              <div class="ico"><img class="icon-img" src="{{ url_for('static', filename='Positive.jpeg') }}" alt="Positive Contribution"></div>
+              <div class="icon-title">CONTRIBUTION</div>
             </button>
-            <button class="icon-card icon-plain sort-btn" type="button" data-key="fish" title="Sort by Fish">
-              <div class="ico"><img class="icon-img" src="{{ url_for('static', filename='Fish.jpg') }}" alt="Fish"></div>
-              <div class="icon-title">FISH</div>
+            <button class="icon-card ops sort-btn" type="button" data-key="ops" title="Sort by Operations">
+              <div class="ico">
+                <img class="icon-img" src="{{ url_for('static', filename='Operations.png') }}" alt="Operations">
+              </div>
+              <div class="right-labels">
+                <div class="icon-title">OPERATIONS</div>
+                <div class="mini-tag">YWT • HSL</div>
+              </div>
+            </button>
+            <button class="icon-card sort-btn" type="button" data-key="reliability" title="Sort by Reliability">
+              <div class="ico"><img class="icon-img" src="{{ url_for('static', filename='Reliability.png') }}" alt="Reliability"></div>
+              <div class="icon-title">RELIABILITY</div>
+            </button>
+            <button class="icon-card sort-btn" type="button" data-key="excellence" title="Sort by Excellence">
+              <div class="ico"><img class="icon-img" src="{{ url_for('static', filename='Excellence.png') }}" alt="Excellence"></div>
+              <div class="icon-title">EXCELLENCE</div>
             </button>
           </div>
           <div></div>
@@ -422,18 +419,32 @@
         <!-- Rows -->
         <section id="rows" class="rows" aria-label="Employee rows">
           {% for p in people %}
-          <!-- add sort data-* attributes -->
+          {% set _h = p.hsl_points|default(0) %}
+          {% if _h > 2 %}
+            {% set _h_class = 'pts-green' %}
+          {% elif _h > 1 %}
+            {% set _h_class = 'pts-orange' %}
+          {% else %}
+            {% set _h_class = 'pts-red' %}
+          {% endif %}
+          {% set _rel = p.reliability|default('') %}
+          {% set _relpts = p.reliability_points|default(0) %}
+          {% set _exc = p.excellence|default(0) %}
+          {% set _excpts = p.excellence_points|default(0) %}
           <article class="row"
                    data-name="{{ p.name|lower }}"
                    data-role="{{ (p.designation or '')|lower }}"
-                   data-total="{{ p.points }}"
-                   data-ywt="{{ (p.ywt if p.ywt != '-' else '') }}"
-                   data-ywtpts="{{ p.ywt_points }}"
+                   data-safetypts="{{ p.safety_points }}"
                    data-si="{{ p.si_done }}"
                    data-shifts="{{ p.shift_count }}"
-                   data-safetypts="{{ p.safety_points }}"
+                   data-pcpts="{{ p.pc_points|default(0) }}"
+                   data-pccount="{{ p.pc_count|default(0) }}"
+                   data-ywt="{{ (p.ywt if p.ywt != '-' else '') }}"
                    data-hsl="{{ (p.hsl[:-1] if p.hsl and '%' in p.hsl else p.hsl) }}"
-                   data-fish="{{ p.fish_points }}">
+                   data-rel="{{ _rel }}"
+                   data-relpts="{{ _relpts }}"
+                   data-exc="{{ _exc }}"
+                   data-excpts="{{ _excpts }}">
             <div class="person">
               <div class="avatar">
                 {% if p.photo %}<img src="{{ p.photo }}" alt="">{% else %}<span>🧑‍💼</span>{% endif %}
@@ -447,38 +458,43 @@
             </div>
 
             <div class="grid">
-              <!-- YWT: value + badge -->
-              <div class="cell ywt {{ p.ywt_class }}">
-                <div class="num">{{ p.ywt }}</div>
-                <div class="pts-badge">{{ p.ywt_points }} pts</div>
-              </div>
-
-              <!-- SAFETY: SI/Shift + badge -->
+              <!-- 1. SAFETY -->
               <div class="cell safety {{ p.safety_class }}">
                 <div class="num">{{ p.si_done }}/{{ p.shift_count }}</div>
                 <div class="pts-badge">{{ p.safety_points }} pts</div>
               </div>
-
-              {# HSL: show average % + points, color mapping 3&2=green, 1=orange, 0=red #}
-              {% set _h = p.hsl_points|default(0) %}
-              {% if _h > 2 %}
-                {% set _h_class = 'pts-green' %}
-              {% elif _h > 1 %}
-                {% set _h_class = 'pts-orange' %}
-              {% else %}
-                {% set _h_class = 'pts-red' %}
-              {% endif %}
-              <div class="cell hsl {{ _h_class }}">
-                <div class="num">{{ p.hsl }}</div>
-                <div class="pts-badge">{{ _h }} pts</div>
+              <!-- 2. CONTRIBUTION -->
+              <div class="cell positive {{ p.pc_class|default('pts-red') }}">
+                <div class="num">{{ p.pc_count|default(0) }}</div>
+                <div class="pts-badge">{{ p.pc_points|default(0) }} pts</div>
               </div>
-
-              <!-- FISH: label above point, color-coded -->
-              <div class="cell fish {{ p.fish_class }}">
-                <div class="num">{{ p.fish_label }}</div>
-                <div class="pts-badge">{{ p.fish_points }} pt</div>
+              <!-- 3. OPERATIONS -->
+              <div class="cell operations">
+                <div class="ops-pill ywt {{ p.ywt_class }}">
+                  <div class="num">{{ p.ywt }}</div>
+                  <div class="pts-badge">{{ p.ywt_points }} pts</div>
+                </div>
+                <div class="ops-pill hsl {{ _h_class }}">
+                  <div class="num">{{ p.hsl }}</div>
+                  <div class="pts-badge">{{ _h }} pts</div>
+                </div>
               </div>
-
+              <!-- 4. RELIABILITY -->
+              <div class="cell positive {{ p.reliability_class|default('pts-red') }}">
+                <div class="num">
+                  {% if p.reliability is number %}
+                    {{ "%.1f"|format(p.reliability) }}%
+                  {% else %}
+                    {{ p.reliability }}
+                  {% endif %}
+                </div>
+                <div class="pts-badge">{{ p.reliability_points|default(0) }} pts</div>
+              </div>
+              <!-- 5. EXCELLENCE -->
+              <div class="cell positive {{ p.excellence_class|default('pts-red') }}">
+                <div class="num">{{ p.excellence|default(0) }}</div>
+                <div class="pts-badge">{{ p.excellence_points|default(0) }} pts</div>
+              </div>
             </div>
 
             <div class="points">
@@ -494,6 +510,10 @@
             <div class="grid">
               <div class="cell"><div class="num">-</div></div>
               <div class="cell"><div class="num">-</div></div>
+              <div class="cell operations">
+                <div class="ops-pill"><div class="num">-</div></div>
+                <div class="ops-pill"><div class="num">-</div></div>
+              </div>
               <div class="cell"><div class="num">-</div></div>
               <div class="cell"><div class="num">-</div></div>
             </div>
@@ -505,7 +525,7 @@
     </div>
   </div>
 
-  <!-- Search filter + live count -->
+  <!-- Search -->
   <script>
     (function () {
       const box = document.getElementById('searchBox');
@@ -513,14 +533,13 @@
       const rows = Array.from(document.querySelectorAll('.rows .row'));
       if (!box) return;
       const norm = s => (s||'').toLowerCase().trim();
-      const match = (row,q) => !q ||
-        norm(row.querySelector('.who .name')?.textContent).includes(q) ||
-        norm(row.querySelector('.who .role')?.textContent).includes(q);
       function render(){
         const q = norm(box.value);
         let shown = 0;
         rows.forEach(r=>{
-          const hit = match(r, q);
+          const name = r.dataset.name || '';
+          const role = r.dataset.role || '';
+          const hit = (!q || name.includes(q) || role.includes(q));
           r.style.display = hit ? '' : 'none';
           if (hit) shown++;
         });
@@ -546,9 +565,7 @@
     }
     function autoSubmit(){
       const params = new URLSearchParams(window.location.search);
-      // preserve terminal filter
       params.set('terminal', "{{ (selected_terminal or 'ALL') }}");
-      // months
       params.delete('month');
       boxes.filter(b=>b.checked).forEach(b=>params.append('month', b.value));
       window.location.assign(`${window.location.pathname}?${params.toString()}`);
@@ -579,87 +596,105 @@
     wrap.addEventListener('click', (e)=>{
       const btn = e.target.closest('button[data-terminal]');
       if (!btn) return;
-      const t = btn.dataset.terminal; // ALL / P123 / P456
+      const t = btn.dataset.terminal;
       const params = new URLSearchParams(window.location.search);
-      params.set('terminal', t); // set terminal
-      // keep any existing month selections intact
+      params.set('terminal', t);
       const url = `${window.location.pathname}?${params.toString()}`;
       window.location.assign(url);
     });
   })();
   </script>
 
-  <!-- Click-to-sort behaviour -->
+  <!-- Click-to-sort -->
   <script>
   (function(){
     const container = document.getElementById('rows');
-    if (!container) return;
+    const buttons = Array.from(document.querySelectorAll('.sort-btn'));
+    if (!container || !buttons.length) return;
 
-    const original = Array.from(container.querySelectorAll('.row')); // initial order
-    const buttons  = Array.from(document.querySelectorAll('.sort-btn'));
+    const original = Array.from(container.querySelectorAll('.row'));
     let activeKey = null;
 
-    const getN = (el, name) => {
-      const v = el.dataset[name];
-      if (v === undefined || v === '') return NaN;
-      const n = Number(v);
-      return isNaN(n) ? NaN : n;
-    };
-    const byNum = (a,b) => (a>b) - (a<b);
+    function ratio(el){
+      const si = Number(el.dataset.si || '0');
+      const sh = Number(el.dataset.shifts || '0');
+      return (sh > 0) ? (si / sh) : -1;
+    }
 
-    function reinsert(list){
+    function sortSafety(){
+      const rows = Array.from(container.querySelectorAll('.row'));
+      rows.sort((a,b)=>{
+        const ap = Number(a.dataset.safetypts || '0');
+        const bp = Number(b.dataset.safetypts || '0');
+        if (ap !== bp) return bp - ap;
+        const ar = ratio(a), br = ratio(b);
+        if (ar !== br) return br - ar;
+        return (a.dataset.name || '').localeCompare(b.dataset.name || '');
+      });
+      return rows;
+    }
+
+    function sortPC(){
+      const rows = Array.from(container.querySelectorAll('.row'));
+      rows.sort((a,b)=>{
+        const ap = Number(a.dataset.pcpts || '0');
+        const bp = Number(b.dataset.pcpts || '0');
+        if (ap !== bp) return bp - ap;
+        const ac = Number(a.dataset.pccount || '0');
+        const bc = Number(b.dataset.pccount || '0');
+        if (ac !== bc) return bc - ac;
+        return (a.dataset.name || '').localeCompare(b.dataset.name || '');
+      });
+      return rows;
+    }
+
+    function sortOps(){
+      const rows = Array.from(container.querySelectorAll('.row'));
+      rows.sort((a,b)=>{
+        const ay = Number(a.dataset.ywt || '999');
+        const by = Number(b.dataset.ywt || '999');
+        if (!isNaN(ay) && !isNaN(by) && ay !== by) return ay - by;
+        const ah = Number(a.dataset.hsl || '0');
+        const bh = Number(b.dataset.hsl || '0');
+        if (!isNaN(ah) && !isNaN(bh) && ah !== bh) return bh - ah;
+        return (a.dataset.name || '').localeCompare(b.dataset.name || '');
+      });
+      return rows;
+    }
+
+    function sortReliability(){
+      const rows = Array.from(container.querySelectorAll('.row'));
+      rows.sort((a,b)=>{
+        const ar = Number(a.dataset.rel || '0');
+        const br = Number(b.dataset.rel || '0');
+        if (ar !== br) return br - ar;
+        const ap = Number(a.dataset.relpts || '0');
+        const bp = Number(b.dataset.relpts || '0');
+        if (ap !== bp) return bp - ap;
+        return (a.dataset.name || '').localeCompare(b.dataset.name || '');
+      });
+      return rows;
+    }
+
+    function sortExcellence(){
+      const rows = Array.from(container.querySelectorAll('.row'));
+      rows.sort((a,b)=>{
+        const ae = Number(a.dataset.exc || '0');
+        const be = Number(b.dataset.exc || '0');
+        if (ae !== be) return be - ae;
+        const ap = Number(a.dataset.excpts || '0');
+        const bp = Number(b.dataset.excpts || '0');
+        if (ap !== bp) return bp - ap;
+        return (a.dataset.name || '').localeCompare(b.dataset.name || '');
+      });
+      return rows;
+    }
+
+    function render(list){
       const frag = document.createDocumentFragment();
-      list.forEach(x => frag.appendChild(x));
+      list.forEach(r => frag.appendChild(r));
       container.innerHTML = '';
       container.appendChild(frag);
-    }
-    function restore(){ reinsert(original.slice()); }
-
-    function ratio(el){
-      const si = getN(el,'si'), sh = getN(el,'shifts');
-      return (isNaN(si) || isNaN(sh) || sh<=0) ? -1 : (si/sh);
-    }
-
-    function sortBy(key){
-      const rows = Array.from(container.querySelectorAll('.row'));
-      const list = rows.slice();
-
-      if (key === 'ywt'){                // lower YWT better
-        list.sort((a,b)=>{
-          const av=getN(a,'ywt'), bv=getN(b,'ywt');
-          if (isNaN(av) && !isNaN(bv)) return 1;
-          if (!isNaN(av) && isNaN(bv)) return -1;
-          if (av !== bv) return byNum(av,bv);           // ascending
-          const ap=getN(a,'ywtpts'), bp=getN(b,'ywtpts');
-          if (ap !== bp) return byNum(bp,ap);
-          return byNum(a.dataset.name,b.dataset.name);
-        });
-      } else if (key === 'safety'){      // more points, better SI ratio
-        list.sort((a,b)=>{
-          const ap=getN(a,'safetypts'), bp=getN(b,'safetypts');
-          if (ap !== bp) return byNum(bp,ap);
-          const ar=ratio(a), br=ratio(b);
-          if (ar !== br) return byNum(br,ar);
-          return byNum(a.dataset.name,b.dataset.name);
-        });
-      } else if (key === 'hsl'){         // higher pass %
-        list.sort((a,b)=>{
-          const av=getN(a,'hsl'), bv=getN(b,'hsl');
-          if (isNaN(av) && !isNaN(bv)) return 1;
-          if (!isNaN(av) && isNaN(bv)) return -1;
-          if (av !== bv) return byNum(bv,av);           // descending
-          return byNum(a.dataset.name,b.dataset.name);
-        });
-      } else if (key === 'fish'){        // Fish (1) first
-        list.sort((a,b)=>{
-          const av=getN(a,'fish'), bv=getN(b,'fish');
-          if (av !== bv) return byNum(bv,av);
-          return byNum(a.dataset.name,b.dataset.name);
-        });
-      } else {
-        restore(); return;
-      }
-      reinsert(list);
     }
 
     buttons.forEach(btn=>{
@@ -668,20 +703,19 @@
         if (activeKey === key){
           activeKey = null;
           buttons.forEach(b=>b.classList.remove('active'));
-          restore();
+          render(original.slice());
         } else {
           activeKey = key;
           buttons.forEach(b=>b.classList.toggle('active', b===btn));
-          sortBy(key);
+          if (key === 'safety') render(sortSafety());
+          else if (key === 'pc') render(sortPC());
+          else if (key === 'ops') render(sortOps());
+          else if (key === 'reliability') render(sortReliability());
+          else if (key === 'excellence') render(sortExcellence());
         }
       });
     });
   })();
   </script>
-
-  <style>
-    /* 75% page scale (Chrome/Edge/Safari) */
-    html { zoom: .75; }     /* non-standard, but widely supported */
-  </style>
 </body>
 </html>

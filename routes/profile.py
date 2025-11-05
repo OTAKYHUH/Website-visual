@@ -4,6 +4,8 @@ from __future__ import annotations
 import os
 import re
 import time
+import uuid
+import datetime
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
@@ -21,7 +23,19 @@ from flask import (
 # ===== Your existing data helpers (unchanged) =====
 from build.build_data import add_month_columns, get_tables
 
-# Optional photos helper (same pattern as main/nonshift)
+# NEW: pull real attendance + MC-details from your build scripts
+# (we just wrote these in build/)
+try:
+    from build.build_attendance import get_tables as get_attendance_tables
+except Exception:
+    get_attendance_tables = None
+
+try:
+    from build.build_MC import get_tables as get_mc_details_tables
+except Exception:
+    get_mc_details_tables = None
+
+# Optional photos helper
 try:
     from build.photos import get_tables as get_photo_tables  # {"photos_dict": {...}}
 except Exception:
@@ -51,80 +65,143 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 PC_XLSX = DATA_DIR / "positive_contributions.xlsx"
 PC_CSV = DATA_DIR / "positive_contributions.csv"
-PC_COLUMNS = ["Name", "Description", "CreatedAt"]
+# New "Date" column (the date the contribution occurred). We'll keep CreatedAt for audit.
+PC_COLUMNS = ["ID", "Name", "Date", "Description", "CreatedAt"]
 
 
 def _pc_read_all() -> pd.DataFrame:
-    # Prefer XLSX; fall back to CSV; else empty
+    """Load, normalize schema, and backfill missing columns/IDs."""
+    def _normalize(df: pd.DataFrame) -> pd.DataFrame:
+        # Ensure columns
+        for c in PC_COLUMNS:
+            if c not in df.columns:
+                df[c] = "" if c not in {"CreatedAt", "Date"} else pd.NaT
+
+        # Types
+        df["Name"] = df["Name"].astype(str)
+        df["Description"] = df["Description"].astype(str)
+        df["CreatedAt"] = pd.to_datetime(df["CreatedAt"], errors="coerce")
+        # "Date" should be day-first for what you type (e.g., 27/10/2025)
+        df["Date"] = pd.to_datetime(df["Date"], errors="coerce", dayfirst=True)
+
+        # Backfill ID if missing
+        mask = df["ID"].isna() | (df["ID"].astype(str).str.strip() == "")
+        if mask.any():
+            df.loc[mask, "ID"] = [
+                uuid.uuid5(
+                    uuid.NAMESPACE_URL,
+                    f"{r.get('Name','')}|{r.get('Description','')}|{str(r.get('Date',''))}|{str(r.get('CreatedAt',''))}",
+                ).hex
+                for _, r in df.loc[mask].iterrows()
+            ]
+        return df[PC_COLUMNS].copy()
+
     if PC_XLSX.exists():
         try:
-            df = pd.read_excel(PC_XLSX, engine="openpyxl")
-            for c in PC_COLUMNS:
-                if c not in df.columns:
-                    df[c] = "" if c != "CreatedAt" else pd.NaT
-            return df[PC_COLUMNS]
+            return _normalize(pd.read_excel(PC_XLSX, engine="openpyxl"))
         except Exception:
             pass
     if PC_CSV.exists():
         try:
-            df = pd.read_csv(PC_CSV)
-            if "CreatedAt" in df.columns:
-                df["CreatedAt"] = pd.to_datetime(df["CreatedAt"], errors="coerce")
-            for c in PC_COLUMNS:
-                if c not in df.columns:
-                    df[c] = "" if c != "CreatedAt" else pd.NaT
-            return df[PC_COLUMNS]
+            return _normalize(pd.read_csv(PC_CSV))
         except Exception:
             pass
     return pd.DataFrame(columns=PC_COLUMNS)
 
 
 def _pc_write(df: pd.DataFrame) -> None:
-    # Try XLSX first (needs openpyxl). Retry a few times in case the file is locked.
     last_err: Optional[Exception] = None
     for _ in range(6):
         try:
             with pd.ExcelWriter(PC_XLSX, engine="openpyxl", mode="w") as w:
-                df.to_excel(w, index=False)
+                # convert Date/CreatedAt to ISO so Excel opens cleanly
+                out = df.copy()
+                for col in ("Date", "CreatedAt"):
+                    if col in out.columns:
+                        out[col] = pd.to_datetime(out[col], errors="coerce")
+                out[PC_COLUMNS].to_excel(w, index=False)
             return
         except PermissionError as e:
             last_err = e
-            time.sleep(0.3)  # file lock backoff (Excel open?)
+            time.sleep(0.3)
         except Exception as e:
             last_err = e
             break
-    # Fallback to CSV so the save still succeeds
     try:
-        df.to_csv(PC_CSV, index=False)
+        df[PC_COLUMNS].to_csv(PC_CSV, index=False)
     except Exception as e:
         raise RuntimeError(f"Failed to write XLSX ({last_err}); CSV fallback also failed: {e}") from e
 
 
-def _pc_add(name: str, description: str) -> pd.DataFrame:
-    name = str(name).strip()
-    description = str(description).strip()
-    now = pd.Timestamp.now(tz="Asia/Singapore")
-    base = _pc_read_all()
-    base = pd.concat(
-        [base, pd.DataFrame([{"Name": name, "Description": description, "CreatedAt": now}])],
-        ignore_index=True,
-    )
-    _pc_write(base)
-    return base
-
-
-def _pc_for_name(name: str) -> List[dict]:
+def _pc_for_name(name: str, months: Optional[List[str]] = None) -> List[dict]:
+    """Return items for UI, optionally filtered by selected months."""
     base = _pc_read_all()
     if base.empty:
         return []
     sub = base[base["Name"].astype(str) == str(name)]
-    sub = sub.sort_values("CreatedAt", ascending=False)
-    return sub[["Description"]].rename(columns={"Description": "Description"}).to_dict(orient="records")
+    if months:
+        mset = {m[:3] for m in months}
+        # if Date missing, fall back to CreatedAt month
+        src = sub["Date"].where(sub["Date"].notna(), sub["CreatedAt"])
+        sub = sub[src.dt.strftime("%b").isin(mset)]
+    sub = sub.sort_values(["Date", "CreatedAt"], ascending=False)
+    # UI dicts
+    items = []
+    for _, r in sub.iterrows():
+        dt = pd.to_datetime(r.get("Date"), errors="coerce")
+        lbl = dt.strftime("%d/%m") if pd.notna(dt) else ""
+        items.append(
+            {
+                "id": str(r.get("ID", "")),
+                "description": str(r.get("Description", "")),
+                "date": (dt.strftime("%Y-%m-%d") if pd.notna(dt) else ""),
+                "date_label": lbl,
+            }
+        )
+    return items
+
+
+def _pc_add(name: str, description: str, date_str: str) -> None:
+    base = _pc_read_all()
+    now = pd.Timestamp.now(tz="Asia/Singapore")
+    occ = pd.to_datetime(date_str, errors="coerce", dayfirst=True)
+    if pd.isna(occ):
+        # if user didn't pick, default to today (date only)
+        occ = pd.Timestamp.now(tz="Asia/Singapore").normalize()
+
+    new_row = {
+        "ID": uuid.uuid4().hex,
+        "Name": str(name).strip(),
+        "Date": occ,
+        "Description": str(description).strip(),
+        "CreatedAt": now,
+    }
+    base = pd.concat([base, pd.DataFrame([new_row])], ignore_index=True)
+    _pc_write(base)
+
+
+def _pc_update(item_id: str, new_desc: str, new_date: str) -> None:
+    base = _pc_read_all()
+    mask = base["ID"].astype(str) == str(item_id)
+    if not mask.any():
+        raise KeyError("Contribution not found")
+    base.loc[mask, "Description"] = str(new_desc).strip()
+    if new_date is not None:
+        occ = pd.to_datetime(new_date, errors="coerce", dayfirst=True)
+        if pd.notna(occ):
+            base.loc[mask, "Date"] = occ
+    _pc_write(base)
+
+
+def _pc_delete(item_id: str) -> None:
+    base = _pc_read_all()
+    base = base[base["ID"].astype(str) != str(item_id)]
+    _pc_write(base)
 
 
 # ========= helpers =========
 PHOTO_DIR = Path(__file__).resolve().parents[1] / "static" / "Staff Photo"
-SI_DIR = Path(__file__).resolve().parents[1] / "static" / "SI"  # <— added: mirror photos path pattern
+SI_DIR = Path(__file__).resolve().parents[1] / "static" / "SI"
 MONTHS_ORDER = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
 
@@ -157,10 +234,8 @@ def _si_tables():
         si = {}
         if callable(get_si_tables):
             try:
-                # mirror photos: pass the folder path in
                 si = get_si_tables(SI_DIR) or {}
             except Exception as e:
-                # Show the exact failure in PythonAnywhere's web error log
                 print(f"[SI] get_si_tables({SI_DIR}) failed: {type(e).__name__}: {e}")
                 si = {}
         else:
@@ -216,7 +291,6 @@ def _ensure_month_and_shiftdate(df: pd.DataFrame) -> pd.DataFrame:
             dt = pd.to_datetime(df[date_col], errors="coerce")
             mon = dt.dt.strftime("%b")
             df["Shift Date"] = dt.dt.strftime("%d ") + mon + dt.dt.strftime(" %y") + " " + df[shift_col].astype(str)
-    # Normalise Month to 3 letters
     if "Month" in df.columns:
         df["Month"] = df["Month"].astype(str).str[:3]
     return df
@@ -322,11 +396,10 @@ def person(raw_name: str):
     """
     Optional query params:
       - month=Jan&month=Feb
-      - tab/cluster=P123|P456
+      - cluster=P123|P456
       - date=01%20Sep%2025 & shift=D|N
     """
     selected_months = request.args.getlist("month")
-
     tab_hint = (request.args.get("cluster") or request.args.get("tab") or "").strip().upper()
 
     tables = _tables()
@@ -448,7 +521,6 @@ def person(raw_name: str):
 
             if (name_col in si_df.columns) and (file_col in si_df.columns):
                 me_key_nospace = _name_key_nospace(raw_name)
-                # normalize both sides (match how names are stored for SI)
                 sub = si_df[si_df[name_col].astype(str).map(_name_key_nospace) == me_key_nospace].copy()
 
                 if date_col_si in sub.columns:
@@ -549,8 +621,34 @@ def person(raw_name: str):
 
     use_emp_bars = bool(qs_date)
 
-    # Positive Contribution list for this person
-    positive_contribs = _pc_for_name(_display_name(raw_name.upper()))
+    # Positive Contribution list (filter by selected months)
+    positive_contribs = _pc_for_name(_display_name(raw_name.upper()), selected_months)
+
+    # ============= NEW PART: attendance + MC details =============
+    # figure out which month to ask the attendance builder for
+    if selected_months:
+        att_month = selected_months[0][:3].title()
+    else:
+        att_month = datetime.datetime.now().strftime("%b")
+
+    actual_name = _display_name(raw_name.upper())
+
+    attendance_stats = {}
+    if callable(get_attendance_tables):
+        try:
+            att_bundle = get_attendance_tables(month=att_month, name=actual_name) or {}
+            attendance_stats = att_bundle.get("attendance_stats", {}) or {}
+        except Exception:
+            attendance_stats = {}
+
+    mc_details = {}
+    if callable(get_mc_details_tables):
+        try:
+            mc_bundle = get_mc_details_tables(name=actual_name) or {}
+            mc_details = mc_bundle.get("mc_details", {}) or {}
+        except Exception:
+            mc_details = {}
+    # ================== END NEW PART ==================
 
     return render_template(
         "profile.html",
@@ -576,7 +674,10 @@ def person(raw_name: str):
         selected_date_str=selected_date_str,
         selected_shift=selected_shift,
         use_emp_bars=use_emp_bars,
-        positive_contribs=positive_contribs,  # NEW
+        positive_contribs=positive_contribs,
+        # NEW ↓↓↓ send to template
+        attendance_stats=attendance_stats,
+        mc_details=mc_details,
     )
 
 
@@ -589,18 +690,48 @@ def by_query():
     return redirect(url_for(".person", raw_name=name))
 
 
-# ===== API: add Positive Contribution (JSON: {name, description}) =====
+# ===== API: add / edit / delete Positive Contribution =====
 @profile.post("/contrib")
 def add_contribution():
     try:
         payload = request.get_json(force=True, silent=False) or {}
         name = str(payload.get("name", "")).strip()
         description = str(payload.get("description", "")).strip()
+        date_str = str(payload.get("date", "")).strip()
+        months = payload.get("months", []) or []
         if not name or not description:
             return jsonify({"ok": False, "error": "Missing name/description"}), 400
+        _pc_add(name, description, date_str)
+        items = _pc_for_name(name, months)
+        return jsonify({"ok": True, "items": items})
+    except Exception as e:
+        return jsonify({"ok": False, "error": f"{type(e).__name__}: {e}"}), 500
 
-        _pc_add(name, description)
-        items = _pc_for_name(name)
+
+@profile.put("/contrib/<item_id>")
+def edit_contribution(item_id: str):
+    try:
+        payload = request.get_json(force=True, silent=False) or {}
+        description = str(payload.get("description", "")).strip()
+        date_str = payload.get("date", None)
+        name = str(payload.get("name", "")).strip()
+        months = payload.get("months", []) or []
+        if not description:
+            return jsonify({"ok": False, "error": "Missing description"}), 400
+        _pc_update(item_id, description, date_str)
+        items = _pc_for_name(name, months) if name else []
+        return jsonify({"ok": True, "items": items})
+    except Exception as e:
+        return jsonify({"ok": False, "error": f"{type(e).__name__}: {e}"}), 500
+
+
+@profile.delete("/contrib/<item_id>")
+def delete_contribution(item_id: str):
+    try:
+        name = str(request.args.get("name", "")).strip()
+        months = request.args.getlist("months")
+        _pc_delete(item_id)
+        items = _pc_for_name(name, months) if name else []
         return jsonify({"ok": True, "items": items})
     except Exception as e:
         return jsonify({"ok": False, "error": f"{type(e).__name__}: {e}"}), 500
