@@ -20,6 +20,11 @@
     --bad-ink:#B30000;
     --bad-bg:rgba(139,0,0,.18);
     --bad-ring:rgba(139,0,0,.55);
+
+    /* sizing knobs */
+    --cell-height: 112px;     /* overall row cell height */
+    --val-size:   32px;       /* number font size (all columns) */
+    --pill-gap:   14px;       /* gap between YWT/HSL pills */
   }
 
   *{ box-sizing:border-box } html,body{ height:100% }
@@ -111,7 +116,7 @@
     align-items:start;
   }
 
-  /* icons: 5 tiles now (Safety, Contribution, Operations, Reliability, Excellence) */
+  /* icons: tiles along the top */
   .icons{
     display:grid;
     grid-template-columns:repeat(6, 160px);
@@ -123,13 +128,14 @@
     padding:12px 14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
     color:#fff; height:130px;
   }
-  .icon-card.ops{
+  .icon-card.ops{          /* image on top */
     grid-column:3 / span 2;
-    flex-direction:row;
-    justify-content:flex-start;
-    gap:14px;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
   }
-  .icon-card.ops .right-labels{ display:flex; flex-direction:column; gap:6px; }
+  .icon-card.ops .right-labels{ display:none; }
 
   .ico{ width:var(--icon-bubble); height:var(--icon-bubble); display:grid; place-items:center; }
   .icon-img{ width:var(--icon-size); height:var(--icon-size); object-fit:contain; display:block; }
@@ -180,76 +186,89 @@
     gap:18px;
   }
 
-  .cell{ display:grid; place-items:center; background:var(--panel); border:1px solid var(--ring); border-radius:16px; padding:16px 10px; }
-  .cell .num{ font-size:30px; font-weight:800; text-shadow:none; }
-
-  .cell.safety.pts-green{ background:rgba(0,255,160,.14); border-color:rgba(0,255,160,.45); color:#00ff9e; }
-  .cell.safety.pts-red{ background: var(--bad-bg); border-color: var(--bad-ring); color: var(--bad-ink); }
-
-  .cell.positive.pts-green{ background:rgba(0,255,160,.14); border-color:rgba(0,255,160,.45); color:#00ff9e; }
-  .cell.positive.pts-orange{ background:rgba(255,160,0,.14); border-color:rgba(255,160,0,.45); color:#ffb24a; }
-  .cell.positive.pts-red{ background: var(--bad-bg); border-color: var(--bad-ring); color: var(--bad-ink); }
-
-  /* Excellence styles */
-  .cell.excellence.pts-green{
-    background:rgba(0,255,160,.14);
-    border-color:rgba(0,255,160,.45);
-    color:#00ff9e;
-  }
-  .cell.excellence.pts-orange{
-    background:rgba(255,160,0,.14);
-    border-color:rgba(255,160,0,.45);
-    color:#ffb24a;
-  }
-  .cell.excellence.pts-red{
-    background:var(--bad-bg);
-    border-color:var(--bad-ring);
-    color:var(--bad-ink);
-  }
-
-  .cell.operations{
-    grid-column:span 2;
+  /* ======== CELLS (unified dark panel + centered content) ======== */
+  .cell{
+    position:relative;
     background:var(--panel);
     border:1px solid var(--ring);
     border-radius:16px;
-    padding:10px;
-    display:grid;
-    grid-template-columns:repeat(2, minmax(0,1fr));
-    gap:12px;
-    align-items:stretch;
+    min-height: var(--cell-height);
+    padding:12px;
+
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    gap:8px;
+    overflow:hidden;
+  }
+  .cell > *{ position:relative; z-index:1; }
+  .cell::after{
+    content:"";
+    position:absolute;
+    inset:6px;                      /* larger inner chip */
+    border-radius:14px;
+    background:var(--chip-bg, rgba(255,255,255,.04));
+    border:1px solid var(--chip-ring, rgba(255,255,255,.08));
+  }
+  /* unify number size across all columns */
+  .cell .val,
+  .cell .num{ 
+    font-size: var(--val-size);
+    line-height: 1;
+    font-weight:800;
   }
 
-  /* Reliability styles */
+  /* inner chip colors by state */
+  .cell.safety.pts-green,
+  .cell.positive.pts-green,
+  .cell.excellence.pts-green,
   .cell.reliability.pts-green{
-    background:rgba(0,255,160,.14);
-    border-color:rgba(0,255,160,.45);
+    --chip-bg: rgba(0,255,160,.14);
+    --chip-ring: rgba(0,255,160,.45);
     color:#00ff9e;
   }
+  .cell.positive.pts-orange,
+  .cell.excellence.pts-orange,
   .cell.reliability.pts-orange{
-    background:rgba(255,160,0,.14);
-    border-color:rgba(255,160,0,.45);
+    --chip-bg: rgba(255,160,0,.14);
+    --chip-ring: rgba(255,160,0,.45);
     color:#ffb24a;
   }
+  .cell.safety.pts-red,
+  .cell.positive.pts-red,
+  .cell.excellence.pts-red,
   .cell.reliability.pts-red{
-    background:var(--bad-bg);
-    border-color:var(--bad-ring);
-    color:var(--bad-ink);
+    --chip-bg: var(--bad-bg);
+    --chip-ring: var(--bad-ring);
+    color: var(--bad-ink);
   }
+
+  /* ======== OPERATIONS (two equal-height pills inside the cell) ======== */
+  .cell.operations{
+    grid-column:span 2;
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:var(--pill-gap);
+    align-items:stretch;
+  }
+  .cell.operations::after{ display:none; } /* no chip around the whole container */
 
   .ops-pill{
     background:rgba(3,5,10,.35);
-    border:1px solid rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.06);
     border-radius:14px;
     padding:14px 10px 10px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:6px;
-    width:100%;
-    min-height:90px;
-  }
 
-  .ops-pill .num{ font-size:20px; font-weight:800; }
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    gap:8px;
+
+    width:100%;
+    height:100%;             /* stretch to match sibling */
+    min-height:auto;
+  }
+  /* Operations values same size as others */
+  .ops-pill .num{ font-size:var(--val-size); line-height:1; font-weight:800; }
+
   .ops-pill .pts-badge{
     font-size:10px;
     padding:3px 7px;
@@ -260,14 +279,14 @@
   .ops-pill.ywt.pts-green{ background:rgba(0,255,160,.12); border-color:rgba(0,255,160,.4); color:#00ff9e; }
   .ops-pill.ywt.pts-orange{ background:rgba(255,160,0,.12); border-color:rgba(255,160,0,.4); color:#ffb24a; }
   .ops-pill.ywt.pts-red{ background:var(--bad-bg); border-color:var(--bad-ring); color:var(--bad-ink); }
-
   .ops-pill.hsl.pts-green{ background:rgba(0,255,160,.12); border-color:rgba(0,255,160,.4); color:#00ff9e; }
   .ops-pill.hsl.pts-orange{ background:rgba(255,160,0,.12); border-color:rgba(255,160,0,.4); color:#ffb24a; }
   .ops-pill.hsl.pts-red{ background:var(--bad-bg); border-color:var(--bad-ring); color:var(--bad-ink); }
 
+  /* shared badge */
   .cell .pts-badge{
     margin-top:6px; padding:3px 8px; display:inline-block;
-    font-size:12px; font-weight:800; letter-spacing:.6px; text-transform:uppercase;
+    font-size:20px; font-weight:800; letter-spacing:.6px; text-transform:uppercase;
     border-radius:999px; border:1px solid currentColor; background:rgba(255,255,255,.03);
   }
 
@@ -284,6 +303,7 @@
 
   html { zoom: .75; }
 </style>
+
 </head>
 <body>
   <div class="wrap">
@@ -348,26 +368,20 @@
           <h3 class="criteria-title">CRITERIA</h3>
           <div class="criteria">
             <div class="crit-section">
-              <div class="crit-head">SAFETY :</div>
-              <div class="crit-item"><span class="crit-pts">3pts</span>- If every shift worked has 1 SI</div>
+              <div class="crit-head">For All Category :</div>
+              <div class="crit-item"><span class="crit-pts">5pts</span>- Top 10%</div>
+              <div class="crit-item"><span class="crit-pts">4pt</span>- Next 30%</div>
+              <div class="crit-item"><span class="crit-pts">3pt</span>- Next 30%</div>
+              <div class="crit-item"><span class="crit-pts">2pt</span>- Next 20%</div>
+              <div class="crit-item"><span class="crit-pts">1pt</span>- Bottom 10%</div>
             </div>
             <div class="crit-section">
-              <div class="crit-head">CONTRIBUTION :</div>
-              <div class="crit-item"><span class="crit-pts">2pts</span>- 4 or more contributions</div>
-              <div class="crit-item"><span class="crit-pts">1pt</span>- 2 to 3 contributions</div>
-              <div class="crit-item"><span class="crit-pts">0pt</span>- 0 to 1 contribution</div>
-            </div>
-            <div class="crit-section">
-              <div class="crit-head">YWT :</div>
-              <div class="crit-item"><span class="crit-pts">6pts</span>- For P123, below 9.5. For P456 below 7.4</div>
-              <div class="crit-item"><span class="crit-pts">4pts</span>- For P123, 9.5-9.7. For P456 7.4-7.6</div>
-              <div class="crit-item"><span class="crit-pts">2pts</span>- For P123, 9.7-10. For P456 7.6-7.9</div>
-            </div>
-            <div class="crit-section">
-              <div class="crit-head">HSL :</div>
-              <div class="crit-item"><span class="crit-pts">3pts</span>- Average across all terminal &gt; 90%</div>
-              <div class="crit-item"><span class="crit-pts">2pts</span>- Average across all terminal 85-90%</div>
-              <div class="crit-item"><span class="crit-pts">1pt</span>- Average across all terminal 80-85%</div>
+              <div class="crit-head">Weightage :</div>
+              <div class="crit-item"><span class="crit-pts">Safety</span>- 20%</div>
+              <div class="crit-item"><span class="crit-pts">Contribution</span>- 10%</div>
+              <div class="crit-item"><span class="crit-pts">Operations</span>- 50%</div>
+              <div class="crit-item"><span class="crit-pts">Reliability</span>- 10%</div>
+              <div class="crit-item"><span class="crit-pts">Excellence</span>- 10%</div>
             </div>
           </div>
         </div>
@@ -391,10 +405,7 @@
               <div class="ico">
                 <img class="icon-img" src="{{ url_for('static', filename='Operations.png') }}" alt="Operations">
               </div>
-              <div class="right-labels">
-                <div class="icon-title">OPERATIONS</div>
-                <div class="mini-tag">YWT • HSL</div>
-              </div>
+              <div class="icon-title">OPERATIONS (YWT • HSL)</div>
             </button>
             <button class="icon-card sort-btn" type="button" data-key="reliability" title="Sort by Reliability">
               <div class="ico"><img class="icon-img" src="{{ url_for('static', filename='Reliability.png') }}" alt="Reliability"></div>
