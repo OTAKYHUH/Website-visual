@@ -6,107 +6,56 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 body {
-  background: #0B0D16;
-  color: #fff;
+  background: #0B0D16; color: #fff;
   font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Inter,Roboto,Arial,sans-serif;
   padding: 24px;
 }
 .panel {
   background: linear-gradient(135deg, #6c3dd8 0%, #2a1645 65%, #23103a 100%);
-  border-radius: 20px;
-  padding: 16px 16px 8px;
-  max-width: 1150px;
+  border-radius: 20px; padding: 16px 16px 8px; max-width: 1150px;
 }
-.panel h3 {
-  margin: 0 0 12px;
-  font-weight: 600;
-  font-size: 16px;
+.panel h3 { margin: 0 0 12px; font-weight: 600; font-size: 16px; }
+.meta { opacity: .6; margin-bottom: 6px; font-size: 12px; }
+.scroll { overflow-x: auto; border-radius: 14px; }
+.table { border-collapse: collapse; min-width: 950px; width: max-content; }
+.table thead th {
+  background: rgba(5,30,55,0.35); padding: 8px 16px; text-align: left; white-space: nowrap;
+  border-right: 1px solid rgba(255,255,255,0.03);
 }
-.meta {
-  opacity: .7;
-  font-size: 12px;
-  margin-bottom: 12px;
+.table tbody td {
+  background: rgba(6,0,22,0.3); padding: 10px 16px 16px; vertical-align: top;
+  width: 150px; max-width: 150px; line-height: 1.35; font-weight: 500;
 }
-.current-month {
-  background: rgba(0,0,0,.15);
-  border: 1px solid rgba(255,255,255,.05);
-  border-radius: 12px;
-  padding: 12px 14px 6px;
-  margin-bottom: 14px;
-}
-.current-month h4 {
-  margin: 0 0 6px;
-  font-size: 14px;
-}
-.current-month pre {
-  white-space: pre-wrap;
-  word-break: break-word;
-  line-height: 1.4;
-  font-family: ui-monospace, SFMono-Regular, SFMono-Medium, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-}
-table.months {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  background: rgba(0,0,0,.1);
-  border: 1px solid rgba(255,255,255,.03);
-  border-radius: 12px;
-  overflow: hidden;
-  font-size: 12px;
-  table-layout: fixed;
-}
-table.months th, table.months td {
-  padding: 6px 8px;
-  border-bottom: 1px solid rgba(255,255,255,.035);
-  vertical-align: top;
-  word-wrap: break-word;
-  width: 150px;
-  line-height: 1.35;
-  font-weight: 500;
-}
-table.months thead {
-  background: rgba(0,0,0,.2);
-}
-footer {
-  margin-top: 12px;
-  opacity: .5;
-  font-size: 11px;
-}
+.table tbody td:nth-child(even) { background: rgba(6,0,22,0.14); }
+.scroll::-webkit-scrollbar { height: 10px; }
+.scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.09); border-radius: 999px; }
+.scroll::-webkit-scrollbar-thumb { background: #6f758a; border-radius: 999px; }
 </style>
 </head>
 <body>
   <div class="panel">
-    <h3>MC Consolidation – MUHAMMAD HAFIRUL HYRIIL BIN MUHTADIIN</h3>
     <div class="meta">
-      Staff No: ZD877 · Emp ID: P1144518G · Sheet: MC Consolidation (P1-3)
+      Generated: 2025-11-07 14:04 |
+      Person: MUHAMMAD HAFIRUL HYRIIL BIN MUHTADIIN |
+      Source: MC Consolidation (P1-3)
     </div>
-    <div class="current-month">
-      <h4>Jan details</h4>
-      <pre>5 - Diarrhoea (1 Day)
-13-14 - Diarrhoea (2 Days)</pre>
-    </div>
-    <div style="overflow-x:auto">
-      <table class="months">
-        <thead>
-          <tr>
-            <th>Jan</th>
+    <h3>Consolidation Details for the whole year</h3>
+    <div class="scroll">
+      <table class="table">
+        <thead><tr><th>Jan</th>
 <th>Feb</th>
 <th>Mar</th>
 <th>Apr</th>
 <th>May</th>
-<th>Jun</th>
+<th>June</th>
 <th>Jul</th>
 <th>Aug</th>
 <th>Sep</th>
 <th>Oct</th>
 <th>Nov</th>
 <th>Dec</th>
-
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>5 - Diarrhoea (1 Day)
+</tr></thead>
+        <tbody><tr><td>5 - Diarrhoea (1 Day)
 13-14 - Diarrhoea (2 Days)</td>
 <td>22-23 - Flu & Cough (2 Days)
 24 - Flu & Cough (1 Day)</td>
@@ -119,7 +68,8 @@ footer {
 19 - Fever (1 Day)
 20 - Fever (1 Day)</td>
 <td>–</td>
-<td>–</td>
+<td>18-19 - Headache (2 Days)
+20 - Headache (1 Day)</td>
 <td>–</td>
 <td>1-2 - Vomit (2 days)
 3 - Vomit (1 Day)
@@ -130,14 +80,9 @@ footer {
 <td>–</td>
 <td>–</td>
 <td>–</td>
-
-          </tr>
-        </tbody>
+</tr></tbody>
       </table>
     </div>
-    <footer>
-      Generated: 2025-11-05T10:46:24
-    </footer>
   </div>
 </body>
 </html>

@@ -1,403 +1,192 @@
-# build/mc_details.py — reusable (importable) + runnable (HTML preview)
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
-Pull the text MC/medical details for each month for ONE person from
-sheets like:
-
-  MC Consolidation (P1-3)
-  MC Consolidation (P4-6)
-
-Columns look like:
-  Employee ID | Staff No | Staff Name | Jan | Feb | Mar | ... | Dec
+build/build_mc_details.py – robust, returns empty months if not found
 """
 
 from __future__ import annotations
-
 from pathlib import Path
-import sys
-import webbrowser
-from datetime import datetime
 import pandas as pd
+import re
 
-# ================== CONFIG ==================
-
+# ====== CONFIG ======
 BASE = Path(__file__).resolve().parents[1]
 DEFAULT_PATH = BASE / "static" / "[NEW] YOD MASTER LIST (MC_UL_TURNOUT).xlsx"
+DETAIL_SHEETS = ["MC Consolidation (P1-3)", "MC Consolidation (P4-6)"]
 
-DETAIL_SHEETS = [
-    "MC Consolidation (P1-3)",
-    "MC Consolidation (P4-6)",
-]
-
+# We’ll accept header aliases and standardize them to these keys:
 COL_EMP_ID   = "Employee ID"
 COL_STAFF_NO = "Staff No"
 COL_NAME     = "Staff Name"
 
-MONTH_COLS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+MONTH_COLS = ["Jan","Feb","Mar","Apr","May","June","Jul","Aug","Sep","Oct","Nov","Dec"]
 
-# =====================================================
+# cache like photos
+_DF_CACHE: dict[str, dict] = {}
 
+# ---------- helpers ----------
+_ALIASES = {
+    COL_EMP_ID:   { "Emp ID","EmployeeID","Emp_ID","ID" },
+    COL_STAFF_NO: { "StaffNo","Staff_No","No","Staff Number" },
+    COL_NAME:     { "Staff Name (JO)","Name","StaffName","Full Name" },
+}
 
-def _load_sheet(path: Path, sheet_name: str) -> pd.DataFrame:
-    """Load one sheet, raise if missing."""
-    return pd.read_excel(path, sheet_name=sheet_name)
+def _standardize_columns(df: pd.DataFrame) -> pd.DataFrame:
+    colmap = {c: str(c).strip() for c in df.columns}
+    df = df.rename(columns=colmap)
+    for target, alts in _ALIASES.items():
+        if target not in df.columns:
+            for a in alts:
+                if a in df.columns:
+                    df = df.rename(columns={a: target})
+                    break
+    return df
 
-
-def load_mc_details_df(path: str | Path, sheet_names: list[str]) -> pd.DataFrame:
-    """
-    Load all MC consolidation sheets and stack into one table.
-    """
+def _load_mc_df(path: str | Path = DEFAULT_PATH,
+                sheet_names: list[str] = DETAIL_SHEETS) -> pd.DataFrame:
     path = Path(path)
+    mtime = path.stat().st_mtime
+    k = str(path.resolve())
+    cached = _DF_CACHE.get(k)
+    if cached and abs(cached.get("ts", 0) - mtime) < 1:
+        return cached["df"].copy()
+
     frames = []
-    for sh in sheet_names:
+    # try declared sheets; if missing, fall back to every sheet containing "MC Consolidation"
+    xls = pd.ExcelFile(path)
+    wanted = [s for s in sheet_names if s in xls.sheet_names]
+    if not wanted:
+        wanted = [s for s in xls.sheet_names if "MC Consolidation" in s]
+
+    for sh in wanted:
         try:
-            df_sh = pd.read_excel(path, sheet_name=sh)
-            df_sh["__source_sheet__"] = sh
-            frames.append(df_sh)
+            df = pd.read_excel(path, sheet_name=sh)
+            df["__source_sheet__"] = sh
+            frames.append(_standardize_columns(df))
         except Exception:
-            continue
+            pass
+
     if not frames:
-        raise FileNotFoundError(f"No MC consolidation sheets found in: {path}")
-    return pd.concat(frames, ignore_index=True, sort=False)
+        raise FileNotFoundError("No MC consolidation sheets found.")
+    df = pd.concat(frames, ignore_index=True, sort=False)
+    _DF_CACHE[k] = {"ts": mtime, "df": df.copy()}
+    return df
 
+# ---- tolerant name matching (short forms, initials) ----
+_SPACER_RE = re.compile(r"[^A-Z0-9]+")
+def _norm(s: str) -> str:
+    if s is None: return ""
+    t = str(s).upper()
+    t = (t.replace(" MOHD ", " MOHAMMAD ")
+          .replace(" MHD ", " MOHAMMAD ")
+          .replace(" MD ", " MOHAMMAD ")
+          .replace(" MOHAMED ", " MOHAMMAD ")
+          .replace(" MUHAMED ", " MOHAMMAD ")
+          .replace(" MOHAMMAD ", " MUHAMMAD ")
+          .replace(" NUR ", " NOR "))
+    for token in (" BIN ", " BINTI ", " D/O ", " S/O "):
+        t = t.replace(token, " ")
+    return _SPACER_RE.sub(" ", t).strip()
 
-def _find_person_row(
-    df: pd.DataFrame,
-    staff_no: str | None = None,
-    employee_id: str | None = None,
-    name: str | None = None,
-) -> pd.Series:
+def _initials(s: str) -> str:
+    parts = [p for p in _norm(s).split() if p]
+    return " ".join(p[0] for p in parts)
+
+def _variants(s: str) -> set[str]:
+    base = _norm(s)
+    parts = base.split()
+    vs = {base, _initials(base)}
+    drop = {"BIN","BINTI","A/L","A/P","D/O","S/O"}
+    vs.add(" ".join([p for p in parts if p not in drop]))
+    if len(parts) >= 2:
+        vs.add(f"{parts[0]} {parts[-1]}")
+        vs.add(f"{parts[0][0]} {parts[-1]}")
+        vs.add(f"{parts[0]} {' '.join(p[0] for p in parts[1:-1])} {parts[-1]}")
+    return {v for v in vs if v}
+
+def _name_match(cell: str, query: str) -> bool:
+    if not cell or not query: return False
+    c = _norm(cell); q = _norm(query)
+    if c == q: return True
+    qv = _variants(query)
+    if c in qv or _initials(c) in qv: return True
+    return all(tok in c for tok in q.split())
+
+def _find_person_row(df: pd.DataFrame,
+                     staff_no: str | None,
+                     employee_id: str | None,
+                     name: str | None):
+    # return (row, found_bool)
     if staff_no and COL_STAFF_NO in df.columns:
-        sub = df.loc[df[COL_STAFF_NO] == staff_no]
-        if not sub.empty:
-            return sub.iloc[0]
+        sub = df.loc[df[COL_STAFF_NO].astype(str) == str(staff_no)]
+        if not sub.empty: return sub.iloc[0], True
     if employee_id and COL_EMP_ID in df.columns:
-        sub = df.loc[df[COL_EMP_ID] == employee_id]
-        if not sub.empty:
-            return sub.iloc[0]
+        sub = df.loc[df[COL_EMP_ID].astype(str) == str(employee_id)]
+        if not sub.empty: return sub.iloc[0], True
     if name and COL_NAME in df.columns:
-        sub = df.loc[df[COL_NAME] == name]
-        if not sub.empty:
-            return sub.iloc[0]
-    return df.iloc[0]
+        nkey = _norm(name)
+        sub = df.loc[df[COL_NAME].astype(str).map(_norm) == nkey]
+        if not sub.empty: return sub.iloc[0], True
+        hits = df.loc[df[COL_NAME].astype(str).map(lambda s: _name_match(s, name))]
+        if not hits.empty: return hits.iloc[0], True
+    return None, False
 
-
-# helper to split multi-line cells into a list
-def _split_lines(val) -> list[str]:
-    if val is None:
-        return []
-    if pd.isna(val):
-        return []
-    s = str(val).strip()
-    if not s:
-        return []
-    # split on newline OR semicolon
-    parts = []
-    for line in s.replace(";", "\n").splitlines():
-        line = line.strip()
-        if line:
-            parts.append(line)
-    return parts
-
-
-def _all_month_details(row: pd.Series) -> dict[str, list[str]]:
-    """
-    Return dict: { 'Jan': ['abc','def'], 'Feb': [...] }
-    using the split helper above.
-    """
-    out: dict[str, list[str]] = {}
-    for m in MONTH_COLS:
-        if m in row.index:
-            out[m] = _split_lines(row.get(m, ""))
-        else:
-            out[m] = []
-    return out
-
-
-def get_person_mc_details(
-    df: pd.DataFrame,
-    month: str,
-    staff_no: str | None = None,
-    employee_id: str | None = None,
-    name: str | None = None,
-) -> dict:
-    """
-    Return structure like:
-    {
-      'person': {...},
-      'month': 'Feb',
-      'details': 'raw string for that month',
-      'months': {'Jan':'...', 'Feb':'...'},
-      'month_lists': {'Jan': [...], ...}
+def _empty_details(month: str) -> dict:
+    return {
+        "person": {"employee_id": None, "staff_no": None, "name": None, "source_sheet": None},
+        "month": month,
+        "month_detail": "",
+        "all_months": {m: "" for m in MONTH_COLS},
+        "months": {m: [] for m in MONTH_COLS},
+        "not_found": True,
     }
-    """
-    row = _find_person_row(df, staff_no=staff_no, employee_id=employee_id, name=name)
 
-    # normalize month
-    month = month.strip()
-    if month.lower() == "jun":
-        month = "June"
-    else:
-        month = month.title()
+def get_person_mc_details(df: pd.DataFrame,
+                          month: str,
+                          staff_no: str | None = None,
+                          employee_id: str | None = None,
+                          name: str | None = None) -> dict:
+    # normalize month label
+    mlabel = "June" if month.strip().lower() == "jun" else month.strip().title()
 
-    # pick this month's text
-    month_detail = ""
-    if month in row.index:
-        val = row.get(month, "")
-        month_detail = "" if pd.isna(val) else str(val)
+    row, ok = _find_person_row(df, staff_no, employee_id, name)
+    if not ok:
+        return _empty_details(mlabel)
 
-    # string version for whole year
-    all_months: dict[str, str] = {}
+    def _split_lines(val) -> list[str]:
+        if val is None or (isinstance(val, float) and pd.isna(val)): return []
+        s = str(val).strip()
+        return [p.strip() for p in s.splitlines() if p.strip()] if s else []
+
+    all_text = {}
+    months_list = {}
     for col in MONTH_COLS:
-        if col in row.index:
-            v = row.get(col, "")
-            all_months[col] = "" if pd.isna(v) else str(v)
-        else:
-            all_months[col] = ""
+        v = row.get(col, "")
+        txt = "" if (pd.isna(v) if isinstance(v, float) else (v is None)) else str(v)
+        all_text[col] = txt
+        months_list[col] = _split_lines(v)
 
-    # list version
-    month_lists = _all_month_details(row)
+    month_detail = all_text.get(mlabel, "")
 
     return {
         "person": {
-            "name": row.get(COL_NAME, ""),
-            "staff_no": row.get(COL_STAFF_NO, ""),
-            "employee_id": row.get(COL_EMP_ID, ""),
-            "__source_sheet__": row.get("__source_sheet__", ""),
+            "employee_id": row.get(COL_EMP_ID),
+            "staff_no": row.get(COL_STAFF_NO),
+            "name": row.get(COL_NAME),
+            "source_sheet": row.get("__source_sheet__", None),
         },
-        "month": month,
-        "details": month_detail,
-        "months": all_months,
-        "month_lists": month_lists,
-        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "month": mlabel,
+        "month_detail": month_detail,
+        "all_months": all_text,
+        "months": months_list,
+        "not_found": False,
     }
 
-
-def get_tables(path: str | Path = DEFAULT_PATH) -> dict[str, pd.DataFrame | dict]:
-    """
-    Keep same style as other build/ modules.
-    """
-    df = load_mc_details_df(path, DETAIL_SHEETS)
-    return {"mc_details_df": df}
-
-
-def render_preview_html(details: dict, out_html: str | Path | None = None) -> Path:
-    p = details["person"]
-    month = details["month"]
-    details_text = details["details"] or "–"
-    all_months = details["months"]
-    generated_at = details.get("generated_at", "")
-
-    # build table head and body
-    head_html = ""
-    for m in MONTH_COLS:
-        head_html += f"<th>{m}</th>\n"
-
-    body_html = ""
-    for m in MONTH_COLS:
-        txt = all_months.get(m, "") or "–"
-        body_html += f"<td>{txt}</td>\n"
-
-    html = f"""<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>MC Consolidation – {p.get('name','')}</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body {{
-  background: #0B0D16;
-  color: #fff;
-  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Inter,Roboto,Arial,sans-serif;
-  padding: 24px;
-}}
-.panel {{
-  background: linear-gradient(135deg, #6c3dd8 0%, #2a1645 65%, #23103a 100%);
-  border-radius: 20px;
-  padding: 16px 16px 8px;
-  max-width: 1150px;
-}}
-.panel h3 {{
-  margin: 0 0 12px;
-  font-weight: 600;
-  font-size: 16px;
-}}
-.meta {{
-  opacity: .7;
-  font-size: 12px;
-  margin-bottom: 12px;
-}}
-.current-month {{
-  background: rgba(0,0,0,.15);
-  border: 1px solid rgba(255,255,255,.05);
-  border-radius: 12px;
-  padding: 12px 14px 6px;
-  margin-bottom: 14px;
-}}
-.current-month h4 {{
-  margin: 0 0 6px;
-  font-size: 14px;
-}}
-.current-month pre {{
-  white-space: pre-wrap;
-  word-break: break-word;
-  line-height: 1.4;
-  font-family: ui-monospace, SFMono-Regular, SFMono-Medium, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-}}
-table.months {{
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  background: rgba(0,0,0,.1);
-  border: 1px solid rgba(255,255,255,.03);
-  border-radius: 12px;
-  overflow: hidden;
-  font-size: 12px;
-  table-layout: fixed;
-}}
-table.months th, table.months td {{
-  padding: 6px 8px;
-  border-bottom: 1px solid rgba(255,255,255,.035);
-  vertical-align: top;
-  word-wrap: break-word;
-  width: 150px;
-  line-height: 1.35;
-  font-weight: 500;
-}}
-table.months thead {{
-  background: rgba(0,0,0,.2);
-}}
-footer {{
-  margin-top: 12px;
-  opacity: .5;
-  font-size: 11px;
-}}
-</style>
-</head>
-<body>
-  <div class="panel">
-    <h3>MC Consolidation – {p.get('name','')}</h3>
-    <div class="meta">
-      Staff No: {p.get('staff_no','') or '–'} · Emp ID: {p.get('employee_id','') or '–'} · Sheet: {p.get('__source_sheet__','') or '–'}
-    </div>
-    <div class="current-month">
-      <h4>{month} details</h4>
-      <pre>{details_text}</pre>
-    </div>
-    <div style="overflow-x:auto">
-      <table class="months">
-        <thead>
-          <tr>
-            {head_html}
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            {body_html}
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <footer>
-      Generated: {generated_at}
-    </footer>
-  </div>
-</body>
-</html>
-"""
-    out_path = Path(out_html) if out_html else Path(__file__).with_name("mc_details_preview.html")
-    out_path.write_text(html, encoding="utf-8")
-    return out_path
-
-# --------- Optional: file picking helpers ----------
-def _pick_mc_file_interactive() -> Path | None:
-    """Try Tk file picker; fall back to console prompt."""
-    try:
-        import tkinter as tk
-        from tkinter import filedialog
-        root = tk.Tk()
-        root.withdraw()
-        path = filedialog.askopenfilename(
-            title="Select MC Consolidation Excel",
-            filetypes=[("Excel files", "*.xlsx *.xlsm *.xls"), ("All files", "*.*")]
-        )
-        root.update()
-        root.destroy()
-        if path:
-            p = Path(path)
-            if p.exists():
-                return p
-    except Exception:
-        pass
-
-    try:
-        inp = input("Enter path to MC Consolidation Excel: ").strip('"').strip()
-        if inp:
-            p = Path(inp).expanduser()
-            if p.exists():
-                return p
-    except (EOFError, KeyboardInterrupt):
-        return None
-    return None
-
-
-def _auto_guess_mc_file() -> Path | None:
-    """Try the default location first, then common relatives."""
-    try:
-        if DEFAULT_PATH.exists():
-            return DEFAULT_PATH
-    except Exception:
-        pass
-
-    here = Path(__file__).parent
-    candidates = [
-        here / "mc_consolidation.xlsx",
-        here / "MC Consolidation.xlsx",
-        Path.cwd() / "mc_consolidation.xlsx",
-        Path.cwd() / "MC Consolidation.xlsx",
-    ]
-    for cand in candidates:
-        if cand.exists():
-            return cand
-    return None
-
-
-__all__ = [
-    "load_mc_details_df",
-    "get_person_mc_details",
-    "get_tables",
-    "DEFAULT_PATH",
-    "DETAIL_SHEETS",
-]
-
-if __name__ == "__main__":
-    # Usage:
-    #   python build_mc_details.py "NAME" Feb
-    args = sys.argv[1:]
-    name = None
-    month = "Jan"
-    if len(args) >= 1:
-        name = args[0]
-    if len(args) >= 2:
-        month = args[1]
-
-    mc_path = _auto_guess_mc_file()
-    if mc_path is None:
-        print("[i] Could not find MC consolidation file automatically.")
-        mc_path = _pick_mc_file_interactive()
-    if mc_path is None:
-        print("[!] No MC file selected. Exiting.")
-        sys.exit(1)
-
-    df = load_mc_details_df(mc_path, DETAIL_SHEETS)
-    details = get_person_mc_details(df, month=month, name=name)
-
-    picked = details["person"].get("name") or details["person"].get("employee_id") or "FIRST ROW"
-    print(f"[i] Showing MC details for: {picked!r} ({month})")
-    print("[i] Months (list form):", details["months"])
-
-    out_html = render_preview_html(details)
-    print(f"[i] Wrote: {out_html}")
-    try:
-        webbrowser.open(out_html.as_uri(), new=2)
-    except Exception:
-        print(f"[i] Open this in your browser: {out_html}")
+def get_tables(path: str | Path = DEFAULT_PATH,
+               month: str = "Jan",
+               staff_no: str | None = None,
+               employee_id: str | None = None,
+               name: str | None = None) -> dict[str, dict]:
+    df = _load_mc_df(path, DETAIL_SHEETS)
+    details = get_person_mc_details(df, month=month, staff_no=staff_no, employee_id=employee_id, name=name)
+    return {"mc_details": details}

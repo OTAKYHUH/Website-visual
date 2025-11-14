@@ -1,523 +1,452 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# build_attendance.py — reusable (importable) + runnable (HTML preview)
-
-"""
-Read the attendance Excel and produce per-person numbers:
-- month MC / UL / Turnout
-- whole-year totals (or sheet totals)
-- pretty HTML preview (like your screenshot)
-
-Pattern is the same as build/photos.py:
-  - config at top
-  - helpers
-  - public API: get_tables(), get_person_attendance_stats(...)
-  - __main__ can be run directly to open HTML
-"""
-
+# build_attendance.py — merge multiple sheets then tally from monthly columns only
 from __future__ import annotations
 
+import re, glob
 from pathlib import Path
-import sys
-import webbrowser
-from datetime import datetime
+from typing import Dict, Optional, Tuple, List
+
 import pandas as pd
 
-# ================== CONFIG ==================
+# ---------- config ----------
+ROOT = Path(__file__).resolve().parents[1]
+DATA_DIRS: List[Path] = [ROOT / "data", ROOT / "static", ROOT]
+PATTERNS  = ["*Attendance*.xlsx", "*Attendance*.xlsm", "*MC*.xlsx", "*MC*.xlsm", "*.xlsx", "*.xlsm"]
+MONTHS    = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+MONTH_BASES = ("MC","UL","TURNOUT")
 
-BASE = Path(__file__).resolve().parents[1]
-# change this to your real file
-DEFAULT_ATT_PATH = BASE / "static" / "[NEW] YOD MASTER LIST (MC_UL_TURNOUT).xlsx"
-
-# the sheets we expect to exist – we’ll try to load all of them and stack
-ATT_SHEETS = ["P1-3 (YOU)", "P1-3 (YOC)", "P4-6"]
-
-# column names in your file
-COL_EMP_ID   = "Employee ID"
-COL_STAFF_NO = "Staff No"
-COL_NAME     = "Staff Name (JO)"
-
-# months we will show in order
-MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-
-# =====================================================
-
-
-def _safe_int(x) -> int:
-    """Convert to int safely, treating blanks/NaN as 0."""
-    try:
-        if pd.isna(x):
-            return 0
-        return int(x)
-    except Exception:
-        try:
-            return int(float(x))
-        except Exception:
-            return 0
-
-
-def _load_attendance_xlsx(path: str | Path, sheet_name: str) -> pd.DataFrame:
-    """
-    Load one sheet (old behavior).
-    Kept just in case you still want single-sheet loading.
-    """
-    path = Path(path)
-    if not path.exists():
-        raise FileNotFoundError(f"Attendance file not found: {path}")
-    return pd.read_excel(path, sheet_name=sheet_name)
-
-
-def _load_all_attendance_xlsx(path: str | Path, sheet_names: list[str]) -> pd.DataFrame:
-    """
-    New behavior: load ALL attendance sheets and stack into one DataFrame.
-    We add a __source_sheet__ column so you still know where each row came from.
-    """
-    path = Path(path)
-    if not path.exists():
-        raise FileNotFoundError(f"Attendance file not found: {path}")
-    frames = []
-    for sh in sheet_names:
-        try:
-            df_sh = pd.read_excel(path, sheet_name=sh)
-            df_sh["__source_sheet__"] = sh
-            frames.append(df_sh)
-        except Exception:
-            # missing sheet – skip
-            continue
-    if not frames:
-        # fallback to first sheet if nothing was read
-        return _load_attendance_xlsx(path, sheet_names[0])
-    return pd.concat(frames, ignore_index=True, sort=False)
-
-
-def _find_person_row(
-    df: pd.DataFrame,
-    staff_no: str | None = None,
-    employee_id: str | None = None,
-    name: str | None = None,
-) -> pd.Series:
-    """
-    Try to locate one person by staff_no → employee_id → name.
-    If nothing is given / found, just return the first row.
-    """
-    if staff_no and COL_STAFF_NO in df.columns:
-        sub = df.loc[df[COL_STAFF_NO] == staff_no]
-        if not sub.empty:
-            return sub.iloc[0]
-
-    if employee_id and COL_EMP_ID in df.columns:
-        sub = df.loc[df[COL_EMP_ID] == employee_id]
-        if not sub.empty:
-            return sub.iloc[0]
-
-    if name and COL_NAME in df.columns:
-        sub = df.loc[df[COL_NAME] == name]
-        if not sub.empty:
-            return sub.iloc[0]
-
-    # fallback: just first row
-    return df.iloc[0]
-
-
-def _month_col_from_row(row: pd.Series, month: str, what: str) -> str | None:
-    """
-    Given a row (person) and month, find the right column name for MC/UL/Turnout.
-    Handles small naming variations like Oct_MC vs Oct_M, etc.
-    """
-    month = month.strip().title()
-
-    if what == "MC":
-        for c in (f"{month}_MC", f"{month}_M"):
-            if c in row.index:
-                return c
-        return None
-
-    if what == "UL":
-        for c in (f"{month}_UL", f"{month}_U"):
-            if c in row.index:
-                return c
-        return None
-
-    if what == "TURNOUT":
-        for c in (f"{month}_Turnout", f"{month}_Turnou"):
-            if c in row.index:
-                return c
-        # fallback: any column that starts with "<Mon>_Turn"
-        prefix = f"{month}_Turn"
-        for col in row.index:
-            if col.startswith(prefix):
-                return col
-        return None
-
-    return None
-
-
-def _sum_across_months(row: pd.Series, what: str) -> int:
-    """Sum all month columns for MC/UL/Turnout."""
-    total = 0
-    for m in MONTHS:
-        col = _month_col_from_row(row, m, what)
-        if col:
-            total += _safe_int(row.get(col, 0))
-    return total
-
-
-def _get_total_for_row(row: pd.Series, what: str) -> int:
-    """Return the TOTAL column if present, else sum across months."""
-    total_cols = {
-        "MC": ["Total_MC", "Total MC", "MC TOTAL", "MC_Total"],
-        "UL": ["Total_UL", "Total UL", "UL TOTAL", "UL_Total"],
-        "TURNOUT": ["Total_Turnout", "Total Turnout", "Turnout TOTAL", "Turnout_Total"],
-    }
-    for c in total_cols.get(what, []):
-        if c in row.index:
-            return _safe_int(row.get(c, 0))
-    # else sum across months
-    return _sum_across_months(row, what)
-
-
-def _all_month_numbers(row: pd.Series) -> dict[str, dict[str, int]]:
-    """
-    Return a dict of:
-      {"Jan": {"MC":.., "UL":.., "Turnout":..}, ...}
-    so we can render the "Full year" table easily.
-    """
-    result: dict[str, dict[str, int]] = {}
-    for m in MONTHS:
-        mc_col = _month_col_from_row(row, m, "MC")
-        ul_col = _month_col_from_row(row, m, "UL")
-        to_col = _month_col_from_row(row, m, "TURNOUT")
-        result[m] = {
-            "MC": _safe_int(row.get(mc_col, 0)) if mc_col else 0,
-            "UL": _safe_int(row.get(ul_col, 0)) if ul_col else 0,
-            "Turnout": _safe_int(row.get(to_col, 0)) if to_col else 0,
-        }
-    return result
-
-
-def get_person_attendance_stats(
-    df: pd.DataFrame,
-    month: str,
-    staff_no: str | None = None,
-    employee_id: str | None = None,
-    name: str | None = None,
-) -> dict:
-    """
-    Core API:
-      give me the big DataFrame + tell me which person + which month
-      → I give you month numbers + totals + full year
-    """
-    month = month.strip().title()
-    row = _find_person_row(df, staff_no=staff_no, employee_id=employee_id, name=name)
-
-    mc_col = _month_col_from_row(row, month, "MC")
-    ul_col = _month_col_from_row(row, month, "UL")
-    to_col = _month_col_from_row(row, month, "TURNOUT")
-
-    month_mc = _safe_int(row.get(mc_col, 0)) if mc_col else 0
-    month_ul = _safe_int(row.get(ul_col, 0)) if ul_col else 0
-    month_turnout = _safe_int(row.get(to_col, 0)) if to_col else 0
-
-    total_mc = _get_total_for_row(row, "MC")
-    total_ul = _get_total_for_row(row, "UL")
-    total_turnout = _get_total_for_row(row, "TURNOUT")
-
-    yearly = _all_month_numbers(row)
-
-    return {
-        "person": {
-            "name": row.get(COL_NAME, ""),
-            "staff_no": row.get(COL_STAFF_NO, ""),
-            "employee_id": row.get(COL_EMP_ID, ""),
-            "__source_sheet__": row.get("__source_sheet__", ""),
-        },
-        "month": month,
-        "monthly": {
-            "MC": month_mc,
-            "UL": month_ul,
-            "Turnout": month_turnout,
-        },
-        "totals": {
-            "MC": total_mc,
-            "UL": total_ul,
-            "Turnout": total_turnout,
-        },
-        "yearly": yearly,
-        "generated_at": datetime.now().isoformat(timespec="seconds"),
-    }
-
-
-def get_tables(path: str | Path = DEFAULT_ATT_PATH) -> dict[str, pd.DataFrame | dict]:
-    """
-    Helper to match your build/ style: return a dict of useful tables.
-    """
-    df = _load_all_attendance_xlsx(path, ATT_SHEETS)
-    return {"attendance_df": df}
-
-
-def render_preview_html(stats: dict, out_html: str | Path | None = None) -> Path:
-    """
-    Build the purple HTML you saw in your screenshot.
-    """
-    person = stats["person"]
-    month = stats["month"]
-    monthly = stats["monthly"]
-    totals = stats["totals"]
-    yearly = stats["yearly"]
-    generated_at = stats.get("generated_at", "")
-
-    # build year rows
-    year_rows = ""
-    for m in MONTHS:
-        mrow = yearly.get(m, {})
-        year_rows += f"""
-        <tr>
-          <td>{m}</td>
-          <td>{mrow.get('MC', 0)}</td>
-          <td>{mrow.get('UL', 0)}</td>
-          <td>{mrow.get('Turnout', 0)}</td>
-        </tr>
-        """
-
-    html = f"""<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>Attendance – {person.get('name','')}</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body {{
-  background: radial-gradient(circle at top, #683cff 0%, #312084 42%, #160e35 100%);
-  color: #fff;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Arial, sans-serif;
-  padding: 24px;
-}}
-.panel {{
-  max-width: 1100px;
-  margin: 0 auto;
-}}
-h2 {{
-  margin: 0 0 6px;
-  font-size: 28px;
-  font-weight: 700;
-}}
-.meta {{
-  opacity: .72;
-  font-size: 12px;
-  margin-bottom: 16px;
-}}
-.cards {{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-  margin-bottom: 20px;
-}}
-.card {{
-  background: rgba(8,4,18,.15);
-  border: 1px solid rgba(255,255,255,.04);
-  border-radius: 20px;
-  padding: 14px 16px 10px;
-  min-width: 160px;
-  box-shadow: 0 8px 20px rgba(0,0,0,.15);
-}}
-.card .label {{
-  font-size: 11px;
-  text-transform: uppercase;
-  opacity: .62;
-  margin-bottom: 4px;
-}}
-.card .val {{
-  font-size: 28px;
-  font-weight: 600;
-}}
-h3 {{
-  margin-top: 10px;
-  font-size: 14px;
-  opacity: .8;
-}}
-.table-wrap {{
-  background: rgba(6,3,14,.33);
-  border: 1px solid rgba(255,255,255,.03);
-  border-radius: 20px;
-  overflow: hidden;
-  margin-top: 10px;
-}}
-table {{
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 600px;
-}}
-thead {{
-  background: rgba(0,0,0,.25);
-}}
-th, td {{
-  padding: 8px 14px;
-  text-align: left;
-  font-size: 13px;
-}}
-tbody tr:nth-child(even) {{
-  background: rgba(0,0,0,.085);
-}}
-footer {{
-  margin-top: 16px;
-  font-size: 11px;
-  opacity: .4;
-}}
-</style>
-</head>
-<body>
-  <div class="panel">
-    <h2>Attendance – {person.get('name','')}</h2>
-    <div class="meta">
-      Staff No: {person.get('staff_no','') or '–'} · Emp ID: {person.get('employee_id','') or '–'} · Sheet: {person.get('__source_sheet__','') or '–'}
-    </div>
-    <div class="cards">
-      <div class="card">
-        <div class="label">{month.upper()} MC</div>
-        <div class="val">{monthly.get('MC',0)}</div>
-      </div>
-      <div class="card">
-        <div class="label">{month.upper()} UL</div>
-        <div class="val">{monthly.get('UL',0)}</div>
-      </div>
-      <div class="card">
-        <div class="label">{month.upper()} TURNOUT</div>
-        <div class="val">{monthly.get('Turnout',0)}</div>
-      </div>
-      <div class="card">
-        <div class="label">TOTAL MC</div>
-        <div class="val">{totals.get('MC',0)}</div>
-      </div>
-      <div class="card">
-        <div class="label">TOTAL UL</div>
-        <div class="val">{totals.get('UL',0)}</div>
-      </div>
-      <div class="card">
-        <div class="label">TOTAL TURNOUT</div>
-        <div class="val">{totals.get('Turnout',0)}</div>
-      </div>
-    </div>
-
-    <h3>Full year</h3>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr><th>Month</th><th>MC</th><th>UL</th><th>Turnout</th></tr>
-        </thead>
-        <tbody>
-          {year_rows}
-        </tbody>
-      </table>
-    </div>
-
-    <footer>Generated: {generated_at}</footer>
-  </div>
-</body>
-</html>
-"""
-    out_path = Path(out_html) if out_html else Path(__file__).with_name("attendance_preview.html")
-    out_path.write_text(html, encoding="utf-8")
-    return out_path
-
-
-# --------- Optional: file picking helpers ----------
-
-def _pick_attendance_file_interactive() -> Path | None:
-    """Try Tk file picker; fall back to console prompt."""
-    try:
-        import tkinter as tk
-        from tkinter import filedialog
-        root = tk.Tk()
-        root.withdraw()
-        path = filedialog.askopenfilename(
-            title="Select Attendance Excel",
-            filetypes=[("Excel files", "*.xlsx *.xlsm *.xls"), ("All files", "*.*")]
-        )
-        root.update()
-        root.destroy()
-        if path:
-            p = Path(path)
-            if p.exists():
-                return p
-    except Exception:
-        pass
-
-    try:
-        inp = input("Enter path to Attendance Excel: ").strip('"').strip()
-        if inp:
-            p = Path(inp).expanduser()
-            if p.exists():
-                return p
-    except (EOFError, KeyboardInterrupt):
-        return None
-    return None
-
-
-def _auto_guess_attendance_file() -> Path | None:
-    """Try the default location first, then some common relatives."""
-    try:
-        if DEFAULT_ATT_PATH.exists():
-            return DEFAULT_ATT_PATH
-    except Exception:
-        pass
-
-    here = Path(__file__).parent
-    candidates = [
-        here / "attendance.xlsx",
-        here / "Attendance.xlsx",
-        Path.cwd() / "attendance.xlsx",
-        Path.cwd() / "Attendance.xlsx",
-    ]
-    for cand in candidates:
-        if cand.exists():
-            return cand
-    return None
-
-
-__all__ = [
-    "get_tables",
-    "get_person_attendance_stats",
-    "DEFAULT_ATT_PATH",
-    "ATT_SHEETS",
-    "MONTHS",
+# Preferred sheet names to merge (case-insensitive, allow spacing variants)
+PREFERRED_SHEETS = [
+    r"^P1[-\s]?3\s*\(YOU\)$",
+    r"^P1[-\s]?3\s*\(YOC\)$",
+    r"^P4[-\s]?6$",
 ]
 
 
-if __name__ == "__main__":
-    # Usage:
-    #   python build_attendance.py "NAME" Oct
-    # or python build_attendance.py
-    args = sys.argv[1:]
-    name = None
-    month = "Oct"   # default; this is why you saw OCT in the screenshot
-    if len(args) >= 1:
-        name = args[0]
-    if len(args) >= 2:
-        month = args[1]
+# ---------- helpers ----------
+def _norm_col(c: object) -> str:
+    s = "" if c is None else str(c)
+    s = re.sub(r"\s+", "_", s.strip())
+    return s.upper()
 
-    att_path = _auto_guess_attendance_file()
-    if att_path is None:
-        print("[i] Could not find attendance file automatically.")
-        att_path = _pick_attendance_file_interactive()
-    if att_path is None:
-        print("[!] No attendance file selected. Exiting.")
-        sys.exit(1)
 
-    df = _load_all_attendance_xlsx(att_path, ATT_SHEETS)
+def _name_key(s) -> str:
+    t = "" if pd.isna(s) else str(s)
+    t = t.upper().replace("/", " ")
+    t = re.sub(r"[^A-Z0-9]+", " ", t)
+    t = re.sub(r"\s+", " ", t).strip()
+    return t
 
-    # 👇 this is the "print the table to see" part
-    print("[i] attendance_df preview:")
-    print(df.head(10))
-    print("[i] columns:", df.columns.tolist())
 
-    stats = get_person_attendance_stats(df, month=month, name=name)
-    picked = stats["person"].get("name") or stats["person"].get("staff_no") or stats["person"].get("employee_id")
-    print(f"[i] Showing attendance for: {picked!r} ({month})")
-    print("[i] Monthly:", stats["monthly"])
+def _name_nospace(s) -> str:
+    t = "" if pd.isna(s) else str(s)
+    return re.sub(r"[^A-Z0-9]+", "", t.upper())
 
-    out_html = render_preview_html(stats)
-    print(f"[i] Wrote preview to: {out_html}")
+
+def _initials(s: str) -> str:
+    s = _name_key(s)
+    parts = [p for p in s.split() if p not in {"D", "O"}]
+    return "".join(p[0] for p in parts if p)
+
+
+def _to_int(v) -> int:
     try:
-        webbrowser.open(out_html.as_uri(), new=2)
+        return int(pd.to_numeric(v, errors="coerce") or 0)
     except Exception:
-        print(f"[i] Open this in your browser: {out_html}")
+        return 0
+
+
+def _find_files(explicit: Optional[str]) -> List[Path]:
+    if explicit:
+        p = Path(explicit)
+        return [p] if p.exists() else []
+
+    files: List[Path] = []
+    for d in DATA_DIRS:
+        if not d.exists():
+            continue
+        for pat in PATTERNS:
+            files.extend(sorted(d.glob(pat)))
+
+    if not files:
+        for d in DATA_DIRS:
+            if not d.exists():
+                continue
+            hits = glob.glob(str(d / "**" / "*.xlsx"), recursive=True) + \
+                   glob.glob(str(d / "**" / "*.xlsm"), recursive=True)
+            files.extend(Path(h) for h in hits)
+
+    seen, uniq = set(), []
+    for f in files:
+        if f not in seen:
+            uniq.append(f)
+            seen.add(f)
+    return uniq
+
+
+def _row_has_month_cols(cols_norm: List[str]) -> bool:
+    s = set(cols_norm)
+    found = 0
+    for m in MONTHS:
+        mN = _norm_col(m)
+        for base in MONTH_BASES:
+            if f"{mN}_{base}" in s or f"{mN}{base}" in s:
+                found += 1
+                if found >= 3:
+                    return True
+    return False
+
+
+def _df_has_month_cols(df: pd.DataFrame) -> bool:
+    return _row_has_month_cols(list(df.columns))
+
+
+def _sheet_month_columns(df: pd.DataFrame) -> List[str]:
+    out: List[str] = []
+    s = set(df.columns)
+    for m in MONTHS:
+        mN = _norm_col(m)
+        for base in MONTH_BASES:
+            a, b = f"{mN}_{base}", f"{mN}{base}"
+            if a in s:
+                out.append(a)
+            elif b in s:
+                out.append(b)
+            else:
+                for c in s:
+                    if str(c).startswith(a + "_") or str(c).startswith(b + "_"):
+                        out.append(c); break
+    return out
+
+
+def _parse_sheet(xls: pd.ExcelFile, sh: str) -> Optional[pd.DataFrame]:
+    try:
+        raw = xls.parse(sh, header=None, dtype=object)
+    except Exception:
+        return None
+
+    # detect header row
+    header_idx: Optional[int] = None
+    for i in range(min(len(raw), 40)):
+        cols_test = [_norm_col(v) for v in raw.iloc[i].tolist()]
+        if _row_has_month_cols(cols_test):
+            header_idx = i
+            break
+    if header_idx is None:
+        for i in range(min(len(raw), 10)):
+            if raw.iloc[i].notna().any():
+                header_idx = i
+                break
+        if header_idx is None:
+            header_idx = 0
+
+    cols_src = raw.iloc[header_idx].tolist() if header_idx < len(raw) else []
+    cols_norm = [_norm_col(c) for c in cols_src]
+    # uniquify headers
+    seen = {}
+    final_cols = []
+    for c in cols_norm:
+        if not c:
+            c = "COL"
+        seen[c] = seen.get(c, 0) + 1
+        final_cols.append(f"{c}_{seen[c]}" if seen[c] > 1 else c)
+
+    df = raw.iloc[min(header_idx + 1, len(raw)) :].copy()
+    df.columns = final_cols if final_cols else []
+    return df.reset_index(drop=True)
+
+
+def _load_and_merge_file(xl: Path) -> tuple[Optional[pd.DataFrame], List[str]]:
+    """
+    Load a workbook and concatenate:
+      - First, any sheets that match PREFERRED_SHEETS
+      - Then, any other sheets that have month columns (as a supplement)
+    """
+    merged: List[pd.DataFrame] = []
+    used_names: List[str] = []
+
+    # prefer cached formula values; though we don't read totals, it doesn't hurt
+    try:
+        xls = pd.ExcelFile(xl, engine="openpyxl", engine_kwargs={"data_only": True})
+    except Exception:
+        try:
+            xls = pd.ExcelFile(xl)
+        except Exception:
+            return None, used_names
+
+    names = xls.sheet_names
+
+    # 1) preferred sheets
+    picked_idx = set()
+    for pat in PREFERRED_SHEETS:
+        rx = re.compile(pat, flags=re.IGNORECASE)
+        for i, nm in enumerate(names):
+            if i in picked_idx:
+                continue
+            if rx.search(nm or ""):
+                df = _parse_sheet(xls, nm)
+                if df is not None and _df_has_month_cols(df):
+                    merged.append(df); used_names.append(nm); picked_idx.add(i)
+
+    # 2) supplement with any other sheet that has month columns
+    for i, nm in enumerate(names):
+        if i in picked_idx:
+            continue
+        df = _parse_sheet(xls, nm)
+        if df is not None and _df_has_month_cols(df):
+            merged.append(df); used_names.append(nm); picked_idx.add(i)
+
+    if not merged:
+        return None, used_names
+
+    # Normalize set union of columns; pandas will align by column names
+    combo = pd.concat(merged, ignore_index=True, sort=False)
+    return combo, used_names
+
+
+def _pick_best_file(files: List[Path]) -> tuple[Optional[pd.DataFrame], Optional[Path], List[str]]:
+    """
+    For each file, merge its candidate sheets, score by:
+      (number of month columns, sum of all month columns), pick the best file.
+    """
+    best_df, best_file, best_sheets, best_score = None, None, [], (-1, -1.0)
+
+    for f in files:
+        df, used = _load_and_merge_file(f)
+        if df is None or df.empty:
+            continue
+        cols = _sheet_month_columns(df)
+        if not cols:
+            continue
+        try:
+            total_sum = float(sum(pd.to_numeric(df[c], errors="coerce").fillna(0).sum() for c in cols))
+        except Exception:
+            total_sum = 0.0
+        score = (len(cols), total_sum)
+        if score > best_score:
+            best_df, best_file, best_sheets, best_score = df, f, used, score
+
+    return best_df, best_file, best_sheets
+
+
+def _col(df: pd.DataFrame, *opts: str) -> Optional[str]:
+    have = set(df.columns)
+    for o in opts:
+        k = _norm_col(o)
+        if k in have:
+            return k
+    for o in opts:
+        k = _norm_col(o)
+        for c in have:
+            if c == k or c.startswith(k + "_"):
+                return c
+    return None
+
+
+# ---------- matching & extraction ----------
+def _match_row(df: pd.DataFrame, name: Optional[str], employee_id: Optional[str], staff_no: Optional[str]) -> Optional[pd.Series]:
+    """Pick the richest matching row in the merged DataFrame."""
+    if df is None or df.empty:
+        return None
+
+    month_cols = _sheet_month_columns(df)
+
+    def _score_row(r: pd.Series) -> int:
+        return int(sum(_to_int(r.get(c, 0)) for c in month_cols))
+
+    def _pick_best(sub: pd.DataFrame) -> Optional[pd.Series]:
+        if sub.empty:
+            return None
+        best_i, best_s = None, -1
+        for i, r in sub.iterrows():
+            sc = _score_row(r)
+            if sc > best_s:
+                best_s, best_i = sc, i
+        return sub.loc[best_i] if best_i is not None else None
+
+    try:
+        emp = _col(df, "Employee ID", "EMPLOYEE ID", "Emp ID", "EMP_ID")
+        stf = _col(df, "Staff No", "STAFF NO", "StaffNo", "STAFF_NO")
+        nam = _col(df, "Staff Name (JO)", "Staff Name", "Name", "NAME")
+
+        if stf and staff_no:
+            sub = df[df[stf].astype(str).str.upper().str.strip() == str(staff_no).upper().strip()]
+            best = _pick_best(sub)
+            if best is not None:
+                return best
+
+        if emp and employee_id:
+            sub = df[df[emp].astype(str).str.upper().str.strip() == str(employee_id).upper().strip()]
+            best = _pick_best(sub)
+            if best is not None:
+                return best
+
+        if nam and name:
+            key = _name_key(name)
+            sub1 = df[df[nam].astype(str).map(_name_key) == key]
+            best = _pick_best(sub1)
+            if best is not None:
+                return best
+
+            nsp = _name_nospace(name)
+            sub2 = df[df[nam].astype(str).map(_name_nospace) == nsp]
+            best = _pick_best(sub2)
+            if best is not None:
+                return best
+
+            ini = _initials(name)
+            if ini:
+                cand = df[df[nam].notna()].copy()
+                cand["_INI_"] = cand[nam].astype(str).map(_initials)
+                sub3 = cand[cand["_INI_"].str.contains("^" + re.escape(ini), na=False)]
+                best = _pick_best(sub3)
+                if best is not None:
+                    return best
+    except Exception:
+        return None
+
+    return None
+
+
+def _extract_monthly(row: pd.Series) -> Dict[str, Dict[str, int]]:
+    monthly = {m: {"mc": 0, "ul": 0, "turnout": 0} for m in MONTHS}
+    idx = set(row.index)
+
+    def pick(m: str, base: str) -> Optional[str]:
+        m_norm = _norm_col(m)
+        for shape in (f"{m_norm}_{base}", f"{m_norm}{base}"):
+            if shape in idx:
+                return shape
+            for c in idx:
+                if str(c).startswith(shape + "_"):
+                    return c
+        return None
+
+    for m in MONTHS:
+        mc = pick(m, "MC")
+        ul = pick(m, "UL")
+        to = pick(m, "TURNOUT")
+        if mc:
+            monthly[m]["mc"] = _to_int(row[mc])
+        if ul:
+            monthly[m]["ul"] = _to_int(row[ul])
+        if to:
+            monthly[m]["turnout"] = _to_int(row[to])
+
+    return monthly
+
+
+def _latest_nonzero_month(monthly: Dict[str, Dict[str, int]]) -> str:
+    for m in reversed(MONTHS):
+        if any(monthly[m].get(k, 0) for k in ("mc", "ul", "turnout")):
+            return m
+    return pd.Timestamp.now().strftime("%b")
+
+
+def _stats(row: Optional[pd.Series], req_month: Optional[str]) -> Dict[str, object]:
+    if row is None or (isinstance(row, pd.Series) and row.empty):
+        m = (req_month or pd.Timestamp.now().strftime("%b"))[:3].title()
+        out = {
+            "month": m,
+            "month_mc": 0, "month_ul": 0, "month_turnout": 0,
+            "total_mc": 0,  "total_ul": 0,  "total_turnout": 0,
+            "monthly": {mn: {"mc": 0, "ul": 0, "turnout": 0} for mn in MONTHS},
+            "not_found": True,
+        }
+        print(f"[ATT DATA] <none> | req_month {m} | got_total 0 0 0 | got_month {m} | not_found True")
+        return out
+
+    monthly = _extract_monthly(row)
+    tm = sum(int(monthly[m]["mc"]) for m in MONTHS)
+    tu = sum(int(monthly[m]["ul"]) for m in MONTHS)
+    tt = sum(int(monthly[m]["turnout"]) for m in MONTHS)
+
+    if req_month:
+        ask = req_month.strip()[:3].title()
+        month_used = "Jun" if ask == "Jun" else ask
+    else:
+        month_used = _latest_nonzero_month(monthly)
+
+    mm = monthly.get(month_used, {"mc": 0, "ul": 0, "turnout": 0})
+
+    out = {
+        "month": month_used,
+        "month_mc": int(mm.get("mc", 0)),
+        "month_ul": int(mm.get("ul", 0)),
+        "month_turnout": int(mm.get("turnout", 0)),
+        "total_mc": int(tm),
+        "total_ul": int(tu),
+        "total_turnout": int(tt),
+        "monthly": monthly,
+        "not_found": False,
+    }
+
+    who = _name_key(row.get("STAFF_NAME_(JO)") or row.get("STAFF_NAME") or row.get("NAME") or "")
+    print(
+        f"[ATT DATA] {who or '<row>'} | req_month {req_month or 'auto'} | "
+        f"got_total {out['total_mc']} {out['total_ul']} {out['total_turnout']} | got_month {out['month']}"
+    )
+    return out
+
+
+def _fallback_from_mc(
+    month: Optional[str],
+    name: Optional[str],
+    employee_id: Optional[str],
+    staff_no: Optional[str],
+) -> Dict[str, object]:
+    try:
+        from .build_MC import get_tables as mc_get  # type: ignore
+        mc_payload = mc_get(month=month, name=name, employee_id=employee_id, staff_no=staff_no) or {}
+        mc = mc_payload.get("mc_details", {}) or {}
+        m = (month or pd.Timestamp.now().strftime("%b"))[:3].title()
+        at = {
+            "month": m,
+            "month_mc": int(mc.get("month_mc", 0)),
+            "month_ul": int(mc.get("month_ul", 0)),
+            "month_turnout": int(mc.get("month_turnout", 0)),
+            "total_mc": int(mc.get("total_mc", 0)),
+            "total_ul": int(mc.get("total_ul", 0)),
+            "total_turnout": int(mc.get("total_turnout", 0)),
+            "monthly": mc.get("monthly", {mn: {"mc": 0, "ul": 0, "turnout": 0} for mn in MONTHS}),
+            "not_found": bool(mc.get("not_found", False)),
+        }
+        print(
+            f"[ATT DATA] (fallback MC) | month {at['month']} | "
+            f"got_total {at['total_mc']} {at['total_ul']} {at['total_turnout']}"
+        )
+        return at
+    except Exception:
+        return _stats(None, month)
+
+
+# ---------- public API ----------
+def get_tables(
+    month: Optional[str] = None,
+    name: Optional[str] = None,
+    employee_id: Optional[str] = None,
+    staff_no: Optional[str] = None,
+    path: Optional[str] = None,
+) -> Dict[str, object]:
+    try:
+        files = _find_files(path)
+        df, picked, used_sheets = _pick_best_file(files)
+
+        if df is None:
+            return {"attendance_stats": _fallback_from_mc(month, name, employee_id, staff_no)}
+
+        row = _match_row(df, name, employee_id, staff_no)
+        stats = _stats(row, month)
+
+        try:
+            sheet_info = ",".join(used_sheets) if used_sheets else "?"
+            print(
+                f"[ATT PICK] file={picked.name if picked else '?'} "
+                f"sheets=[{sheet_info}] totals={stats['total_mc']}/{stats['total_ul']}/{stats['total_turnout']}"
+            )
+        except Exception:
+            pass
+
+        return {"attendance_stats": stats}
+    except Exception as e:
+        print(f"[ATT ERROR] {type(e).__name__} {e}")
+        return {"attendance_stats": _fallback_from_mc(month, name, employee_id, staff_no)}

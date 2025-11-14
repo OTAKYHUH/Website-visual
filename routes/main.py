@@ -19,6 +19,14 @@ except Exception:
 # NEW: import HSL tables (same style as attached file)
 from build.build_H import get_tables as get_hsl_tables  # type: ignore
 
+# NEW: Attendance (same builder used by profile.py / nonshift.py)
+try:
+    from build.build_attendance import get_tables as get_attendance_tables  # type: ignore
+    print("[ATT LOADED]", getattr(get_attendance_tables, "__version__", "?"))
+except Exception:
+    get_attendance_tables = None
+    print("[ATT LOADED] FAILED")
+
 main = Blueprint("main", __name__, template_folder="templates")
 
 # ---------- caches ----------
@@ -47,12 +55,12 @@ def _order_months(ms) -> List[str]:
 
 
 def _name_key(s) -> str:
-    t = "" if pd.isna(s) else str(s)
+    import re, pandas as _pd
+    t = "" if _pd.isna(s) else str(s)
     t = t.upper().replace("/", " ")
     t = re.sub(r"[^A-Z0-9]+", " ", t)
     t = re.sub(r"\s+", " ", t).strip()
     return t
-
 
 def _display_name(n: str) -> str:
     return re.sub(r"\bD O\b", "D/O", n, flags=re.IGNORECASE) if n else n
@@ -132,16 +140,24 @@ def _filter_to_abcd(df: pd.DataFrame, group_col: str) -> pd.DataFrame:
     return out
 
 
-def _which_plant(val: str) -> str | None:
-    v = (val or "").upper()
-    if "P456" in v or v.strip() == "456":
-        return "P456"
-    if "P123" in v or v.strip() == "123":
+def _which_plant(val) -> str | None:
+    """Return 'P123' or 'P456' from messy values (numbers, NaN, strings, etc.)."""
+    import pandas as _pd
+    if val is None:
+        return None
+    try:
+        if isinstance(val, float) and _pd.isna(val):
+            return None
+    except Exception:
+        pass
+    s = str(val).strip().upper().replace("/", " ")
+    if not s:
+        return None
+    if s == "P123" or "123" in s:
         return "P123"
-    if v in {"P123","P456"}:
-        return v
+    if s == "P456" or "456" in s:
+        return "P456"
     return None
-
 
 # --- month normalization ---
 def _to_month_abbr(x) -> str:
@@ -373,11 +389,22 @@ def _norm_shift(val: str) -> str:
     return v[:1] if v else ""
 
 
-def _shift_key(df: pd.DataFrame, dc: str | None, sc: str | None) -> pd.Series:
-    if not dc or not sc:
-        return pd.Series([pd.NA] * len(df))
-    dt = _fast_parse_date(df[dc], dayfirst=False)
-    sh = df[sc].astype(str).map(_norm_shift)
+def _shift_key(df, date_col: str | None, shift_col: str | None):
+    """Return Series of 'YYYY-MM-DD@D|N' keys (NaN if missing pieces)."""
+    import pandas as _pd
+    if not date_col or not shift_col:
+        return _pd.Series([_pd.NA] * len(df))
+
+    def _fast_parse_date(series):
+        s = _pd.Series(series)
+        if _pd.api.types.is_datetime64_any_dtype(s):
+            return _pd.to_datetime(s, errors="coerce")
+        if _pd.api.types.is_numeric_dtype(s):
+            return _pd.to_datetime(s, unit="D", origin="1899-12-30", errors="coerce")
+        return _pd.to_datetime(s.astype(str).str.strip(), errors="coerce", dayfirst=False, cache=True)
+
+    dt = _fast_parse_date(df[date_col])
+    sh = df[shift_col].astype(str).str.strip().str.upper().str[0].replace({"1":"D","2":"N","G":"N"})
     return dt.dt.strftime("%Y-%m-%d") + "@" + sh
 
 
@@ -453,10 +480,175 @@ def _build_name_map(safety_raw: list[str], base_raw: list[str], threshold: float
     return mapping
 
 
+# ---------- Attendance helpers (profile.py / nonshift.py) ----------
+
+def _as_scalar(x):
+    """Return a clean scalar string or None from tuple/list/Series/NaN/etc."""
+    import pandas as _pd
+    if x is None:
+        return None
+    if isinstance(x, _pd.Series):
+        for v in x.tolist():
+            s = ("" if _pd.isna(v) else str(v)).strip()
+            if s and s.lower() != "nan":
+                return s
+        return None
+    try:
+        s = ("" if _pd.isna(x) else str(x)).strip()
+    except Exception:
+        try:
+            s = str(x).strip()
+        except Exception:
+            return None
+    return None if (s == "" or s.lower() == "nan") else s
+
+def _extract_ids_map(df) -> dict[str, tuple[str|None, str|None]]:
+    """Build { exact_name -> (employee_id, staff_no) } from common spellings."""
+    def _find_col(df, *cands):
+        low = {c.lower(): c for c in df.columns}
+        for c in cands:
+            k = c.lower()
+            if k in low:
+                return low[k]
+        return None
+
+    name_col = _find_col(df, "Name", "NAME")
+    emp_col  = _find_col(df, "Employee ID", "EMPLOYEE ID", "Emp ID", "EMP_ID")
+    stf_col  = _find_col(df, "Staff No", "STAFF NO", "StaffNo", "STAFF_NO")
+    if not name_col: return {}
+
+    keep = [c for c in [name_col, emp_col, stf_col] if c]
+    tmp = df[keep].copy()
+    tmp[name_col] = tmp[name_col].astype(str).str.strip()
+
+    def _first_nonempty(series):
+        import pandas as _pd
+        for x in series:
+            s = ("" if _pd.isna(x) else str(x)).strip()
+            if s:
+                return s
+        return None
+
+    grp = tmp.groupby(name_col, dropna=False).agg(_first_nonempty)
+    out = {}
+    for nm, row in grp.iterrows():
+        out[str(nm).strip()] = (
+            (row.get(emp_col) if emp_col else None),
+            (row.get(stf_col) if stf_col else None),
+        )
+    return out
+
+def _resolve_mc_ul(stats: dict, selected_months: list[str] | None) -> tuple[float|None, float|None]:
+    """Return (mc, ul) using your builder’s keys. Month-aware; mirrors nonshift.py."""
+    if not isinstance(stats, dict):
+        return None, None
+
+    def to_num(x):
+        try:
+            if x is None or (isinstance(x, float) and pd.isna(x)):
+                return None
+            return float(x)
+        except Exception:
+            try:
+                return float(str(x).strip())
+            except Exception:
+                return None
+
+    if selected_months:
+        mon = selected_months[0][:3].title()
+        mm = stats.get("month_mc"); mu = stats.get("month_ul")
+        if mm is None or mu is None:
+            monthly = stats.get("by_month") or stats.get("months") or stats.get("monthly") or {}
+            rec = monthly.get(mon) or {}
+            if mm is None: mm = (rec.get("mc") if isinstance(rec, dict) else None)
+            if mu is None: mu = (rec.get("ul") if isinstance(rec, dict) else None)
+        if mm is None: mm = stats.get(f"mc_{mon}") or stats.get(f"{mon}_mc")
+        if mu is None: mu = stats.get(f"ul_{mon}") or stats.get(f"{mon}_ul")
+        return to_num(mm), to_num(mu)
+
+    # No filter → totals
+    return to_num(stats.get("total_mc")), to_num(stats.get("total_ul"))
+
+
+def _call_attendance_for_person(exact_nm: str | None,
+                                emp_id: str | None,
+                                staff_no: str | None,
+                                att_month: str) -> dict:
+    """Try IDs first, then name. Always pass clean scalars to the builder."""
+    if not callable(get_attendance_tables):
+        return {}
+
+    # force to scalars first so boolean tests are safe
+    emp_id  = _as_scalar(emp_id)
+    staff_no = _as_scalar(staff_no)
+
+    # try 1: prefer IDs if we have them
+    if (emp_id is not None) or (staff_no is not None):
+        try:
+            b = get_attendance_tables(month=att_month, name=None, employee_id=emp_id, staff_no=staff_no) or {}
+            stats = b.get("attendance_stats", {}) or {}
+            if stats:
+                return stats
+        except Exception:
+            pass
+
+    # try 2: exact name
+    nm = _as_scalar(exact_nm)
+    if nm:
+        try:
+            b = get_attendance_tables(month=att_month, name=nm, employee_id=None, staff_no=None) or {}
+            stats = b.get("attendance_stats", {}) or {}
+            if stats:
+                return stats
+        except Exception:
+            pass
+
+    # try 3: normalized name variant
+    if nm:
+        import re as _re
+        cand = _re.sub(r"\s+", " ", nm.replace("/", " ")).strip()
+        try:
+            b = get_attendance_tables(month=att_month, name=cand, employee_id=None, staff_no=None) or {}
+            stats = b.get("attendance_stats", {}) or {}
+            if stats:
+                return stats
+        except Exception:
+            pass
+
+    return {}
+
+
+def _id_lookup_with_fallback(id_map: dict[str, tuple[str|None, str|None]], exact_nm: str | None):
+    """Return (emp_id, staff_no) using exact name first, then normalized fallback. Always scalars."""
+    import pandas as _pd
+
+    def _to_pair(x):
+        if isinstance(x, tuple) or isinstance(x, list):
+            return _as_scalar(x[0] if len(x) > 0 else None), _as_scalar(x[1] if len(x) > 1 else None)
+        if isinstance(x, _pd.Series):
+            vals = list(x.values)
+            return _as_scalar(vals[0] if len(vals) > 0 else None), _as_scalar(vals[1] if len(vals) > 1 else None)
+        return None, None
+
+    if not exact_nm:
+        return (None, None)
+
+    hit = id_map.get(str(exact_nm).strip())
+    emp, stf = _to_pair(hit)
+    if (emp is not None) or (stf is not None):
+        return emp, stf
+
+    nk = _name_key(exact_nm)
+    for k, pair in id_map.items():
+        if _name_key(k) == nk:
+            emp, stf = _to_pair(pair)
+            return emp, stf
+    return (None, None)
+
 # ---------- core (heavy) ----------
 def _get_people(selected_months: List[str], terminal: str | None) -> List[Dict[str, str]]:
     """
-    Safety + dummy positive contribution + ops (if present) + reliability + excellence.
+    Safety + positive contribution + ops (if present) + HSL + attendance% as Reliability + excellence.
     """
     tnorm = (terminal or "ALL").upper()
     if tnorm not in {"ALL","P123","P456"}:
@@ -684,7 +876,7 @@ def _get_people(selected_months: List[str], terminal: str | None) -> List[Dict[s
         si_cnt, shift_cnt = safety_ratio_map.get(nm_key, (0, 0))
         s_cls  = _safety_class(s_pts)
 
-        # POSITIVE CONTRIBUTION (dummy, patterned)
+        # POSITIVE CONTRIBUTION (still demo)
         pat = idx % 6
         if pat in (0, 1):
             pc_count = 4
@@ -740,31 +932,42 @@ def _get_people(selected_months: List[str], terminal: str | None) -> List[Dict[s
             "hsl_points": hsl_pts,
 
             "points": total_points,
+
             "photo": photos.get(_name_key(raw_name), ""),
+
+            # keep exact name for attendance builder
+            "_exact_name": raw_name,
         })
 
-    # ====== RELIABILITY (dummy, percentile → points) ======
-    n = len(people)
-    if n > 0:
-        # make a wide-spread dummy reliability % for each person
-        for i, person in enumerate(people):
-            # 55..~100 with some variation
-            base_val = 55 + (i * 17) % 45   # 55..99
-            reliability = round(float(base_val) + ((i % 3) * 0.2), 1)
-            person["reliability"] = reliability
+    # ====== RELIABILITY (attendance %) — added here ======
+    if callable(get_attendance_tables) and len(people) > 0:
+        # month to query builder: first selected month (3-letter) or "auto"
+        att_month = (selected_months[0][:3].title() if selected_months else "auto")
+        # map of exact name -> (employee_id, staff_no) from base df
+        id_map = _extract_ids_map(base)
 
-        # rank by reliability descending
-        order = sorted(range(n), key=lambda k: people[k]["reliability"], reverse=True)
+        for p in people:
+            exact_nm = str(p.get("_exact_name") or p.get("name") or "").strip() or None
+            emp_id, staff_no = _id_lookup_with_fallback(id_map, exact_nm)
+            # call builder (IDs first, then name fallback)
+            attendance_stats = _call_attendance_for_person(exact_nm, emp_id, staff_no, att_month)
+            # pick MC/UL according to month filter
+            mc_used, ul_used = _resolve_mc_ul(attendance_stats, selected_months)
+            shift_worked = int(p.get("shift_count") or 0)
 
-        # percentile bands
-        rel_bands = [
-            (0.10, 5),
-            (0.20, 4),
-            (0.30, 3),
-            (0.40, 2),
-            (0.50, 1),
-        ]
+            pct = None
+            if mc_used is not None and ul_used is not None:
+                denom = float(shift_worked) + float(mc_used) + float(ul_used)
+                if denom > 0:
+                    pct = max(0.0, min(100.0, 100.0 * (float(shift_worked) / denom)))
 
+            # store to 1 decimal place
+            p["reliability"] = (round(float(pct), 1) if isinstance(pct, (int, float)) and not pd.isna(pct) else 0.0)
+
+        # convert reliability into points via ranking (same bands we used elsewhere)
+        n = len(people)
+        order = sorted(range(n), key=lambda k: people[k].get("reliability", 0.0), reverse=True)
+        rel_bands = [(0.10, 5),(0.20, 4),(0.30, 3),(0.40, 2),(0.50, 1)]
         for rank, idx_r in enumerate(order):
             pos = (rank + 1) / n
             pts = 0
@@ -772,22 +975,20 @@ def _get_people(selected_months: List[str], terminal: str | None) -> List[Dict[s
                 if pos <= cutoff:
                     pts = val
                     break
-
-            if pts >= 5:
-                cls = "pts-green"
-            elif pts >= 3:
-                cls = "pts-orange"
-            elif pts >= 1:
-                cls = "pts-red"
-            else:
-                cls = "pts-red"
-
+            cls = "pts-green" if pts >= 5 else ("pts-orange" if pts >= 3 else "pts-red")
             people[idx_r]["reliability_points"] = pts
             people[idx_r]["reliability_class"] = cls
             people[idx_r]["points"] = int(people[idx_r].get("points", 0)) + pts
+    else:
+        # fallback if attendance builder unavailable
+        for p in people:
+            p["reliability"] = 0.0
+            p["reliability_points"] = 0
+            p["reliability_class"] = "pts-red"
 
-        # ====== EXCELLENCE (dummy, percentile → points) ======
-        # make dummy excellence similar to contribution but more spread out at the top
+    # ====== EXCELLENCE (same demo logic) ======
+    n = len(people)
+    if n > 0:
         for i, person in enumerate(people):
             pc_like = int(person.get("pc_count", 0))
             wiggle = (i * 13) % 9  # 0..8
@@ -795,7 +996,6 @@ def _get_people(selected_months: List[str], terminal: str | None) -> List[Dict[s
             person["excellence"] = excellence_val
 
         order_exc = sorted(range(n), key=lambda k: people[k]["excellence"], reverse=True)
-
         exc_bands = [
             (0.10, 5),
             (0.20, 4),
@@ -803,7 +1003,6 @@ def _get_people(selected_months: List[str], terminal: str | None) -> List[Dict[s
             (0.40, 2),
             (0.50, 1),
         ]
-
         for rank, idx_e in enumerate(order_exc):
             pos = (rank + 1) / n
             pts = 0

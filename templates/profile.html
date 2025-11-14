@@ -217,12 +217,7 @@
   .si-select option[disabled]{ color: var(--muted); }
   .si-select option:checked{ background: linear-gradient(180deg, rgba(0,240,255,.22), rgba(0,240,255,.08)); color: #dff9ff; }
   .si-select option:hover{ background: rgba(255,255,255,.08); }
-  .pill,
-  .pill:link,
-  .pill:visited {
-    color: #fff;
-  }
-
+  .pill, .pill:link, .pill:visited { color: #fff; }
 </style>
 </head>
 <body>
@@ -343,20 +338,20 @@
 
     <!-- MC / UL / Turnout -->
     <section class="panel-wide mut" id="mut">
-      <h4>MC, UL &amp; Turnout for the month of <span id="mut-month">Oct</span></h4>
+      <h4>MC, UL &amp; Turnout for the month of <span id="mut-month">-</span></h4>
       <div class="mut-row">
-        <div class="mut-item"><div class="mut-label" id="mut-mc-label">Oct MC:</div> <div class="mut-chip" id="mut-mc">1</div></div>
-        <div class="mut-item"><div class="mut-label" id="mut-ul-label">Oct UL:</div> <div class="mut-chip" id="mut-ul">0</div></div>
-        <div class="mut-item"><div class="mut-label" id="mut-to-label">Oct Turnout:</div> <div class="mut-chip" id="mut-to">0</div></div>
+        <div class="mut-item"><div class="mut-label" id="mut-mc-label">MC:</div> <div class="mut-chip" id="mut-mc">0</div></div>
+        <div class="mut-item"><div class="mut-label" id="mut-ul-label">UL:</div> <div class="mut-chip" id="mut-ul">0</div></div>
+        <div class="mut-item"><div class="mut-label" id="mut-to-label">Turnout:</div> <div class="mut-chip" id="mut-to">0</div></div>
       </div>
 
       <div class="mut-sep"></div>
 
       <h4>MC, UL &amp; Turnout for the whole year</h4>
       <div class="mut-row">
-        <div class="mut-item"><div class="mut-label">Total MC:</div> <div class="mut-chip" id="mut-tot-mc">9</div></div>
-        <div class="mut-item"><div class="mut-label">Total UL:</div> <div class="mut-chip" id="mut-tot-ul">1</div></div>
-        <div class="mut-item"><div class="mut-label">Total Turnout:</div> <div class="mut-chip" id="mut-tot-to">5</div></div>
+        <div class="mut-item"><div class="mut-label">Total MC:</div> <div class="mut-chip" id="mut-tot-mc">0</div></div>
+        <div class="mut-item"><div class="mut-label">Total UL:</div> <div class="mut-chip" id="mut-tot-ul">0</div></div>
+        <div class="mut-item"><div class="mut-label">Total Turnout:</div> <div class="mut-chip" id="mut-tot-to">0</div></div>
       </div>
     </section>
 
@@ -392,7 +387,7 @@
   <script type="application/json" id="gy-useemp">{{ use_emp_bars|tojson }}</script>
   <script type="application/json" id="pc-data">{{ positive_contribs|tojson }}</script>
   <script type="application/json" id="sel-months">{{ selected_months|tojson }}</script>
-  <!-- NEW: real attendance + MC-details from Flask -->
+  <!-- real attendance + MC-details -->
   <script type="application/json" id="attendance-json">{{ attendance_stats|tojson }}</script>
   <script type="application/json" id="mc-details-json">{{ mc_details|tojson }}</script>
 
@@ -524,11 +519,16 @@
     const barLabel = useEmp ? 'Employees' : 'Shifts';
 
     const ywtVals = ywtRaw.filter(v => v !== null && !isNaN(v));
-    let minY = Math.min(...ywtVals), maxY = Math.max(...ywtVals);
-    const pad = Math.max(0.2, (maxY - minY) * 0.15);
-    minY = Math.floor((minY - pad) * 100) / 100;
-    maxY = Math.ceil((maxY + pad) * 100) / 100;
-    if (!(maxY > minY)) { minY -= 0.5; maxY += 0.5; }
+    let minY, maxY;
+    if (ywtVals.length === 0) {
+      minY = 0; maxY = 1;
+    } else {
+      minY = Math.min(...ywtVals); maxY = Math.max(...ywtVals);
+      const pad = Math.max(0.2, (maxY - minY) * 0.15);
+      minY = Math.floor((minY - pad) * 100) / 100;
+      maxY = Math.ceil((maxY + pad) * 100) / 100;
+      if (!(maxY > minY)) { minY -= 0.5; maxY += 0.5; }
+    }
 
     const ctx = document.getElementById('groupMixChart').getContext('2d');
 
@@ -888,62 +888,72 @@
     })();
   </script>
 
-  <!-- MC/UL/Turnout REAL renderer -->
+  <!-- MC/UL/Turnout renderer (uses builder.monthly + totals) -->
   <script>
-    (function(){
-      // ✅ match the actual ID in the HTML
-      const raw = document.getElementById('attendance-json');
-      const att = raw ? JSON.parse(raw.textContent || 'null') : null;
+  (function(){
+    const raw = document.getElementById('attendance-json');
+    let att = null; try { att = raw ? JSON.parse(raw.textContent || 'null') : null; } catch(e){ att = null; }
 
-      // fallbacks
-      const month   = att && att.month                      ? att.month                      : 'Oct';
-      const monthMC = att && typeof att.month_mc === 'number'      ? att.month_mc      : 0;
-      const monthUL = att && typeof att.month_ul === 'number'      ? att.month_ul      : 0;
-      const monthTO = att && typeof att.month_turnout === 'number' ? att.month_turnout : 0;
-      const totMC   = att && typeof att.total_mc === 'number'      ? att.total_mc      : 0;
-      const totUL   = att && typeof att.total_ul === 'number'      ? att.total_ul      : 0;
-      const totTO   = att && typeof att.total_turnout === 'number' ? att.total_turnout : 0;
+    const get = (o,p) => { try { return p.split('.').reduce((x,k)=> (x && k in x) ? x[k] : undefined, o); } catch { return undefined; } };
+    const pick = (...xs) => xs.find(v => v!==undefined && v!==null && v!=='');
+    const num  = (v,d=0) => (v==null || v==='') ? d : (isNaN(+v) ? d : +v);
 
-      document.getElementById('mut-month').textContent    = month;
-      document.getElementById('mut-mc').textContent       = monthMC;
-      document.getElementById('mut-ul').textContent       = monthUL;
-      document.getElementById('mut-to').textContent       = monthTO;
-      document.getElementById('mut-mc-label').textContent = month + ' MC:';
-      document.getElementById('mut-ul-label').textContent = month + ' UL:';
-      document.getElementById('mut-to-label').textContent = month + ' Turnout:';
-      document.getElementById('mut-tot-mc').textContent   = totMC;
-      document.getElementById('mut-tot-ul').textContent   = totUL;
-      document.getElementById('mut-tot-to').textContent   = totTO;
+    const month   = pick(get(att,'month'), get(att,'current_month'), get(att,'Month'), '-');
+    const monthMC = num(pick(get(att,'month_mc'), get(att,'month.MC'), get(att,'stats.month_mc')), 0);
+    const monthUL = num(pick(get(att,'month_ul'), get(att,'month.UL'), get(att,'stats.month_ul')), 0);
+    const monthTO = num(pick(get(att,'month_turnout'), get(att,'month.Turnout'), get(att,'stats.month_turnout')), 0);
+    const totMC   = num(pick(get(att,'total_mc'), get(att,'totals.total_mc')), 0);
+    const totUL   = num(pick(get(att,'total_ul'), get(att,'totals.total_ul')), 0);
+    const totTO   = num(pick(get(att,'total_turnout'), get(att,'totals.total_turnout')), 0);
 
-      // expose for the monthly trend charts
-      const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-      const byMonth = {};
-      months.forEach(m => byMonth[m] = { MC:0, UL:0, Turnout:0 });
-      byMonth[month] = { MC: monthMC, UL: monthUL, Turnout: monthTO };
+    document.getElementById('mut-month').textContent    = month;
+    document.getElementById('mut-mc').textContent       = monthMC;
+    document.getElementById('mut-ul').textContent       = monthUL;
+    document.getElementById('mut-to').textContent       = monthTO;
+    document.getElementById('mut-mc-label').textContent = month + ' MC:';
+    document.getElementById('mut-ul-label').textContent = month + ' UL:';
+    document.getElementById('mut-to-label').textContent = month + ' Turnout:';
+    document.getElementById('mut-tot-mc').textContent   = totMC;
+    document.getElementById('mut-tot-ul').textContent   = totUL;
+    document.getElementById('mut-tot-to').textContent   = totTO;
 
-      window.__MUT_DATA__ = {
-        byMonth: byMonth,
-        totals: { MC: totMC, UL: totUL, Turnout: totTO }
-      };
-    })();
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const monthly = get(att, 'monthly') || {};
+    const byMonth = {};
+    months.forEach(m => {
+      const row = monthly[m] || {};
+      byMonth[m] = { MC: num(row.mc, 0), UL: num(row.ul, 0), Turnout: num(row.turnout, 0) };
+    });
+    window.__MUT_DATA__ = { byMonth, totals:{ MC:totMC, UL:totUL, Turnout:totTO } };
+  })();
   </script>
 
-  <!-- Consolidation Details REAL renderer -->
+  <!-- Consolidation Details renderer (tolerant + Jun→June) -->
   <script>
     (function(){
-      const raw = document.getElementById('mc-details-data');
-      const det = raw ? JSON.parse(raw.textContent || 'null') : null;
-      const sel = (()=>{ try { return JSON.parse(document.getElementById('sel-months').textContent||'[]'); } catch(e){ return []; }})();
+      const raw = document.getElementById('mc-details-json');
+      let det = null; try { det = raw ? JSON.parse(raw.textContent || 'null') : null; } catch(e){ det = null; }
 
+      const sel = (()=>{ try { return JSON.parse(document.getElementById('sel-months').textContent||'[]'); } catch(e){ return []; }})();
       const ALL = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
       const activeMonths = (sel && sel.length>0) ? sel : ALL;
 
+      const src =
+        (det && det.all_months) ? det.all_months :
+        (det && det.months)     ? det.months     :
+        (det && det.details)    ? det.details    : {};
+
       const grid = document.getElementById('consGrid');
       grid.innerHTML = '';
-      const colDefs = [...activeMonths.map(()=> 'minmax(120px,1fr)')];
-      grid.style.gridTemplateColumns = colDefs.join(' ');
+      grid.style.gridTemplateColumns = activeMonths.map(()=> 'minmax(120px,1fr)').join(' ');
 
-      // header
+      const mapKey = (m) => {
+        const full = {Jan:'January', Feb:'February', Mar:'March', Apr:'April', May:'May', Jun:'June', Jul:'July', Aug:'August', Sep:'September', Oct:'October', Nov:'November', Dec:'December'};
+        const cands = [m, full[m] || m, m.toLowerCase(), m.toUpperCase()];
+        for (const k of cands) if (k in src) return k;
+        return m;
+      };
+
       activeMonths.forEach(m => {
         const h = document.createElement('div');
         h.className = 'cons-cell cons-head cons-month';
@@ -951,18 +961,19 @@
         grid.appendChild(h);
       });
 
-      // body – one row only (your design)
       activeMonths.forEach(m => {
         const cell = document.createElement('div');
         cell.className = 'cons-cell cons-body';
 
-        const all = det && det.all_months ? det.all_months : {};
-        const txt = (all[m] || '').trim();
+        const key = mapKey(m);
+        const rawTxt = (src && src[key]) || '';
+        const txt = typeof rawTxt === 'string' ? rawTxt.trim()
+                 : Array.isArray(rawTxt) ? rawTxt.join('\n').trim()
+                 : '';
 
         if (!txt) {
           cell.innerHTML = '<span class="item">–</span>';
         } else {
-          // split by newline if there is
           txt.split(/\r?\n/).forEach(piece => {
             const span = document.createElement('span');
             span.className = 'item';
@@ -973,39 +984,28 @@
         grid.appendChild(cell);
       });
 
-      // we also want the monthly chart to know “which month has text”
-      // so we pass it into window.__CONSOLIDATION__
       const monthsObj = {};
       ALL.forEach(m => {
-        const all = det && det.all_months ? det.all_months : {};
-        const txt = (all[m] || '').trim();
+        const key = mapKey(m);
+        const rawTxt = (src && src[key]) || '';
+        const txt = typeof rawTxt === 'string' ? rawTxt.trim()
+                 : Array.isArray(rawTxt) ? rawTxt.join('\n').trim()
+                 : '';
         monthsObj[m] = txt ? [txt] : [];
       });
-      window.__CONSOLIDATION__ = {
-        months: monthsObj,
-        healthTips: "",   // not in your file, so leave blank
-        ha1: false,
-        ha2: false,
-        remarks: ""
-      };
+      window.__CONSOLIDATION__ = { months: monthsObj, healthTips:"", ha1:false, ha2:false, remarks:"" };
     })();
   </script>
 
-  <!-- Monthly Trend charts -->
+  <!-- Monthly Trend charts (from attendance_stats.monthly) -->
   <script>
     (function(){
       const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
       const MUT = window.__MUT_DATA__ || { byMonth:{} };
-      const CONS = window.__CONSOLIDATION__ || {};
 
       const mc = months.map(m=> (MUT.byMonth[m]?.MC) ?? 0);
       const ul = months.map(m=> (MUT.byMonth[m]?.UL) ?? 0);
       const to = months.map(m=> (MUT.byMonth[m]?.Turnout) ?? 0);
-
-      let tipMonthIndex = -1;
-      const mcMax = Math.max(...mc, 1);
-      const tipBar = months.map((_,i)=> i===tipMonthIndex ? Math.max(mcMax*1.1, 1) : 0);
-      const ha1Scatter = months.map((_,i)=> null);
 
       function mkLine(id, label, data, color){
         const ctx = document.getElementById(id).getContext('2d');
@@ -1032,7 +1032,7 @@
               {
                 type:'bar',
                 label:'Health Tips',
-                data: tipBar,
+                data: months.map(()=>0),
                 backgroundColor:'rgba(255,140,0,.85)',
                 borderColor:'rgba(255,140,0,1)',
                 borderWidth:1,
@@ -1043,7 +1043,7 @@
               {
                 type:'scatter',
                 label:'HA (1)',
-                data: ha1Scatter,
+                data: months.map(()=> null),
                 pointRadius:6,
                 pointBackgroundColor:'#aeeaff',
                 pointBorderColor:'#ffffff',
@@ -1069,7 +1069,7 @@
           options:{
             responsive:true, maintainAspectRatio:false, animation:false,
             plugins:{
-              legend:{ display:true, labels:{ color:'#cfe8ff' } },
+              legend:{ display:true, labels:{ color:'#cfe8ff'} },
               tooltip:{ intersect:false, mode:'index' }
             },
             scales:{

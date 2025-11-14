@@ -24,16 +24,19 @@ from flask import (
 from build.build_data import add_month_columns, get_tables
 
 # NEW: pull real attendance + MC-details from your build scripts
-# (we just wrote these in build/)
 try:
     from build.build_attendance import get_tables as get_attendance_tables
+    print("[ATT LOADED]", getattr(get_attendance_tables, "__version__", "?"))
 except Exception:
     get_attendance_tables = None
+    print("[ATT LOADED] FAILED")
 
 try:
     from build.build_MC import get_tables as get_mc_details_tables
+    print("[MC  LOADED]", getattr(get_mc_details_tables, "__version__", "?"))
 except Exception:
     get_mc_details_tables = None
+    print("[MC  LOADED] FAILED")
 
 # Optional photos helper
 try:
@@ -51,7 +54,7 @@ profile = Blueprint("profile", __name__, url_prefix="/profile", template_folder=
 
 # ---------- caches ----------
 _CACHE_TTL = 120
-_CACHE = {"ts": 0.0, "tables": None}
+_CACHE: Dict[str, object] = {"ts": 0.0, "tables": None}
 
 _PHOTO_TTL = 300
 _PHOTO_CACHE = {"ts": 0.0, "photos": {}}
@@ -65,26 +68,19 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 PC_XLSX = DATA_DIR / "positive_contributions.xlsx"
 PC_CSV = DATA_DIR / "positive_contributions.csv"
-# New "Date" column (the date the contribution occurred). We'll keep CreatedAt for audit.
 PC_COLUMNS = ["ID", "Name", "Date", "Description", "CreatedAt"]
 
 
 def _pc_read_all() -> pd.DataFrame:
     """Load, normalize schema, and backfill missing columns/IDs."""
     def _normalize(df: pd.DataFrame) -> pd.DataFrame:
-        # Ensure columns
         for c in PC_COLUMNS:
             if c not in df.columns:
                 df[c] = "" if c not in {"CreatedAt", "Date"} else pd.NaT
-
-        # Types
         df["Name"] = df["Name"].astype(str)
         df["Description"] = df["Description"].astype(str)
         df["CreatedAt"] = pd.to_datetime(df["CreatedAt"], errors="coerce")
-        # "Date" should be day-first for what you type (e.g., 27/10/2025)
         df["Date"] = pd.to_datetime(df["Date"], errors="coerce", dayfirst=True)
-
-        # Backfill ID if missing
         mask = df["ID"].isna() | (df["ID"].astype(str).str.strip() == "")
         if mask.any():
             df.loc[mask, "ID"] = [
@@ -114,7 +110,6 @@ def _pc_write(df: pd.DataFrame) -> None:
     for _ in range(6):
         try:
             with pd.ExcelWriter(PC_XLSX, engine="openpyxl", mode="w") as w:
-                # convert Date/CreatedAt to ISO so Excel opens cleanly
                 out = df.copy()
                 for col in ("Date", "CreatedAt"):
                     if col in out.columns:
@@ -134,18 +129,15 @@ def _pc_write(df: pd.DataFrame) -> None:
 
 
 def _pc_for_name(name: str, months: Optional[List[str]] = None) -> List[dict]:
-    """Return items for UI, optionally filtered by selected months."""
     base = _pc_read_all()
     if base.empty:
         return []
     sub = base[base["Name"].astype(str) == str(name)]
     if months:
         mset = {m[:3] for m in months}
-        # if Date missing, fall back to CreatedAt month
         src = sub["Date"].where(sub["Date"].notna(), sub["CreatedAt"])
         sub = sub[src.dt.strftime("%b").isin(mset)]
     sub = sub.sort_values(["Date", "CreatedAt"], ascending=False)
-    # UI dicts
     items = []
     for _, r in sub.iterrows():
         dt = pd.to_datetime(r.get("Date"), errors="coerce")
@@ -166,9 +158,7 @@ def _pc_add(name: str, description: str, date_str: str) -> None:
     now = pd.Timestamp.now(tz="Asia/Singapore")
     occ = pd.to_datetime(date_str, errors="coerce", dayfirst=True)
     if pd.isna(occ):
-        # if user didn't pick, default to today (date only)
         occ = pd.Timestamp.now(tz="Asia/Singapore").normalize()
-
     new_row = {
         "ID": uuid.uuid4().hex,
         "Name": str(name).strip(),
@@ -281,7 +271,6 @@ def _order_months(ms):
 
 def _ensure_month_and_shiftdate(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
-    # Add Month + Shift Date if missing
     if "Month" not in df.columns or "Shift Date" not in df.columns:
         date_col = _find_col(df, "EVENT_SHIFT_DT", "DATE", "Date")
         shift_col = _find_col(df, "EVENT_HR12_SHIFT_C", "SHIFT", "Shift")
@@ -391,6 +380,18 @@ def _compute_group_avgs_for_shifts(
     return out
 
 
+# ---------- NEW: extract Employee ID / Staff No for robust builder matching ----------
+def _extract_ids(df: pd.DataFrame) -> tuple[Optional[str], Optional[str]]:
+    """Return (employee_id, staff_no) from any common column spellings."""
+    if df is None or df.empty:
+        return None, None
+    emp_col = _find_col(df, "Employee ID", "EMPLOYEE ID", "Emp ID", "EMP_ID")
+    stf_col = _find_col(df, "Staff No", "STAFF NO", "StaffNo", "STAFF_NO")
+    emp_id = str(df[emp_col].dropna().astype(str).iloc[0]).strip() if emp_col and df[emp_col].notna().any() else None
+    staff  = str(df[stf_col].dropna().astype(str).iloc[0]).strip() if stf_col and df[stf_col].notna().any() else None
+    return emp_id, staff
+
+
 @profile.get("/<path:raw_name>")
 def person(raw_name: str):
     """
@@ -414,6 +415,7 @@ def person(raw_name: str):
     if nm:
         df0 = df0[df0[nm].astype(str).str.upper().map(_name_key).eq(person_key)]
 
+    # infer plant/tab if not set
     plant_col = _find_col(df0, "Plant", "PLANT", "Source")
     if not tab_hint:
         inferred = None
@@ -612,7 +614,6 @@ def person(raw_name: str):
             counts_emps = _sub.dropna(subset=[ywt_col_all]).groupby("_G").size()
         else:
             counts_emps = pd.Series({})
-
         group_chart_counts = [int(counts_shifts.get(g, 0)) for g in group_chart_labels]
         group_chart_empcounts = [int(counts_emps.get(g, 0)) for g in group_chart_labels]
     else:
@@ -621,34 +622,71 @@ def person(raw_name: str):
 
     use_emp_bars = bool(qs_date)
 
-    # Positive Contribution list (filter by selected months)
+    # Positive Contribution list
     positive_contribs = _pc_for_name(_display_name(raw_name.upper()), selected_months)
 
-    # ============= NEW PART: attendance + MC details =============
-    # figure out which month to ask the attendance builder for
+    # ====== ATTENDANCE + MC DETAILS (robust) ======
+    # month to ask:
+    #   - if user filtered: use the FIRST selected (3-letter)
+    #   - else: auto (builder picks latest month with data)
     if selected_months:
         att_month = selected_months[0][:3].title()
     else:
-        att_month = datetime.datetime.now().strftime("%b")
+        att_month = "auto"
 
-    actual_name = _display_name(raw_name.upper())
+    # exact name from the dataframe (no formatting)
+    if nm and not df0.empty:
+        exact_name_for_builders = str(df0[nm].iloc[0])
+    else:
+        exact_name_for_builders = _display_name(raw_name.upper())
+
+    # pull IDs from df0 to make matching bulletproof (even if page doesn't display them)
+    emp_id, staff_no = _extract_ids(df0)
 
     attendance_stats = {}
     if callable(get_attendance_tables):
         try:
-            att_bundle = get_attendance_tables(month=att_month, name=actual_name) or {}
+            att_bundle = get_attendance_tables(
+                month=att_month,
+                name=exact_name_for_builders,
+                employee_id=emp_id,
+                staff_no=staff_no,
+            ) or {}
             attendance_stats = att_bundle.get("attendance_stats", {}) or {}
-        except Exception:
+            print("[ATT DATA]",
+                  exact_name_for_builders, "| req_month", att_month,
+                  "| got_total", attendance_stats.get("total_mc"),
+                  attendance_stats.get("total_ul"),
+                  attendance_stats.get("total_turnout"),
+                  "| got_month", attendance_stats.get("month"),
+                  "| v", attendance_stats.get("version"))
+        except Exception as e:
+            print("[ATT ERROR]", type(e).__name__, e)
             attendance_stats = {}
+
+    # pick MC month: if we used auto, reuse attendance's resolved month; else use att_month
+    resolved_month = attendance_stats.get("month") if attendance_stats else None
+    if not resolved_month or resolved_month == "auto":
+        resolved_month = att_month if att_month != "auto" else datetime.datetime.now().strftime("%b")
+    # MC sheet uses 'June' spelling sometimes
+    mc_month = "June" if resolved_month in ("Jun", "June") else resolved_month
 
     mc_details = {}
     if callable(get_mc_details_tables):
         try:
-            mc_bundle = get_mc_details_tables(name=actual_name) or {}
+            mc_bundle = get_mc_details_tables(
+                month=mc_month,
+                name=exact_name_for_builders,
+                employee_id=emp_id,
+                staff_no=staff_no,
+            ) or {}
             mc_details = mc_bundle.get("mc_details", {}) or {}
-        except Exception:
+            print("[MC  DATA]",
+                  exact_name_for_builders, "| req_month", mc_month,
+                  "| not_found", mc_details.get("not_found"))
+        except Exception as e:
+            print("[MC  ERROR]", type(e).__name__, e)
             mc_details = {}
-    # ================== END NEW PART ==================
 
     return render_template(
         "profile.html",
@@ -675,9 +713,8 @@ def person(raw_name: str):
         selected_shift=selected_shift,
         use_emp_bars=use_emp_bars,
         positive_contribs=positive_contribs,
-        # NEW ↓↓↓ send to template
-        attendance_stats=attendance_stats,
-        mc_details=mc_details,
+        attendance_stats=attendance_stats,  # ✅ now filled
+        mc_details=mc_details,              # ✅ now filled
     )
 
 

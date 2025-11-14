@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 import time, os, re, difflib
 import pandas as pd
+import datetime
 from pathlib import Path
 
 # DATA
@@ -15,10 +16,23 @@ try:
 except Exception:
     get_safety_tables = None
 
+# ATTENDANCE (same builder used by profile.py)
+try:
+    from build.build_attendance import get_tables as get_attendance_tables
+    print("[ATT LOADED]", getattr(get_attendance_tables, "__version__", "?"))
+except Exception:
+    get_attendance_tables = None
+    print("[ATT LOADED] FAILED")
+
 nonshift = Blueprint("nonshift", __name__, url_prefix="/non-shift", template_folder="templates")
 
 # ========= CONFIG =========
 PHOTO_DIR = Path(__file__).resolve().parents[1] / "static" / "Staff Photo"
+
+# People to hide (normalize with _name_key)
+_EXCLUDE_NAMES = {
+    "MOHAMMAD ABDUL RAHIMI BIN RAHMAT",
+}
 
 # ========= caches =========
 _CACHE_TTL_SEC = 120
@@ -27,6 +41,10 @@ _PHOTO_TTL_SEC = 300
 _PHOTO_CACHE = {"ts": 0.0, "photos_dict": {}}
 _SAFETY_TTL_SEC = 300
 _SAFETY_CACHE = {"ts": 0.0, "df": None}
+
+# Attendance cache (builder results per name+month)
+_ATT_TTL_SEC = 300
+_ATT_CACHE = {"ts": 0.0, "data": {}}  # key: (name_key, month_key|auto) -> {"stats": dict}
 
 def _tables_cached():
     now = time.time()
@@ -110,6 +128,7 @@ def _ensure_month_3(df: pd.DataFrame) -> pd.DataFrame:
     else:
         df = df.copy(); df["Month"] = df["Month"].astype(str).str[:3]
     return df
+
 def _find_col(df: pd.DataFrame, *cands: str):
     low = {c.lower(): c for c in df.columns}
     for c in cands:
@@ -118,7 +137,6 @@ def _find_col(df: pd.DataFrame, *cands: str):
     return None
 
 def _guess_wait_col(df: pd.DataFrame):
-    # prefer numeric columns that look like wait/ywt/avg
     pick = None
     for c in df.columns:
         lc = c.lower()
@@ -127,6 +145,69 @@ def _guess_wait_col(df: pd.DataFrame):
                 return c
             pick = pick or c
     return pick
+
+# ---------- pull Employee ID / Staff No per name (profile.py style) ----------
+def _extract_ids_map(df: pd.DataFrame) -> dict[str, tuple[str|None, str|None]]:
+    """
+    Build { exact_name -> (employee_id, staff_no) } from common spellings.
+    Uses the first non-empty value per name.
+    """
+    name_col = _find_col(df, "Name", "NAME")
+    emp_col  = _find_col(df, "Employee ID", "EMPLOYEE ID", "Emp ID", "EMP_ID")
+    stf_col  = _find_col(df, "Staff No", "STAFF NO", "StaffNo", "STAFF_NO")
+    if not name_col:
+        return {}
+    keep_cols = [c for c in [name_col, emp_col, stf_col] if c]
+    tmp = df[keep_cols].copy()
+    tmp[name_col] = tmp[name_col].astype(str).str.strip()
+
+    def _first_nonempty(series):
+        for x in series:
+            s = ("" if pd.isna(x) else str(x)).strip()
+            if s:
+                return s
+        return None
+
+    grp = tmp.groupby(name_col, dropna=False).agg(_first_nonempty)
+    out: dict[str, tuple[str|None, str|None]] = {}
+    for nm, row in grp.iterrows():
+        out[str(nm).strip()] = (
+            (row.get(emp_col) if emp_col else None),
+            (row.get(stf_col) if stf_col else None),
+        )
+    return out
+
+# ---------- resolve MC/UL from builder (month-aware) ----------
+def _resolve_mc_ul(stats: dict, selected_months: list[str] | None) -> tuple[float|None, float|None]:
+    """Return (mc, ul) using your builder’s keys. Month-aware."""
+    if not isinstance(stats, dict):
+        return None, None
+
+    def to_num(x):
+        try:
+            if x is None or (isinstance(x, float) and pd.isna(x)):
+                return None
+            return float(x)
+        except Exception:
+            try:
+                return float(str(x).strip())
+            except Exception:
+                return None
+
+    if selected_months:
+        mon = selected_months[0][:3].title()
+        mm = stats.get("month_mc"); mu = stats.get("month_ul")
+        if mm is None or mu is None:
+            monthly = stats.get("by_month") or stats.get("months") or stats.get("monthly") or {}
+            rec = monthly.get(mon) or {}
+            if mm is None: mm = (rec.get("mc") if isinstance(rec, dict) else None)
+            if mu is None: mu = (rec.get("ul") if isinstance(rec, dict) else None)
+        if mm is None: mm = stats.get(f"mc_{mon}") or stats.get(f"{mon}_mc")
+        if mu is None: mu = stats.get(f"ul_{mon}") or stats.get(f"{mon}_ul")
+        return to_num(mm), to_num(mu)
+
+    # No filter → totals
+    return to_num(stats.get("total_mc")), to_num(stats.get("total_ul"))
 
 def _slice_tab(df: pd.DataFrame, tab: str) -> pd.DataFrame:
     plant_col = _col(df, "Plant", "PLANT", "Source")
@@ -140,10 +221,8 @@ def _upper(s) -> str:
 
 def _make_cards(df: pd.DataFrame, photos_lookup: dict) -> list[dict]:
     """
-    Build cards by NAME, but:
-      - Only count shifts where the chosen YWT column is NOT NA
-      - Average wait is computed only from those valid shifts
-      - Other metrics (SI/NISR/SBR/Attendance/Stars) behave as before
+    Build cards by NAME; wait-time stats use rows where YWT present.
+    Other metrics are aggregated as usual.
     """
     if df.empty:
         return []
@@ -175,25 +254,28 @@ def _make_cards(df: pd.DataFrame, photos_lookup: dict) -> list[dict]:
         valid_mask = sdf[wait_col].notna()
         g_wait = sdf[valid_mask].groupby(name_col, dropna=False)
     else:
-        # if we couldn't find a wait column, treat none as valid (shift_worked=0, no avg)
         valid_mask = pd.Series(False, index=sdf.index)
         g_wait = g_all
 
-    # build base from ALL rows (for non-YWT fields)
-    agg = {name_col: "first"}
-    if group_col: agg[group_col] = "last"
-    if si_col:    agg[si_col]    = "sum"
-    if nisr_col:  agg[nisr_col]  = "sum"
-    if sbr_col:   agg[sbr_col]   = "sum"
-    if att_col:   agg[att_col]   = "mean"
-    if star_col:  agg[star_col]  = "max"
-
-    base = g_all.agg(**{k: (k, v) for k, v in agg.items()}).reset_index(drop=True)
-
-    # add wait metrics from VALID rows only
+    # build base from VALID YWT rows for shift count + avg wait
     if wait_col:
-        avg_wait = g_wait[wait_col].mean()                     # NaNs ignored by mean
-        shift_done = g_wait.size()                             # count only rows w/ YWT
+        avg_wait = g_wait[wait_col].mean()
+        shift_done = g_wait.size()  # ShiftWorked = only rows with YWT
+    else:
+        avg_wait = pd.Series(dtype=float)
+        shift_done = pd.Series(dtype=int)
+
+    base = g_all.agg(**{
+        name_col: (name_col, "first"),
+        (group_col or "group"): (group_col, "last") if group_col else (name_col, "first"),
+        (si_col or "SI"): (si_col, "sum") if si_col else (name_col, "first"),
+        (nisr_col or "NISR"): (nisr_col, "sum") if nisr_col else (name_col, "first"),
+        (sbr_col or "SBR"): (sbr_col, "sum") if sbr_col else (name_col, "first"),
+        (att_col or "Attendance"): (att_col, "mean") if att_col else (name_col, "first"),
+        (star_col or "STAR"): (star_col, "max") if star_col else (name_col, "first"),
+    }).reset_index(drop=True)
+
+    if wait_col:
         base = base.merge(avg_wait.rename("avg_wait"), left_on=name_col, right_index=True, how="left")
         base = base.merge(shift_done.rename("ShiftWorked"), left_on=name_col, right_index=True, how="left")
     else:
@@ -213,15 +295,14 @@ def _make_cards(df: pd.DataFrame, photos_lookup: dict) -> list[dict]:
             "shift_worked": int(r["ShiftWorked"]) if pd.notna(r.get("ShiftWorked")) else 0,
             "avg_wait": fmt2(r.get("avg_wait")),
             "stars": "" if (star_col is None or pd.isna(r.get(star_col))) else int(r.get(star_col)),
-            "attendance": "" if (att_col is None or pd.isna(r.get(att_col))) else f"{float(r.get(att_col)):.2f}",
+            # fallback value from DF (kept to 1 dp); will be overwritten by builder calc
+            "attendance": "" if (att_col is None or pd.isna(r.get(att_col))) else f"{float(r.get(att_col)):.1f}",
             "si": 0 if (si_col is None or pd.isna(r.get(si_col))) else int(r.get(si_col)),
             "nisr": 0 if (nisr_col is None or pd.isna(r.get(nisr_col))) else int(r.get(nisr_col)),
             "sbr": 0 if (sbr_col is None or pd.isna(r.get(sbr_col))) else int(r.get(sbr_col)),
             "photo": photo_uri,
+            "exact_name": str(r.get(name_col, "")).strip(),  # for builder match + IDs
         })
-
-    # Optional: if you want to HIDE people with 0 valid YWT shifts, uncomment:
-    # cards = [c for c in cards if c["shift_worked"] > 0]
 
     return cards
 
@@ -336,11 +417,6 @@ def _debug_info(tables, df_before_filters, df_after_filters, photos_lookup, tab,
 
 # =============================== Routes ===============================
 def _resolve_tab():
-    """
-    Accept both ?tab=P123/P456 and ?only=P123/P456
-    (so Main can link with either query name).
-    Defaults to 'P123'.
-    """
     raw = request.args.get("tab") or request.args.get("only") or "P123"
     raw = (raw or "").strip().upper()
     return "P456" if raw == "P456" else "P123"
@@ -352,12 +428,13 @@ def index():
         _CACHE.update({"ts": 0, "tables": None})
         _PHOTO_CACHE.update({"ts": 0, "photos_dict": {}})
         _SAFETY_CACHE.update({"ts": 0, "df": None})
+        _ATT_CACHE.update({"ts": 0, "data": {}})
 
     current_tab = _resolve_tab()
     selected_months = request.args.getlist("month")  # e.g. ['Sep','Oct']
     debug = request.args.get("debug") == "1"
 
-    # ---- ADDED: prebuild month querystring for easy linking to /profile ----
+    # prebuild month querystring for easy linking to /profile
     month_qs = "&".join(f"month={m}" for m in selected_months) if selected_months else ""
 
     tables = _tables_cached() or {}
@@ -372,21 +449,47 @@ def index():
         ])
         months_all = _order_months(demo["Month"].unique().tolist()) or MONTHS_ORDER
         cards = _make_cards(demo, {})
+
+        # remove blacklisted people
+        excl_keys = {_name_key(n) for n in _EXCLUDE_NAMES}
+        cards = [c for c in cards if _name_key(c.get("name","")) not in excl_keys]
+
+        # (optional) overlay attendance even in demo via builder, like profile.py
+        if callable(get_attendance_tables):
+            att_month = (selected_months[0][:3].title() if selected_months else "auto")
+            for c in cards:
+                exact_nm = (c.get("exact_name") or c.get("name") or "").strip()
+                try:
+                    att_bundle = get_attendance_tables(month=att_month, name=exact_nm) or {}
+                    attendance_stats = att_bundle.get("attendance_stats", {}) or {}
+                except Exception:
+                    attendance_stats = {}
+                # Use ShiftWorked + builder MC/UL
+                mc_used, ul_used = _resolve_mc_ul(attendance_stats, selected_months)
+                shift_worked = int(c.get("shift_worked") or 0)
+                pct = None
+                if mc_used is not None and ul_used is not None:
+                    denom = float(shift_worked) + float(mc_used) + float(ul_used)
+                    if denom > 0:
+                        pct = max(0.0, min(100.0, 100.0 * (float(shift_worked) / denom)))
+                c["attendance"] = (f"{pct:.1f}" if isinstance(pct, (int, float)) and not pd.isna(pct) else "")
+
         safety_map = _safety_lookup(selected_months)
         if safety_map:
             for c in cards:
                 m = safety_map.get(_name_key(c.get("name","")))
                 if m:
                     c["si"], c["nisr"], c["sbr"] = m["si"], m["nisr"], m["sbr"]
+
         if debug:
             debug_text = "[FALLBACK] No base found. Tried keys: " + ", ".join(tried_keys)
             return render_template("nonshift.html", cards=cards, months=months_all,
                                    selected_months=selected_months, current_tab=current_tab,
-                                   active_tab=current_tab, month_qs=month_qs,  # ADDED
+                                   active_tab=current_tab, month_qs=month_qs,
                                    debug_text=debug_text)
         return render_template("nonshift.html", cards=cards, months=months_all,
                                selected_months=selected_months, current_tab=current_tab,
-                               active_tab=current_tab, month_qs=month_qs)  # ADDED
+                               active_tab=current_tab, month_qs=month_qs)
 
     # normal path
     df0 = base.copy()
@@ -418,7 +521,41 @@ def index():
     months_all = _order_months(df["Month"].dropna().astype(str).str[:3].unique().tolist()) or MONTHS_ORDER
     photos_lookup = _photos_cached()
     cards = _make_cards(df, photos_lookup)
-    
+
+    # remove blacklisted people
+    excl_keys = {_name_key(n) for n in _EXCLUDE_NAMES}
+    cards = [c for c in cards if _name_key(c.get("name","")) not in excl_keys]
+
+    # -------- attendance overlay (MC/UL from builder; numerator = ShiftWorked) --------
+    if callable(get_attendance_tables) and cards:
+        att_month = (selected_months[0][:3].title() if selected_months else "auto")
+        id_map = _extract_ids_map(df0)
+
+        for c in cards:
+            exact_nm = (c.get("exact_name") or c.get("name") or "").strip()
+            emp_id, staff_no = id_map.get(exact_nm, (None, None))
+            try:
+                att_bundle = get_attendance_tables(
+                    month=att_month,
+                    name=exact_nm,
+                    employee_id=emp_id,
+                    staff_no=staff_no,
+                ) or {}
+                attendance_stats = att_bundle.get("attendance_stats", {}) or {}
+            except Exception:
+                attendance_stats = {}
+
+            mc_used, ul_used = _resolve_mc_ul(attendance_stats, selected_months)
+            shift_worked = int(c.get("shift_worked") or 0)
+
+            pct = None
+            if mc_used is not None and ul_used is not None:
+                denom = float(shift_worked) + float(mc_used) + float(ul_used)
+                if denom > 0:
+                    pct = max(0.0, min(100.0, 100.0 * (float(shift_worked) / denom)))
+
+            c["attendance"] = (f"{pct:.1f}" if isinstance(pct, (int, float)) and not pd.isna(pct) else "")
+
     # overlay safety
     safety_map = _safety_lookup(selected_months)
     if safety_map:
@@ -427,20 +564,18 @@ def index():
             if m:
                 c["si"], c["nisr"], c["sbr"] = m["si"], m["nisr"], m["sbr"]
 
+    debug_text = None
     if debug:
-        dbg = _debug_info(tables, df0, df, photos_lookup, current_tab, selected_months)
-        return render_template("nonshift.html", cards=cards, months=months_all,
-                               selected_months=selected_months, current_tab=current_tab,
-                               active_tab=current_tab, month_qs=month_qs,  # ADDED
-                               debug_text=dbg)
+        debug_text = _debug_info(tables, df0, df, photos_lookup, current_tab, selected_months)
 
     return render_template("nonshift.html",
         cards=cards,
         months=months_all,
         selected_months=selected_months,
         current_tab=current_tab,
-        active_tab=current_tab,   # ADDED (alias for templates)
-        month_qs=month_qs,        # ADDED (prebuilt ?month=... string)
+        active_tab=current_tab,
+        month_qs=month_qs,
+        debug_text=debug_text,
     )
 
 # --------- Convenience routes so you can link cleanly ---------

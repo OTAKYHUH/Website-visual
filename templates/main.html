@@ -126,7 +126,7 @@
   .icon-card{
     background:var(--panel); border:1px solid var(--ring); border-radius:18px;
     padding:12px 14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
-    color:#fff; height:130px;
+    color:#fff; height:130px; transition:box-shadow .2s, transform .2s, outline .2s;
   }
   .icon-card.ops{          /* image on top */
     grid-column:3 / span 2;
@@ -136,6 +136,21 @@
     gap:8px;
   }
   .icon-card.ops .right-labels{ display:none; }
+
+  /* ACTIVE SORT STATE — blue highlight */
+  .icon-card.active{
+    outline: 2px solid var(--accent);
+    box-shadow:
+      0 0 0 6px rgba(0,240,255,.15),
+      0 8px 22px rgba(0,0,0,.45);
+    transform: translateY(-1px);
+  }
+  .icon-card.active .icon-title{
+    background: linear-gradient(135deg,var(--accent),var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
+  }
 
   .ico{ width:var(--icon-bubble); height:var(--icon-bubble); display:grid; place-items:center; }
   .icon-img{ width:var(--icon-size); height:var(--icon-size); object-fit:contain; display:block; }
@@ -393,25 +408,25 @@
         <div class="header">
           <div></div>
           <div class="icons" aria-label="Key metric icons">
-            <button class="icon-card sort-btn" type="button" data-key="safety" title="Sort by Safety">
+            <button class="icon-card sort-btn" type="button" data-key="safety" title="Sort by Safety" aria-pressed="false">
               <div class="ico"><img class="icon-img" src="{{ url_for('static', filename='Safety.png') }}" alt="Safety"></div>
               <div class="icon-title">SAFETY</div>
             </button>
-            <button class="icon-card sort-btn" type="button" data-key="pc" title="Sort by Positive Contribution">
+            <button class="icon-card sort-btn" type="button" data-key="pc" title="Sort by Positive Contribution" aria-pressed="false">
               <div class="ico"><img class="icon-img" src="{{ url_for('static', filename='Positive.jpeg') }}" alt="Positive Contribution"></div>
               <div class="icon-title">CONTRIBUTION</div>
             </button>
-            <button class="icon-card ops sort-btn" type="button" data-key="ops" title="Sort by Operations">
+            <button class="icon-card ops sort-btn" type="button" data-key="ops" title="Sort by Operations" aria-pressed="false">
               <div class="ico">
                 <img class="icon-img" src="{{ url_for('static', filename='Operations.png') }}" alt="Operations">
               </div>
               <div class="icon-title">OPERATIONS (YWT • HSL)</div>
             </button>
-            <button class="icon-card sort-btn" type="button" data-key="reliability" title="Sort by Reliability">
+            <button class="icon-card sort-btn" type="button" data-key="reliability" title="Sort by Reliability" aria-pressed="false">
               <div class="ico"><img class="icon-img" src="{{ url_for('static', filename='Reliability.png') }}" alt="Reliability"></div>
               <div class="icon-title">RELIABILITY</div>
             </button>
-            <button class="icon-card sort-btn" type="button" data-key="excellence" title="Sort by Excellence">
+            <button class="icon-card sort-btn" type="button" data-key="excellence" title="Sort by Excellence" aria-pressed="false">
               <div class="ico"><img class="icon-img" src="{{ url_for('static', filename='Excellence.png') }}" alt="Excellence"></div>
               <div class="icon-title">EXCELLENCE</div>
             </button>
@@ -712,12 +727,21 @@
       btn.addEventListener('click', ()=>{
         const key = btn.dataset.key;
         if (activeKey === key){
+          // turn off sorting and remove active highlight
           activeKey = null;
-          buttons.forEach(b=>b.classList.remove('active'));
+          buttons.forEach(b=>{
+            b.classList.remove('active');
+            b.setAttribute('aria-pressed','false');
+          });
           render(original.slice());
         } else {
+          // activate selected sort and highlight button
           activeKey = key;
-          buttons.forEach(b=>b.classList.toggle('active', b===btn));
+          buttons.forEach(b=>{
+            const on = (b===btn);
+            b.classList.toggle('active', on);
+            b.setAttribute('aria-pressed', on ? 'true' : 'false');
+          });
           if (key === 'safety') render(sortSafety());
           else if (key === 'pc') render(sortPC());
           else if (key === 'ops') render(sortOps());
