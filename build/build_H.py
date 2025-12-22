@@ -1,4 +1,6 @@
 # build_H.py — Hourly + HSL bundle (START_DT-based Shift Date for Hourly, DateTime from Dates+Time)
+from __future__ import annotations
+
 from pathlib import Path
 import pandas as pd
 import re
@@ -7,9 +9,8 @@ import re
 ALL_XLSX = Path(__file__).resolve().parents[1] / "static" / "All.xlsx"
 HSL_DIR  = Path(__file__).resolve().parents[1] / "static" / "Automated Data" / "HSL"
 
-# Accept either spelling: "exract" (typo) or "extract"
 HSL_CANDIDATES = [
-    HSL_DIR / "hsl_exract_log.xlsx",
+    HSL_DIR / "hsl_exract_log.xlsx",   # typo variant
     HSL_DIR / "hsl_extract_log.xlsx",
 ]
 
@@ -18,7 +19,6 @@ def _norm(s):
     return re.sub(r"[^a-z0-9]+", "", str(s or "").lower())
 
 def _find_col_ci(df: pd.DataFrame, *cands: str) -> str | None:
-    """Case/format-insensitive column finder."""
     if df is None or df.empty:
         return None
     idx = {_norm(c): c for c in df.columns}
@@ -81,10 +81,6 @@ def _rename_eq_cols(df: pd.DataFrame) -> pd.DataFrame:
     return df.rename(columns=rename_map)
 
 def _add_datetime_column_from_dates_time(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Build DateTime from **Dates + Time** (fallback: Date or START_DT + Time; else just the date).
-    NOTE: We keep this as-is (Dates+Time), per your request only Shift Date changes to START_DT-based.
-    """
     df = df.copy()
     date_col = (
         _find_col_ci(df, "Dates")
@@ -103,9 +99,7 @@ def _add_datetime_column_from_dates_time(df: pd.DataFrame) -> pd.DataFrame:
         df["DateTime"] = dts
     return df
 
-
 def _print_cols(df: pd.DataFrame, name: str, max_width: int = 160) -> None:
-    """Pretty-print the column names for a DataFrame."""
     cols = [str(c) for c in df.columns]
     col_line = ", ".join(cols)
     if len(col_line) > max_width:
@@ -114,21 +108,32 @@ def _print_cols(df: pd.DataFrame, name: str, max_width: int = 160) -> None:
 
 # ===================== LOADERS =======================
 def read_hourly_sheet(xlsx_path: Path = ALL_XLSX) -> pd.DataFrame:
-    """Read 'Hourly' from All.xlsx (raw)."""
     return pd.read_excel(xlsx_path, sheet_name="Hourly")
+
+def _pick_hsl_file() -> Path | None:
+    for p in HSL_CANDIDATES:
+        if p.exists():
+            return p
+    # fallback: try open anyway
+    for p in HSL_CANDIDATES:
+        try:
+            pd.ExcelFile(p)
+            return p
+        except Exception:
+            pass
+    return None
 
 def read_hsl_logs() -> dict[str, pd.DataFrame]:
     """Load HSL Log & Details, returning dict with whatever is available."""
     out = {}
-    x = None
-    for p in HSL_CANDIDATES:
-        try:
-            x = pd.ExcelFile(p)
-            break
-        except Exception:
-            x = None
-    if x is None:
+    p = _pick_hsl_file()
+    if p is None:
         return out
+    try:
+        x = pd.ExcelFile(p)
+    except Exception:
+        return out
+
     for sheet in x.sheet_names:
         if sheet.strip().lower() in {"log", "details"}:
             out[sheet.strip().title()] = x.parse(sheet_name=sheet)
@@ -136,25 +141,11 @@ def read_hsl_logs() -> dict[str, pd.DataFrame]:
 
 # ================= Transform pipelines =================
 def add_month_and_shiftdate_hourly(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Hourly:
-      - DateTime from Dates+Time (unchanged)
-      - Shift normalized (1->D, 2->N, G->N)
-      - Shift Date **USING START_DT** (fallback to Dates/Date only if START_DT missing)
-      - Month derived from the **same base date as Shift Date** (i.e., START_DT preferred)
-      - Rename EQMT→Mounting, EQOF→Offloading
-    """
     df = df.copy()
-    # Keep existing DateTime behavior
     df = _add_datetime_column_from_dates_time(df)
-
-    # Normalize shift
     df = _ensure_shift_col(df)
-
-    # >>> CHANGE: build Shift Date from START_DT first <<<
     df = _ensure_shift_date(df, "START_DT", "START DT", "Start Date", "Dates", "Date")
 
-    # Month from the same base date (prefer START_DT)
     base_date_col = (
         _find_col_ci(df, "START_DT", "START DT", "Start Date")
         or _find_col_ci(df, "Dates")
@@ -164,22 +155,13 @@ def add_month_and_shiftdate_hourly(df: pd.DataFrame) -> pd.DataFrame:
         base_dt = pd.to_datetime(df[base_date_col], errors="coerce")
         df["Month"] = base_dt.dt.strftime("%b")
     else:
-        # If no base found, clear Month to be explicit
         df["Month"] = ""
 
     df = _rename_eq_cols(df)
     return df
 
 def transform_hsl_log(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    HSL Log:
-      - bucket headers → Good/Average/Poor/Failed
-      - drop 'Name'
-      - map Shift (1->D, 2->N, G->N)
-      - ensure 'Shift Date' (dd MMM yy S) using a date-like column
-    """
     df = df.copy()
-    # Rename bucket columns
     rename_map = {}
     for col in list(df.columns):
         c_norm = re.sub(r"\s+", "", str(col)).lower()
@@ -210,14 +192,7 @@ def _find_col(df: pd.DataFrame, *names: str) -> str:
     raise KeyError(f"Could not find any of {names} in {list(df.columns)}")
 
 def transform_hsl_details(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    HSL Details:
-      - map Shift (1->D, 2->N, G->N)
-      - ensure 'Shift Date' (dd MMM yy S) using 'Activity Date' if available
-      - extract 'Start Time' & 'End time'
-    """
     df = df.copy()
-    # Shift normalization
     shift_col = None
     for cand in ["Shift","shift"]:
         if cand in df.columns:
@@ -228,10 +203,8 @@ def transform_hsl_details(df: pd.DataFrame) -> pd.DataFrame:
         shift_col = "Shift"
     df[shift_col] = df[shift_col].apply(_map_shift_text).astype(str)
 
-    # Shift Date
     df = _ensure_shift_date(df, "Activity Date", "Date", "Dates")
 
-    # Times from datetime-like columns
     act_col = _find_col(df, "Activity Date", "activity date")
     gi_col  = _find_col(df, "Gate In/Prev Trans", "Gate In / Prev Trans", "Gate In")
     dt1 = pd.to_datetime(df[act_col], errors="coerce")
@@ -239,6 +212,41 @@ def transform_hsl_details(df: pd.DataFrame) -> pd.DataFrame:
     df["End time"]   = dt1.dt.strftime("%H:%M:%S")
     df["Start Time"] = dt2.dt.strftime("%H:%M:%S")
     return df
+
+# =================== NEW: log-only cached fast path ===================
+_HSL_LOG_CACHE: dict = {"mtime": None, "df": None}
+
+def get_log_only(*, verbose: bool = False) -> pd.DataFrame:
+    """
+    FAST: returns only transformed Log (no All.xlsx read).
+    Cached by HSL log file modification time.
+    """
+    p = _pick_hsl_file()
+    if p is None:
+        return pd.DataFrame()
+
+    try:
+        mtime = p.stat().st_mtime
+    except Exception:
+        mtime = None
+
+    hit = _HSL_LOG_CACHE.get("df")
+    if isinstance(hit, pd.DataFrame) and hit is not None and _HSL_LOG_CACHE.get("mtime") == mtime:
+        return hit
+
+    try:
+        raw = pd.read_excel(p, sheet_name="Log")
+    except Exception:
+        return pd.DataFrame()
+
+    out = transform_hsl_log(raw)
+    _HSL_LOG_CACHE["mtime"] = mtime
+    _HSL_LOG_CACHE["df"] = out
+
+    if verbose:
+        print(f"[HSL] get_log_only loaded: {p.name} rows={len(out)}")
+
+    return out
 
 # ------------------ Public API ------------------
 __all__ = [
@@ -248,22 +256,23 @@ __all__ = [
     "transform_hsl_log",
     "transform_hsl_details",
     "get_tables",
+    "get_log_only",
 ]
 
-def get_tables(xlsx_path: Path = ALL_XLSX, verbose: bool = False) -> dict[str, pd.DataFrame]:
+def get_tables(xlsx_path: Path = ALL_XLSX, verbose: bool = False,
+               load_hourly: bool = True, load_details: bool = True) -> dict[str, pd.DataFrame]:
     """
     Returns transformed tables:
-      - Hourly  → DateTime (Dates+Time), Shift, **Shift Date (START_DT + Shift)**, Mounting/Offloading, Month
-      - Log     → Shift, **Shift Date (dd MMM yy S)**, bucket headers normalized
-      - Details → Shift, **Shift Date (dd MMM yy S)**, Start/End times
-    Also returns 'Log_raw' and 'Details_raw' when available.
+      - Hourly  → DateTime (Dates+Time), Shift, Shift Date (START_DT + Shift), Mounting/Offloading, Month
+      - Log     → Shift, Shift Date (dd MMM yy S), bucket headers normalized
+      - Details → Shift, Shift Date (dd MMM yy S), Start/End times
     """
     out: dict[str, pd.DataFrame] = {}
 
-    # Hourly (enriched)
-    Hourly = read_hourly_sheet(xlsx_path)
-    Hourly = add_month_and_shiftdate_hourly(Hourly)
-    out["Hourly"] = Hourly
+    if load_hourly:
+        Hourly = read_hourly_sheet(xlsx_path)
+        Hourly = add_month_and_shiftdate_hourly(Hourly)
+        out["Hourly"] = Hourly
 
     # HSL sheets
     sheets = read_hsl_logs()
@@ -272,7 +281,7 @@ def get_tables(xlsx_path: Path = ALL_XLSX, verbose: bool = False) -> dict[str, p
     if log_raw is not None:
         out["Log_raw"] = log_raw
         out["Log"] = transform_hsl_log(log_raw.copy())
-    if det_raw is not None:
+    if load_details and det_raw is not None:
         out["Details_raw"] = det_raw
         out["Details"] = transform_hsl_details(det_raw.copy())
 

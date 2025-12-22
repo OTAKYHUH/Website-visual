@@ -111,7 +111,7 @@
   /* header: 6 metric columns on the right side */
   .header{
     display:grid;
-    grid-template-columns: 1fr calc(160px*6 + 18px*5) 110px;
+    grid-template-columns: 1fr calc(160px*6 + 18px*5) 150px;
     gap:18px;
     align-items:start;
   }
@@ -182,7 +182,7 @@
   /* rows: 6 columns area on the right */
   .row{
     display:grid;
-    grid-template-columns: 1fr calc(160px*6 + 18px*5) 110px;
+    grid-template-columns: 1fr calc(160px*6 + 18px*5) 150px;
     gap:18px;
     align-items:stretch
   }
@@ -446,13 +446,7 @@
         <section id="rows" class="rows" aria-label="Employee rows">
           {% for p in people %}
           {% set _h = p.hsl_points|default(0) %}
-          {% if _h > 2 %}
-            {% set _h_class = 'pts-green' %}
-          {% elif _h > 1 %}
-            {% set _h_class = 'pts-orange' %}
-          {% else %}
-            {% set _h_class = 'pts-red' %}
-          {% endif %}
+          {% set _h_class = p.hsl_class|default('pts-red') %}
           {% set _rel = p.reliability|default('') %}
           {% set _relpts = p.reliability_points|default(0) %}
           {% set _exc = p.excellence|default(0) %}
@@ -524,7 +518,7 @@
             </div>
 
             <div class="points">
-              <div class="num">{{ p.points }}</div>
+              <div class="num">{{ '%.2f' % p.points }}</div>
               <small>POINTS</small>
             </div>
           </article>
