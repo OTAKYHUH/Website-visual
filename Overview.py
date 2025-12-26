@@ -29,4 +29,4 @@ def open_browser():
 if __name__ == '__main__':
     # Launch browser in a separate thread
     threading.Timer(1.5, open_browser).start()
-    app.run(debug=False)
+    app.run(debug=True)

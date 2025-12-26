@@ -1,192 +1,207 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Role Selection</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            text-align: center; 
-            padding: 2em; 
-            background-color: black; 
-        }
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            background: black;
-            padding: 0.5em;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            background: url("{{ url_for('static', filename='Background.png') }}") no-repeat center center fixed;
-            background-size: 800px auto;
-            position: relative;
-        }
-        img.logo {
-            max-width: 200px;
-        }
-        h2 { 
-            color: white;
-            font-size: 3em;
-            font-weight: bold; 
-            font-family: 'Montserrat', sans-serif;
-        }
-        .button-group {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 24px;
-            flex-wrap: wrap;
-            white-space: nowrap;
-        }
-        .button-group > button { 
-            width: 320px;
-            height: 120px;
-            padding: 0.9em 1.1em;
-            margin: 0; 
-            font-size: 1.6em; 
-            border: none;
-            border-radius: 6px;
-            background-color: #E1C233;
-            color: black;
-            cursor: pointer;
-            transition: background 0.3s;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            line-height: 1.15;
-            box-sizing: border-box;
-            white-space: normal;
-        }
-        button { 
-            padding: 1em 2em; 
-            margin: 1em; 
-            font-size: 2em; 
-            border: none;
-            border-radius: 6px;
-            background-color: #E1C233;
-            color: black;
-            cursor: pointer;
-            transition: background 0.3s;
-            font-weight: bold;
-        }
-        button:hover { background-color: #0056b3; }
-        .error { 
-            color: red; 
-            margin-top: 1em; 
-            font-weight: bold; 
-        }
+  <title>Role Selection</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 
-        /* ===== Modal ===== */
-        .modal {
-            position: fixed; inset: 0;
-            display: none;
-            align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.6);
-            z-index: 9999;
-            padding: 1.5rem;
-        }
-        .modal.is-open { display: flex; }
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 2em;
+      background-color: black;
+    }
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      background: black;
+      padding: 0.5em;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      background: url("{{ url_for('static', filename='Background.png') }}") no-repeat center center fixed;
+      background-size: 800px auto;
+      position: relative;
+    }
+    img.logo { max-width: 200px; }
 
-        .modal__dialog {
-            width: 100%;
-            max-width: 350px;
-            background: rgba(20,20,20,0.95);
-            border-radius: 14px;
-            padding: 2rem 1.5rem 1.5rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            color: #eee;
-            position: relative;
-        }
-        .modal__dialog h3 { 
-            margin: 0 0 .75rem; 
-            font-family: 'Montserrat', sans-serif; 
-            text-align: center;
-        }
-        .modal__row { text-align: left; margin-top: 1rem; }
-        .modal__row label { font-weight: 600; display:block; margin-bottom: .25rem; }
-        .modal__row input {
-            width: 100%;
-            padding: .7rem .8rem;
-            border-radius: 10px;
-            border: 1px solid #444;
-            background: #111;
-            color: #eee;
-            font-size: 1rem;
-            box-sizing: border-box;
-        }
-        .modal__actions { margin-top: 1.5rem; display: flex; gap: .5rem; justify-content: flex-end; }
-        .btn {
-            padding: .7rem 1rem; 
-            border-radius: 10px; 
-            border: 1px solid #444; 
-            background: #222; 
-            color: #eee; 
-            cursor: pointer; 
-            font-weight: 600;
-            font-size: 1rem;
-        }
-        .btn--primary { background: #3b82f6; border-color: #3b82f6; color:#fff; }
-    </style>
+    h2 {
+      color: white;
+      font-size: 3em;
+      font-weight: bold;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      white-space: nowrap;
+    }
+    .button-group > button {
+      width: 320px;
+      height: 120px;
+      padding: 0.9em 1.1em;
+      margin: 0;
+      font-size: 1.6em;
+      border: none;
+      border-radius: 6px;
+      background-color: #E1C233;
+      color: black;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.15;
+      box-sizing: border-box;
+      white-space: normal;
+    }
+    button:hover { background-color: #0056b3; }
+
+    .error {
+      color: red;
+      margin-top: 1em;
+      font-weight: bold;
+    }
+
+    /* ===== Modal ===== */
+    .modal {
+      position: fixed; inset: 0;
+      display: none;
+      align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.6);
+      z-index: 9999;
+      padding: 1.5rem;
+    }
+    .modal.is-open { display: flex; }
+
+    .modal__dialog {
+      width: 100%;
+      max-width: 350px;
+      background: rgba(20,20,20,0.95);
+      border-radius: 14px;
+      padding: 2rem 1.5rem 1.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      color: #eee;
+      position: relative;
+    }
+    .modal__dialog h3 {
+      margin: 0 0 .75rem;
+      font-family: 'Montserrat', sans-serif;
+      text-align: center;
+    }
+    .modal__row { text-align: left; margin-top: 1rem; }
+    .modal__row label { font-weight: 600; display:block; margin-bottom: .25rem; }
+    .modal__row input {
+      width: 100%;
+      padding: .7rem .8rem;
+      border-radius: 10px;
+      border: 1px solid #444;
+      background: #111;
+      color: #eee;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .modal__actions {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: .5rem;
+      justify-content: flex-end;
+    }
+    .btn {
+      padding: .7rem 1rem;
+      border-radius: 10px;
+      border: 1px solid #444;
+      background: #222;
+      color: #eee;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    .btn--primary { background: #3b82f6; border-color: #3b82f6; color:#fff; }
+  </style>
 </head>
+
 <body>
-    <div class="container">
-        <!-- Logo -->
-        <img src="{{ url_for('static', filename='Gold YOD Logo.png') }}" 
-             alt="Logo" class="logo">
+  <div class="container">
+    <!-- Logo -->
+    <img src="{{ url_for('static', filename='Gold YOD Logo.png') }}" alt="Logo" class="logo">
 
-        <!-- Title -->
-        <h2>YOD PERFORMANCE <br>DASHBOARD</h2>
+    <!-- Title -->
+    <h2>YOD PERFORMANCE <br>DASHBOARD</h2>
 
-        <!-- Error messages -->
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            <div class="error">{{ messages[0] }}</div>
-          {% endif %}
-        {% endwith %}
+    <!-- Error messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="error">{{ messages[0] }}</div>
+      {% endif %}
+    {% endwith %}
 
-        <!-- Main Form -->
-        <form method="POST" id="roleForm">
-            <div class="button-group">
-                <button type="submit" name="role" value="shift">YWT Champion<br>(Team Performance Drive)</button>
-                
-                <button type="button" id="dailyAnalysisBtn" data-pbi-url="https://app.powerbi.com/reportEmbed?reportId=026a9d28-9f5e-44ae-99ec-eb550030a75f&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3">Daily Analysis</button>
-                <button type="button" id="trainingBtn" data-url="{{ url_for('home.training') }}">Training</button>
-                <button type="button" id="playbookBtn" data-url="https://miro.com/app/dashboard/">Playbook</button>
-<button type="button" data-role="non_shift" class="pw-open">SO Individual Performance</button>
-                <button type="button" data-role="avp_vp" class="pw-open">JO Individual Performance</button>
-            </div>
-        </form>
-    </div>
+    <!-- Main Form -->
+    <form method="POST" id="roleForm">
+      <div class="button-group">
 
-    <!-- Login Modal -->
-    <div id="passwordModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="pw-title">
-      <div class="modal__dialog">
-        <h3 id="pw-title">Login</h3>
+        <!-- YWT Champion (Team Performance Drive) -->
+        <button type="submit" name="role" value="shift">
+          YWT Champion<br>(Team Performance Drive)
+        </button>
 
-        <form method="POST" id="passwordForm">
-          <input type="hidden" name="role" id="hiddenRole">
+        <!-- Daily Analysis (NOW same style as shift) -->
+        <button type="submit" name="role" value="daily_analysis">
+          Daily Analysis
+        </button>
 
-          <div class="modal__row">
-            <label for="username-input">Username</label>
-            <input id="username-input" type="text" name="username" required>
-          </div>
+        <!-- Training -->
+        <button type="button" id="trainingBtn" data-url="{{ url_for('home.training') }}">
+          Training
+        </button>
 
-          <div class="modal__row">
-            <label for="pw-input">Password</label>
-            <input id="pw-input" type="password" name="password" required autocomplete="current-password">
-          </div>
+        <!-- Playbook -->
+        <button type="button" id="playbookBtn" data-url="https://miro.com/app/dashboard/">
+          Playbook
+        </button>
 
-          <div class="modal__actions">
-            <button type="submit" class="btn btn--primary">Enter</button>
-            <button type="button" class="btn" id="pwCancel">Cancel</button>
-          </div>
-        </form>
+        <!-- Password protected -->
+        <button type="button" data-role="non_shift" class="pw-open">SO Individual Performance</button>
+        <button type="button" data-role="avp_vp" class="pw-open">JO Individual Performance</button>
+
       </div>
-    </div>
+    </form>
+  </div>
 
-    <script>
+  <!-- Login Modal -->
+  <div id="passwordModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="pw-title">
+    <div class="modal__dialog">
+      <h3 id="pw-title">Login</h3>
+
+      <form method="POST" id="passwordForm">
+        <input type="hidden" name="role" id="hiddenRole">
+
+        <div class="modal__row">
+          <label for="username-input">Username</label>
+          <input id="username-input" type="text" name="username" required>
+        </div>
+
+        <div class="modal__row">
+          <label for="pw-input">Password</label>
+          <input id="pw-input" type="password" name="password" required autocomplete="current-password">
+        </div>
+
+        <div class="modal__actions">
+          <button type="submit" class="btn btn--primary">Enter</button>
+          <button type="button" class="btn" id="pwCancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      // ===== Password modal =====
       const modal      = document.getElementById('passwordModal');
       const pwCancel   = document.getElementById('pwCancel');
       const hiddenRole = document.getElementById('hiddenRole');
@@ -216,67 +231,52 @@
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
       });
-    </script>
 
-    
-    <script>
-      (function () {
-        // Daily Analysis (no password) -> open embedded Power BI in a new tab
-        const dailyBtn = document.getElementById('dailyAnalysisBtn');
-        if (dailyBtn) {
-          dailyBtn.addEventListener('click', function () {
-            const url = dailyBtn.getAttribute('data-pbi-url');
-            if (!url || url === 'https://app.powerbi.com/reportEmbed?reportId=026a9d28-9f5e-44ae-99ec-eb550030a75f&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3') {
-              alert('Daily Analysis Power BI link not set yet. Please update data-pbi-url in home.html.');
-              return;
-            }
-            window.open(url, '_blank', 'noopener,noreferrer');
-          });
-        }
+      // ===== Training =====
+      const trainingBtn = document.getElementById('trainingBtn');
+      if (trainingBtn) {
+        trainingBtn.addEventListener('click', function () {
+          const url = trainingBtn.getAttribute('data-url') || '/training';
+          window.location.href = url;
+        });
+      }
 
-        // Training (no password) -> open internal /training page
-        const trainingBtn = document.getElementById('trainingBtn');
-        if (trainingBtn) {
-          trainingBtn.addEventListener('click', function () {
-            const url = trainingBtn.getAttribute('data-url') || '/training';
-            window.location.href = url;
-          });
-        }
+      // ===== Playbook =====
+      const playbookBtn = document.getElementById('playbookBtn');
+      if (playbookBtn) {
+        playbookBtn.addEventListener('click', function () {
+          const url = playbookBtn.getAttribute('data-url') || "https://miro.com/app/dashboard/";
+          window.open(url, "_blank", "noopener,noreferrer");
+        });
+      }
 
-        // Playbook (no password) -> open Miro dashboard in a new tab
-        const playbookBtn = document.getElementById('playbookBtn');
-        if (playbookBtn) {
-          playbookBtn.addEventListener('click', function () {
-            const url = playbookBtn.getAttribute('data-url') || "https://miro.com/app/dashboard/";
-            window.open(url, '_blank', 'noopener,noreferrer');
-          });
-        }
+      // ===== Intercept FORM submit for both Shift + Daily Analysis =====
+      const SHIFT_PBI_URL =
+        "https://app.powerbi.com/reportEmbed?reportId=da709d26-ef86-4a23-bdfe-46ca2d260554&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
 
-      })();
-    </script>
+      const DAILY_PBI_URL =
+        "https://app.powerbi.com/reportEmbed?reportId=026a9d28-9f5e-44ae-99ec-eb550030a75f&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
 
-<!-- === Added: Intercept Shift submit to open Power BI in a new tab === -->
-    <script>
-      (function () {
-        const PBI_URL = 'https://app.powerbi.com/reportEmbed?reportId=da709d26-ef86-4a23-bdfe-46ca2d260554&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3';
-        const form = document.getElementById('roleForm');
-
-        if (!form) return;
-
+      const form = document.getElementById('roleForm');
+      if (form) {
         form.addEventListener('submit', function (e) {
-          // Identify which button submitted the form (modern browsers)
           const submitter = e.submitter || document.activeElement;
+          if (!submitter || submitter.name !== 'role') return;
 
-          if (
-            submitter &&
-            submitter.name === 'role' &&
-            submitter.value === 'shift'
-          ) {
-            e.preventDefault(); // stop the POST
-            window.open(PBI_URL, '_blank', 'noopener,noreferrer');
+          if (submitter.value === 'shift') {
+            e.preventDefault();
+            window.open(SHIFT_PBI_URL, "_blank", "noopener,noreferrer");
+            return;
+          }
+
+          if (submitter.value === 'daily_analysis') {
+            e.preventDefault();
+            window.open(DAILY_PBI_URL, "_blank", "noopener,noreferrer");
+            return;
           }
         });
-      })();
-    </script>
+      }
+    })();
+  </script>
 </body>
 </html>
