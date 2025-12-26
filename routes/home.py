@@ -61,3 +61,8 @@ def role_selection():
 
     # GET
     return render_template("home.html")
+
+@home.route("/training", methods=["GET"])
+def training():
+    """Public Training page (no password)."""
+    return render_template("training.html")
