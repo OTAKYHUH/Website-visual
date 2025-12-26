@@ -169,6 +169,13 @@
         <button type="button" data-role="non_shift" class="pw-open">SO Individual Performance</button>
         <button type="button" data-role="avp_vp" class="pw-open">JO Individual Performance</button>
 
+        <button
+            type="button"
+            id="staffProfileBtn"
+            data-url="https://globalpsa.sharepoint.com/:x:/s/PSAC-CNBD-YOD-efile/IQDQRbYZAnJeSaHbuUxC4x6yAXaNJ1Bwi693i6NtMbvJPZg?e=Tbd92g">
+            Staff Profile
+        </button>
+
       </div>
     </form>
   </div>
@@ -249,6 +256,14 @@
           window.open(url, "_blank", "noopener,noreferrer");
         });
       }
+      // ===== Staff Profile (SharePoint Excel) =====
+        const staffProfileBtn = document.getElementById('staffProfileBtn');
+        if (staffProfileBtn) {
+        staffProfileBtn.addEventListener('click', function () {
+            const url = staffProfileBtn.getAttribute('data-url');
+            window.open(url, "_blank", "noopener,noreferrer");
+        });
+        }
 
       // ===== Intercept FORM submit for both Shift + Daily Analysis =====
       const SHIFT_PBI_URL =
