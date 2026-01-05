@@ -156,10 +156,9 @@
         </button>
 
         <!-- Training -->
-        <button type="button" id="trainingBtn" data-url="{{ url_for('home.training') }}">
+        <button type="button" id="trainingBtn" data-url="{{ url_for('yas_booklet.yas_page', page=1) }}">
           Training
         </button>
-
         <!-- Playbook -->
         <button type="button" id="playbookBtn" data-url="https://miro.com/app/dashboard/">
           Playbook
@@ -267,10 +266,10 @@
 
       // ===== Intercept FORM submit for both Shift + Daily Analysis =====
       const SHIFT_PBI_URL =
-        "https://app.powerbi.com/reportEmbed?reportId=da709d26-ef86-4a23-bdfe-46ca2d260554&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
+        "https://app.powerbi.com/reportEmbed?reportId=b3af80f5-56b8-4b19-8e28-547613d2c6f8&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
 
       const DAILY_PBI_URL =
-        "https://app.powerbi.com/reportEmbed?reportId=0a8ee805-ae4c-4dca-9fe8-2b0bde112e20&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
+        "https://app.powerbi.com/reportEmbed?reportId=8f105737-0465-44ee-822a-0791181fc5ca&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
 
       const form = document.getElementById('roleForm');
       if (form) {

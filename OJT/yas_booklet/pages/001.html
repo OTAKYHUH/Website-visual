@@ -1,0 +1,208 @@
+<div class="page-wrap">
+  <div class="sheet cover-page">
+
+    <div class="cover-head">
+      <div class="cover-line1">PSA CORPORATION LIMITED</div>
+      <div class="cover-line2">On-the-Job Training (OJT) Booklet</div>
+    </div>
+
+    <div class="section-h">Trainee Details</div>
+
+    <table class="grid-table">
+      <tr>
+        <td class="label-col">Name:</td>
+        <td class="line-col"><span class="line"></span></td>
+      </tr>
+      <tr>
+        <td class="label-col">Employee Number:</td>
+        <td class="line-col"><span class="line"></span></td>
+      </tr>
+      <tr>
+        <td class="label-col">Department:</td>
+        <td class="line-col"><span class="line"></span></td>
+      </tr>
+      <tr>
+        <td class="label-col">Course Start Date:</td>
+        <td class="line-col"><span class="line"></span></td>
+      </tr>
+      <tr>
+        <td class="label-col">Course End Date:</td>
+        <td class="line-col"><span class="line"></span></td>
+      </tr>
+    </table>
+
+    <table class="big-box-table">
+      <tr>
+        <td class="big-left">JOB TITLE</td>
+        <td class="big-right">YARD ACTIVITY SUPERVISOR</td>
+      </tr>
+      <tr>
+        <td class="big-left">MODULE</td>
+        <td class="big-right">YARD ACTIVITY SUPERVISOR COURSE</td>
+      </tr>
+    </table>
+
+    <div class="section-h" style="margin-top:14px;">Document Control</div>
+
+    <table class="doc-control">
+      <tr>
+        <td class="dc-title" colspan="2">YARD SHIFTING SUPERVISOR</td>
+        <td class="dc-ref">Handout Ref No.:</td>
+      </tr>
+      <tr class="dc-head">
+        <td>Action</td>
+        <td>Name</td>
+        <td>Date</td>
+      </tr>
+      <tr>
+        <td>Drafted by:</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Vetted by:</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Approved by:</td>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
+
+    <div class="footer">
+      © PSA Corporation Limited. Year 2015. Printed in Singapore. All rights reserved.
+      Please note that information contained in these training materials are strictly confidential
+      and may not be revealed to any third parties, reproduced, stored in a retrieval system nor
+      transmitted in any form or by any means (electronic, mechanical, photocopying, recording,
+      or otherwise) without the prior written consent of PSA Corporation Limited.
+    </div>
+
+  </div>
+</div>
+
+<style>
+  /* ===== same “page” feel as your OJT screenshot ===== */
+  :root{
+    --ink:#000;
+    --grid:#8a8a8a;         /* thin grey like screenshot */
+    --grid-strong:#6f6f6f;
+  }
+
+  body{
+    font-family: Arial, Helvetica, sans-serif;
+    background:#fff;
+    margin:0;
+    color:var(--ink);
+  }
+
+  .page-wrap{
+    max-width: 1200px;
+    width: 95vw;
+    margin: 0 auto;
+    padding: 18px 0 40px;
+    display:flex;
+    justify-content:center;
+  }
+
+  .sheet{
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .cover-head{
+    text-align:center;
+    margin-bottom: 10px;
+  }
+  .cover-line1{
+    font-weight:700;
+    font-size: 28px;
+    margin-bottom: 2px;
+  }
+  .cover-line2{
+    font-weight:700;
+    font-size: 28px;
+  }
+
+  .section-h{
+    font-weight:700;
+    font-size: 13px;
+    margin: 12px 0 8px;
+  }
+
+  /* ===== tables styled like your OJT page ===== */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+    font-size: 13px;
+  }
+
+  .grid-table{
+    border:1px solid var(--grid-strong);
+    margin-bottom: 12px;
+  }
+  .grid-table td{
+    border:1px solid var(--grid);
+    padding:10px 12px;
+    vertical-align:middle;
+  }
+
+  .label-col{ width: 260px; font-weight:700; }
+  .line-col{ width:auto; }
+
+  .line{
+    display:block;
+    height: 16px;
+    border-bottom: 1px solid var(--grid-strong);
+  }
+
+  /* big JOB TITLE / MODULE box but same thin-border style */
+  .big-box-table{
+    border:1px solid var(--grid-strong);
+    margin-top: 6px;
+  }
+  .big-box-table td{
+    border:1px solid var(--grid);
+    padding: 16px 12px;
+  }
+  .big-left{
+    width: 260px;
+    font-weight:700;
+  }
+  .big-right{
+    font-weight:700;
+    text-align:center;
+    font-size: 14px;
+    letter-spacing: .2px;
+  }
+
+  /* Document control table in same style */
+  .doc-control{
+    border:1px solid var(--grid-strong);
+    margin-top: 6px;
+  }
+  .doc-control td{
+    border:1px solid var(--grid);
+    padding:10px 12px;
+  }
+  .dc-title{
+    font-weight:700;
+    text-align:left;
+  }
+  .dc-ref{
+    text-align:left;
+  }
+  .dc-head td{
+    font-weight:700;
+    text-align:center;
+  }
+
+  .footer{
+    margin-top: 12px;
+    font-size: 11px;
+    line-height: 1.35;
+    font-weight:700;
+  }
+</style>
