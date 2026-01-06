@@ -1,13 +1,147 @@
-<p><strong>MODULE 5 – </strong><strong>Activity Management</strong></p>
-<p>Different yard activities require different actions. As a YAS, it is your responsibility to understand and respond with the best supervisory action.</p>
-<p>Upon checking on W25 activity, mounting activity is for non-urgent IYS. What should you do?</p>
-<p>1)Call IYS to suspend and inform the Yard Planner to replan offloading</p>
-<p>2)Call IYS to suspend and inform YOC to assign an RTG to for offloading</p>
-<p>3)Call IYS to suspend and inform YAS to replan (kill the block)</p>
-<p>4) None of the above</p>
-<p>Ans : (   )</p>
-<p>Ideal situation during Peak and Lull period:</p>
-<table>
-<tr><td>Peak/Heavy</td><td>Lull/Light</td></tr>
-<tr><td>Inform all shifting team (IYS, ITT, IGH) to suspend non-urgent shifting<br/>Workthru all YCO<br/>Request for additional holding area from YPDM<br/>Planner to raise ITT boxes to ease yard space<br/>Deploy optimal number of YCOs</td><td>Kill end block to allow crane parking. For example, at PPT2 S1 the end blocks are T and Y; at PPT3, they are S and Y.<br/>Plan for YCOs’ meal breaks during lull periods<br/>Can consider if can get shifting to support, identify blocks neede<br/>Able to proceed with workthru; coordination with the shifting team is needed to identify executable blocks.</td></tr>
-</table>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PPT4–6 aRMG Layout</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    margin: 20px;
+  }
+
+  /* ===== ROW LAYOUT ===== */
+  .row {
+    display: grid;
+    grid-template-columns: 420px 1fr; /* table | images */
+    gap: 30px;
+    align-items: stretch;
+  }
+
+  /* ===== TABLE ===== */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td {
+    border: 1px solid #000;
+    padding: 6px 10px;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  /* ===== COLORS ===== */
+  .title {
+    background: red;
+    font-weight: bold;
+  }
+
+  .terminal {
+    background: yellow;
+    font-weight: bold;
+  }
+
+  .header {
+    background: #ccf5d8;
+    font-weight: bold;
+  }
+
+  /* ===== IMAGE ===== */
+  .image-wrapper {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 20px;
+    height: 100%;
+  }
+
+  .image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 1px solid #000;
+  }
+</style>
+</head>
+
+<body>
+
+<p><strong>Below are tables for equipment layout and special stowage area for PPT4–6</strong></p>
+
+<div class="row">
+
+  <!-- ================= TABLE ================= -->
+  <table>
+
+    <tr class="title">
+      <td colspan="2">LOCATIONS OF aRMG BLOCKS</td>
+    </tr>
+
+    <!-- Terminal 4 -->
+    <tr class="terminal">
+      <td colspan="2">Terminal 4</td>
+    </tr>
+    <tr class="header">
+      <td>Section</td>
+      <td>Block</td>
+    </tr>
+    <tr>
+      <td rowspan="6">Section 1</td>
+      <td>TP01 – TP05</td>
+    </tr>
+    <tr><td>TQ01 – TQ05</td></tr>
+    <tr><td>TR01 – TR03</td></tr>
+    <tr><td>TS01 – TS03</td></tr>
+    <tr><td>TT01 – TT03</td></tr>
+    <tr><td>TU01 – TU05</td></tr>
+
+    <!-- Terminal 5 -->
+    <tr class="terminal">
+      <td colspan="2">Terminal 5</td>
+    </tr>
+    <tr class="header">
+      <td>Section</td>
+      <td>Block</td>
+    </tr>
+    <tr>
+      <td rowspan="6">Section 1</td>
+      <td>TB01 – TB07</td>
+    </tr>
+    <tr><td>TC01 – TC05</td></tr>
+    <tr><td>TD01 – TD07</td></tr>
+    <tr><td>TL01 – TL05</td></tr>
+    <tr><td>TM01 – TM05</td></tr>
+    <tr><td>TN01 – TN05</td></tr>
+
+    <!-- Terminal 6 -->
+    <tr class="terminal">
+      <td colspan="2">Terminal 6</td>
+    </tr>
+    <tr class="header">
+      <td>Section</td>
+      <td>Block</td>
+    </tr>
+    <tr>
+      <td rowspan="6">Section 1</td>
+      <td>TE01 – TE05</td>
+    </tr>
+    <tr><td>TF01 – TF05</td></tr>
+    <tr><td>TG01 – TG07</td></tr>
+    <tr><td>TH01 – TH05</td></tr>
+    <tr><td>TJ01 – TJ07</td></tr>
+    <tr><td>TK01 – TK06</td></tr>
+
+  </table>
+
+  <!-- ================= IMAGES ================= -->
+  <div class="image-wrapper">
+    <!-- Replace with your actual image paths -->
+    <img src="/static/armg_terminal4.png" alt="aRMG Terminal 4">
+    <img src="/static/armg_terminal5_6.jpg" alt="aRMG Terminal 5 & 6">
+  </div>
+
+</div>
+
+</body>
+</html>

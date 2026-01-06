@@ -1,1 +1,162 @@
-<p><strong>Monitor no show</strong><strong> closely</strong><strong> to identify high waiting PM.</strong><strong> </strong><strong>B</strong><strong>elow is the example page of a </strong><strong>no show</strong><strong> report.</strong></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PPT1-3 Equipment Layout</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+  }
+
+  .page-title {
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 30px;
+    align-items: start;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 25px;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px 8px;
+    text-align: center;
+  }
+
+  .title-row {
+    background: red;
+    color: #000;
+    font-weight: bold;
+  }
+
+  .terminal-row {
+    background: yellow;
+    font-weight: bold;
+  }
+
+  .header-row {
+    background: #c6efce;
+    font-weight: bold;
+  }
+
+  .section-divider td {
+    background: #000;
+    height: 14px;
+    padding: 0;
+    border: none;
+  }
+
+  .left {
+    text-align: left;
+  }
+
+  .images img {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 25px;
+    border: 1px solid #000;
+  }
+</style>
+</head>
+
+<body>
+
+<p class="page-title">
+  Below are tables for <strong>equipment layout</strong> and special
+  <strong>stowage area</strong> for <strong>PPT1-3</strong>
+</p>
+
+<div class="layout">
+
+  <!-- LEFT COLUMN (TABLES) -->
+  <div>
+
+    <!-- RMG TABLE -->
+    <table>
+      <tr class="title-row">
+        <td colspan="2">Locations of RMG BLOCKS</td>
+      </tr>
+      <tr class="terminal-row">
+        <td colspan="2">Terminal 1</td>
+      </tr>
+      <tr class="header-row">
+        <td>Section</td>
+        <td>Block</td>
+      </tr>
+
+      <tr>
+        <td rowspan="4">Section 1</td>
+        <td>A13</td>
+      </tr>
+      <tr><td>B13</td></tr>
+      <tr><td>C13</td></tr>
+      <tr><td>D13</td></tr>
+
+      <tr class="section-divider"><td colspan="2"></td></tr>
+
+      <tr>
+        <td rowspan="4">Section 2</td>
+        <td>F13</td>
+      </tr>
+      <tr><td>G13</td></tr>
+      <tr><td>H13</td></tr>
+      <tr><td>J13</td></tr>
+    </table>
+    <br>
+    <br>
+
+    <!-- OHBC TABLE -->
+    <table>
+      <tr class="title-row">
+        <td colspan="2">Locations of OHBC BLOCKS</td>
+      </tr>
+      <tr class="terminal-row">
+        <td colspan="2">Terminal 1</td>
+      </tr>
+      <tr class="header-row">
+        <td>Section</td>
+        <td>Block</td>
+      </tr>
+
+      <tr>
+        <td rowspan="4">Section 1</td>
+        <td>B01-B08</td>
+      </tr>
+      <tr><td>C01-C08</td></tr>
+      <tr><td>D01-D08</td></tr>
+      <tr><td>E01-E08</td></tr>
+
+      <tr class="section-divider"><td colspan="2"></td></tr>
+
+      <tr>
+        <td rowspan="4">Section 2</td>
+        <td>F01-F04</td>
+      </tr>
+      <tr><td>G01-G04</td></tr>
+      <tr><td>H01-H04</td></tr>
+      <tr><td>J03-J04</td></tr>
+    </table>
+
+  </div>
+
+  <!-- RIGHT COLUMN (IMAGES) -->
+  <div class="images">
+    <img src="/static/RMG.jpg" alt="RMG Crane">
+    <img src="/static/ohbc.png" alt="OHBC Crane">
+  </div>
+
+</div>
+
+</body>
+</html>

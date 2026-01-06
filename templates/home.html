@@ -43,7 +43,6 @@
       width: 320px;
       height: 120px;
       padding: 0.9em 1.1em;
-      margin: 0;
       font-size: 1.6em;
       border: none;
       border-radius: 6px;
@@ -62,11 +61,7 @@
     }
     button:hover { background-color: #0056b3; }
 
-    .error {
-      color: red;
-      margin-top: 1em;
-      font-weight: bold;
-    }
+    .error { color: red; margin-top: 1em; font-weight: bold; }
 
     /* ===== Modal ===== */
     .modal {
@@ -74,20 +69,16 @@
       display: none;
       align-items: center; justify-content: center;
       background: rgba(0,0,0,0.6);
-      z-index: 9999;
-      padding: 1.5rem;
+      z-index: 9999; padding: 1.5rem;
     }
     .modal.is-open { display: flex; }
-
     .modal__dialog {
-      width: 100%;
-      max-width: 350px;
+      width: 100%; max-width: 350px;
       background: rgba(20,20,20,0.95);
       border-radius: 14px;
       padding: 2rem 1.5rem 1.5rem;
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      color: #eee;
-      position: relative;
+      color: #eee; position: relative;
     }
     .modal__dialog h3 {
       margin: 0 0 .75rem;
@@ -97,104 +88,100 @@
     .modal__row { text-align: left; margin-top: 1rem; }
     .modal__row label { font-weight: 600; display:block; margin-bottom: .25rem; }
     .modal__row input {
-      width: 100%;
-      padding: .7rem .8rem;
-      border-radius: 10px;
-      border: 1px solid #444;
-      background: #111;
-      color: #eee;
-      font-size: 1rem;
-      box-sizing: border-box;
+      width: 100%; padding: .7rem .8rem;
+      border-radius: 10px; border: 1px solid #444;
+      background: #111; color: #eee; font-size: 1rem;
     }
     .modal__actions {
       margin-top: 1.5rem;
-      display: flex;
-      gap: .5rem;
+      display: flex; gap: .5rem;
       justify-content: flex-end;
     }
     .btn {
       padding: .7rem 1rem;
-      border-radius: 10px;
-      border: 1px solid #444;
-      background: #222;
-      color: #eee;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 1rem;
+      border-radius: 10px; border: 1px solid #444;
+      background: #222; color: #eee;
+      cursor: pointer; font-weight: 600; font-size: 1rem;
     }
-    .btn--primary { background: #3b82f6; border-color: #3b82f6; color:#fff; }
+    .btn--primary {
+      background: #3b82f6;
+      border-color: #3b82f6;
+      color: #fff;
+    }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <!-- Logo -->
     <img src="{{ url_for('static', filename='Gold YOD Logo.png') }}" alt="Logo" class="logo">
 
-    <!-- Title -->
     <h2>YOD PERFORMANCE <br>DASHBOARD</h2>
 
-    <!-- Error messages -->
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         <div class="error">{{ messages[0] }}</div>
       {% endif %}
     {% endwith %}
 
-    <!-- Main Form -->
     <form method="POST" id="roleForm">
       <div class="button-group">
 
-        <!-- YWT Champion (Team Performance Drive) -->
         <button type="submit" name="role" value="shift">
           YWT Champion<br>(Team Performance Drive)
         </button>
 
-        <!-- Daily Analysis (NOW same style as shift) -->
         <button type="submit" name="role" value="daily_analysis">
           Daily Analysis
         </button>
 
-        <!-- Training -->
         <button type="button" id="trainingBtn" data-url="{{ url_for('yas_booklet.yas_page', page=1) }}">
           Training
         </button>
-        <!-- Playbook -->
+
         <button type="button" id="playbookBtn" data-url="https://miro.com/app/dashboard/">
           Playbook
         </button>
 
-        <!-- Password protected -->
-        <button type="button" data-role="non_shift" class="pw-open">SO Individual Performance</button>
-        <button type="button" data-role="avp_vp" class="pw-open">JO Individual Performance</button>
+        <button type="button" data-role="non_shift" class="pw-open">
+          SO Individual Performance
+        </button>
 
-        <button
-            type="button"
-            id="staffProfileBtn"
-            data-url="https://globalpsa.sharepoint.com/:x:/s/PSAC-CNBD-YOD-efile/IQDQRbYZAnJeSaHbuUxC4x6yAXaNJ1Bwi693i6NtMbvJPZg?e=Tbd92g">
-            Staff Profile
+        <button type="button" data-role="avp_vp" class="pw-open">
+          JO Individual Performance
+        </button>
+
+        <button type="button" id="staffProfileBtn"
+          data-url="https://globalpsa.sharepoint.com/:x:/s/PSAC-CNBD-YOD-efile/IQDQRbYZAnJeSaHbuUxC4x6yAXaNJ1Bwi693i6NtMbvJPZg?e=Tbd92g">
+          Staff Profile
+        </button>
+        <button type="button" id="pptWeeklyBtn">
+          PPT Weekly
+        </button>
+
+        <button type="button" id="shiokBtn">
+          SHIOK
         </button>
 
       </div>
     </form>
   </div>
 
-  <!-- Login Modal -->
-  <div id="passwordModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="pw-title">
+  <!-- ===== Login Modal ===== -->
+  <div id="passwordModal" class="modal" aria-hidden="true">
     <div class="modal__dialog">
-      <h3 id="pw-title">Login</h3>
+      <h3>Login</h3>
 
       <form method="POST" id="passwordForm">
         <input type="hidden" name="role" id="hiddenRole">
 
         <div class="modal__row">
-          <label for="username-input">Username</label>
-          <input id="username-input" type="text" name="username" required>
+          <label>Username</label>
+          <input type="text" name="username" required>
         </div>
 
         <div class="modal__row">
-          <label for="pw-input">Password</label>
-          <input id="pw-input" type="password" name="password" required autocomplete="current-password">
+          <label>Password</label>
+          <input type="password" name="password" required>
         </div>
 
         <div class="modal__actions">
@@ -208,89 +195,82 @@
   <script>
     (function () {
       // ===== Password modal =====
-      const modal      = document.getElementById('passwordModal');
-      const pwCancel   = document.getElementById('pwCancel');
+      const modal = document.getElementById('passwordModal');
       const hiddenRole = document.getElementById('hiddenRole');
-      const pwButtons  = document.querySelectorAll('.pw-open');
-      const pwInput    = document.getElementById('pw-input');
 
-      function openModal(role) {
-        hiddenRole.value = role;
-        modal.classList.add('is-open');
-        modal.setAttribute('aria-hidden', 'false');
-        setTimeout(() => document.getElementById('username-input').focus(), 0);
-      }
-      function closeModal() {
-        modal.classList.remove('is-open');
-        modal.setAttribute('aria-hidden', 'true');
-        pwInput.value = '';
-      }
-
-      pwButtons.forEach(btn => {
-        btn.addEventListener('click', () => openModal(btn.dataset.role));
+      document.querySelectorAll('.pw-open').forEach(btn => {
+        btn.addEventListener('click', () => {
+          hiddenRole.value = btn.dataset.role;
+          modal.classList.add('is-open');
+        });
       });
 
-      pwCancel.addEventListener('click', closeModal);
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-      });
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
-      });
+      document.getElementById('pwCancel')
+        .addEventListener('click', () => modal.classList.remove('is-open'));
 
       // ===== Training =====
       const trainingBtn = document.getElementById('trainingBtn');
-      if (trainingBtn) {
-        trainingBtn.addEventListener('click', function () {
-          const url = trainingBtn.getAttribute('data-url') || '/training';
-          window.location.href = url;
-        });
-      }
+      trainingBtn?.addEventListener('click', () => {
+        window.location.href = trainingBtn.dataset.url;
+      });
 
       // ===== Playbook =====
       const playbookBtn = document.getElementById('playbookBtn');
-      if (playbookBtn) {
-        playbookBtn.addEventListener('click', function () {
-          const url = playbookBtn.getAttribute('data-url') || "https://miro.com/app/dashboard/";
-          window.open(url, "_blank", "noopener,noreferrer");
-        });
-      }
-      // ===== Staff Profile (SharePoint Excel) =====
-        const staffProfileBtn = document.getElementById('staffProfileBtn');
-        if (staffProfileBtn) {
-        staffProfileBtn.addEventListener('click', function () {
-            const url = staffProfileBtn.getAttribute('data-url');
-            window.open(url, "_blank", "noopener,noreferrer");
-        });
-        }
+      playbookBtn?.addEventListener('click', () => {
+        window.open(playbookBtn.dataset.url, "_blank");
+      });
+      // ===== Staff Profile =====
+      const staffProfileBtn = document.getElementById('staffProfileBtn');
+      staffProfileBtn?.addEventListener('click', () => {
+        window.open(staffProfileBtn.dataset.url, "_blank", "noopener,noreferrer");
+      });
 
-      // ===== Intercept FORM submit for both Shift + Daily Analysis =====
+      // ===== Power BI Button Logic =====
       const SHIFT_PBI_URL =
         "https://app.powerbi.com/reportEmbed?reportId=b3af80f5-56b8-4b19-8e28-547613d2c6f8&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
 
       const DAILY_PBI_URL =
         "https://app.powerbi.com/reportEmbed?reportId=8f105737-0465-44ee-822a-0791181fc5ca&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
 
-      const form = document.getElementById('roleForm');
-      if (form) {
-        form.addEventListener('submit', function (e) {
-          const submitter = e.submitter || document.activeElement;
-          if (!submitter || submitter.name !== 'role') return;
+      const PPT_WEEKLY_PBI_URL =
+        "https://app.powerbi.com/reportEmbed?reportId=08e074d4-3c03-46b9-b533-812c20defe3e&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
 
-          if (submitter.value === 'shift') {
+      const SHIOK_PBI_URL =
+        "https://app.powerbi.com/reportEmbed?reportId=c250baad-0d3f-4420-b764-ff3dd9cd1510&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
+
+      document.getElementById('roleForm')
+        .addEventListener('submit', function (e) {
+          const btn = e.submitter;
+
+          if (!btn) return;
+
+          // SHIFT
+          if (btn.value === 'shift') {
             e.preventDefault();
-            window.open(SHIFT_PBI_URL, "_blank", "noopener,noreferrer");
-            return;
+            window.open(SHIFT_PBI_URL, "_blank");
           }
 
-          if (submitter.value === 'daily_analysis') {
+          // DAILY
+          if (btn.value === 'daily_analysis') {
             e.preventDefault();
-            window.open(DAILY_PBI_URL, "_blank", "noopener,noreferrer");
-            return;
+            window.open(DAILY_PBI_URL, "_blank");
           }
         });
-      }
+
+      // ===== PPT Weekly =====
+      document.getElementById('pptWeeklyBtn')
+        .addEventListener('click', () => {
+          window.open(PPT_WEEKLY_PBI_URL, "_blank");
+        });
+
+      // ===== SHIOK =====
+      document.getElementById('shiokBtn')
+        .addEventListener('click', () => {
+          window.open(SHIOK_PBI_URL, "_blank");
+        });
+
     })();
   </script>
+
 </body>
 </html>

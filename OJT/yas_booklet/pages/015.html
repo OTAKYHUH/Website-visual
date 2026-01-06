@@ -1,2 +1,206 @@
-<p>Could YAS have prevented these?</p>
-<p>Example of afterspace failed</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PPT4–6 RTG & FM Blocks</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    margin: 20px;
+  }
+
+  /* ===== ROW LAYOUT (TABLE + IMAGE) ===== */
+  .row {
+    display: grid;
+    grid-template-columns: 420px 1fr; /* table | image */
+    gap: 30px;
+    align-items: stretch;
+    margin-bottom: 40px;
+  }
+
+  /* ===== TABLE ===== */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td {
+    border: 1px solid #000;
+    padding: 6px 10px;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  /* ===== COLORS ===== */
+  .title {
+    background: red;
+    font-weight: bold;
+  }
+
+  .terminal {
+    background: yellow;
+    font-weight: bold;
+  }
+
+  .header {
+    background: #ccf5d8;
+    font-weight: bold;
+  }
+
+  /* ===== IMAGE ===== */
+  .image-wrapper {
+    border: 1px solid #000;
+    overflow: hidden;
+  }
+
+  .image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ===== FOOTNOTE ===== */
+  .footnote {
+    margin: 10px 0 30px 0;
+    font-size: 13px;
+    font-weight: bold;
+  }
+</style>
+</head>
+
+<body>
+
+<!-- ================= ROW 1 : MANUAL RTG BLOCKS ================= -->
+<div class="row">
+
+  <!-- TABLE -->
+  <table>
+    <tr class="title">
+      <td colspan="2">LOCATIONS OF MANUAL RTG BLOCKS</td>
+    </tr>
+
+    <!-- Terminal 4 -->
+    <tr class="terminal">
+      <td colspan="2">Terminal 4</td>
+    </tr>
+    <tr class="header">
+      <td>Section</td>
+      <td>Block</td>
+    </tr>
+    <tr>
+      <td rowspan="3">Section 1</td>
+      <td>TR04</td>
+    </tr>
+    <tr><td>TS04 – TS05</td></tr>
+    <tr><td>TT04</td></tr>
+
+    <!-- Terminal 5 -->
+    <tr class="terminal">
+      <td colspan="2">Terminal 5</td>
+    </tr>
+    <tr class="header">
+      <td>Section</td>
+      <td>Block</td>
+    </tr>
+    <tr>
+      <td rowspan="3">Section 1</td>
+      <td>TL06</td>
+    </tr>
+    <tr><td>TM06 – TM08</td></tr>
+    <tr><td>TN06 – TN08</td></tr>
+
+    <!-- Terminal 6 -->
+    <tr class="terminal">
+      <td colspan="2">Terminal 6</td>
+    </tr>
+    <tr class="header">
+      <td>Section</td>
+      <td>Block</td>
+    </tr>
+    <tr>
+      <td>Section 1</td>
+      <td>TH06 – TH08</td>
+    </tr>
+  </table>
+
+  <!-- IMAGE -->
+  <div class="image-wrapper">
+    <!-- replace with your real image -->
+    <img src="/static/manual_rtg_ppt4_6.png" alt="Manual RTG PPT4-6">
+  </div>
+
+</div>
+
+<p class="footnote">
+  *PPT4-6 replanners are responsible for all RTG matters pertaining to their respective yard.
+</p>
+
+<!-- ================= ROW 2 : FM BLOCKS ================= -->
+<div class="row">
+
+  <!-- TABLE -->
+  <table>
+    <tr class="title">
+      <td colspan="2">LOCATIONS OF FM BLOCKS</td>
+    </tr>
+
+    <!-- Terminal 4 -->
+    <tr class="terminal">
+      <td colspan="2">Terminal 4</td>
+    </tr>
+    <tr class="header">
+      <td>Section</td>
+      <td>Block</td>
+    </tr>
+    <tr>
+      <td rowspan="5">Section 1</td>
+      <td>TA01 – TA04</td>
+    </tr>
+    <tr><td>TR06</td></tr>
+    <tr><td>TS06</td></tr>
+    <tr><td>TT06</td></tr>
+    <tr><td>TU06</td></tr>
+
+    <!-- Terminal 5 -->
+    <tr class="terminal">
+      <td colspan="2">Terminal 5</td>
+    </tr>
+    <tr class="header">
+      <td>Section</td>
+      <td>Block</td>
+    </tr>
+    <tr>
+      <td rowspan="2">Section 1</td>
+      <td>TC06 – TC07</td>
+    </tr>
+    <tr><td>TL07</td></tr>
+
+    <!-- Terminal 6 -->
+    <tr class="terminal">
+      <td colspan="2">Terminal 6</td>
+    </tr>
+    <tr class="header">
+      <td>Section</td>
+      <td>Block</td>
+    </tr>
+    <tr>
+      <td rowspan="2">Section 1</td>
+      <td>TE06 – TE07</td>
+    </tr>
+    <tr><td>TF06 – TF07</td></tr>
+
+  </table>
+
+  <!-- IMAGE -->
+  <div class="image-wrapper">
+    <!-- replace with your real image -->
+    <img src="/static/fm_blocks_ppt4_6.png" alt="FM Blocks PPT4-6">
+  </div>
+
+</div>
+
+</body>
+</html>

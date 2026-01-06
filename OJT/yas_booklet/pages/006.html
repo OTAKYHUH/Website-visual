@@ -1,22 +1,75 @@
-<p><strong>VOMC panel</strong></p>
+<!-- ===== Yard QCC Panel ===== -->
+<p class="section-title">Yard QCC panel</p>
+
 <img
-  src="/static/VOMC.png"
-  alt="VOMC"
+  src="/static/QCC 2.png"
+  alt="Yard QCC Panel"
   class="full-width-image"
 />
-<img
-  src="/static/VOMC Legend.png"
-  alt="Legend"
-  class = "leg"
-/>
+
 <!-- ===== Answer Section (Page-specific) ===== -->
 <style>
+  /* Scoped styles for this answer section only */
+  .answer-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 60px;
+    row-gap: 12px;
+    margin-top: 20px;
+    font-size: 14px;
+  }
+
+  .answer-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .answer-number {
+    min-width: 28px;
+  }
+
+  .answer-blank {
+    flex: 1;
+    height: 18px;
+    border-bottom: 1px solid #000;
+  }
+
+  .section-title {
+    margin-top: 14px;
+    font-weight: 700;
+  }
+
   .full-width-image {
     width: 100%;
     height: auto;
     display: block;
   }
-  .leg{
-    width: 20%;
-  }
 </style>
+
+<div class="answer-section">
+  <div class="answer-line">
+    <span class="answer-number">9)</span><div class="answer-blank"></div>
+  </div>
+  <div class="answer-line">
+    <span class="answer-number">13)</span><div class="answer-blank"></div>
+  </div>
+
+  <div class="answer-line">
+    <span class="answer-number">10)</span><div class="answer-blank"></div>
+  </div>
+  <div class="answer-line">
+    <span class="answer-number">14)</span><div class="answer-blank"></div>
+  </div>
+
+  <div class="answer-line">
+    <span class="answer-number">11)</span><div class="answer-blank"></div>
+  </div>
+  <div class="answer-line">
+    <span class="answer-number">15)</span><div class="answer-blank"></div>
+  </div>
+
+  <div class="answer-line">
+    <span class="answer-number">12)</span><div class="answer-blank"></div>
+  </div>
+</div>

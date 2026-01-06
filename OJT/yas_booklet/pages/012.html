@@ -1,18 +1,195 @@
-<p><strong>MODULE 4 – C</strong><strong>ommunication and </strong><strong>C</strong><strong>oordination</strong></p>
-<p>Effective communication in the yard requires quick and clear identification of equipment. Each radioset number is assigned using a standard format to indicate both the equipment type and the individual unit. Radioset numbers are made up of a three-digit prefix that represents the equipment type follow by the crane or prime mover number. Examples in table form as follows,</p>
-<table>
-<tr><td><strong>Equipment type</strong></td><td><strong>Radioset</strong><strong> prefix</strong></td><td><strong>Example (crane/PM)</strong></td><td><strong>Radioset</strong><strong> Number</strong></td></tr>
-<tr><td><strong>Prime </strong><strong>M</strong><strong>over</strong></td><td><strong>460</strong></td><td><strong>429</strong></td><td><strong>460429</strong></td></tr>
-<tr><td><strong>Quay Crane</strong></td><td><strong>410</strong></td><td><strong>105</strong></td><td><strong>410105</strong></td></tr>
-<tr><td><strong>RTG</strong></td><td><strong>420</strong></td><td><strong>501</strong></td><td><strong>420501</strong></td></tr>
-<tr><td><strong>RMG</strong></td><td><strong>430</strong></td><td><strong>108</strong></td><td><strong>430108</strong></td></tr>
-<tr><td><strong>IGH</strong></td><td><strong>960/9600</strong></td><td><strong>9</strong><strong>89</strong></td><td><strong>960989</strong></td></tr>
-<tr><td><strong>FM/H</strong><strong>yster</strong></td><td><strong>450</strong></td><td><strong>831</strong></td><td><strong>450831</strong></td></tr>
-<tr><td><strong>R</strong><strong>eachstacker</strong></td><td><strong>451</strong></td><td><strong>803</strong></td><td><strong>451803</strong></td></tr>
-</table>
-<p>What is the radioset number for Prime Mover 6004?</p>
-<p>A)4606004</p>
-<p>B)466004</p>
-<p>What is the radioset number for FM 057?</p>
-<p>A)450057</p>
-<p>B)45057</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FM & Manual RTG Blocks</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    margin: 20px;
+  }
+
+  /* ===== ROW LAYOUT ===== */
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 520px;
+    gap: 30px;
+    align-items: stretch;
+    margin-bottom: 40px;
+  }
+
+  /* ===== TABLE ===== */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td {
+    border: 1px solid #999;
+    padding: 6px 10px;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .title {
+    background: red;
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  .terminal {
+    background: yellow;
+    font-weight: bold;
+  }
+
+  .header {
+    background: #ccf5d8;
+    font-weight: bold;
+  }
+
+  .black-col {
+    background: black;
+    border: none !important;
+    width: 36px;
+    padding: 0;
+  }
+
+  /* ===== IMAGE ===== */
+  .image-wrapper {
+    height: 100%;
+    border: 1px solid #000;
+    overflow: hidden;
+  }
+
+  .image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;   /* keeps proportions */
+    display: block;
+  }
+</style>
+</head>
+
+<body>
+
+<!-- ================= ROW 1 : FM BLOCKS ================= -->
+<div class="row">
+
+  <!-- FM TABLE -->
+  <table>
+    <tr class="title">
+      <td colspan="5">LOCATIONS OF FM BLOCKS</td>
+    </tr>
+
+    <tr class="terminal">
+      <td colspan="5">Terminal 1</td>
+    </tr>
+    <tr class="header">
+      <td>Section</td><td>Block</td>
+      <td class="black-col" colspan="3"></td>
+    </tr>
+    <tr>
+      <td>Section 1</td><td>A02–A07</td>
+      <td class="black-col" colspan="3"></td>
+    </tr>
+
+    <tr class="terminal">
+      <td colspan="5">Terminal 2</td>
+    </tr>
+    <tr class="header">
+      <td>Section</td><td>Block</td>
+      <td class="black-col"></td>
+      <td>Section</td><td>Block</td>
+    </tr>
+
+    <tr>
+      <td rowspan="4">Section 1</td><td>T09</td>
+      <td class="black-col"></td>
+      <td rowspan="4">Section 2</td><td>K10, K11</td>
+    </tr>
+    <tr><td>X09</td><td class="black-col"></td><td>L10, L11</td></tr>
+    <tr><td></td><td class="black-col"></td><td>M12</td></tr>
+    <tr><td></td><td class="black-col"></td><td>P10, P11, P12</td></tr>
+
+    <tr class="terminal">
+      <td colspan="5">Terminal 3</td>
+    </tr>
+    <tr class="header">
+      <td>Section</td><td>Block</td>
+      <td class="black-col"></td>
+      <td>Section</td><td>Block</td>
+    </tr>
+
+    <tr>
+      <td rowspan="3">Section 1</td><td>W31</td>
+      <td class="black-col"></td>
+      <td rowspan="3">Section 2</td><td>S10, S11</td>
+    </tr>
+    <tr><td>X31</td><td class="black-col"></td><td>T31</td></tr>
+    <tr><td>Z31</td><td class="black-col"></td><td>U31</td></tr>
+  </table>
+
+  <!-- FM IMAGE -->
+  <div class="image-wrapper">
+    <img src="/static/fm_equipment.png" alt="FM Equipment">
+  </div>
+
+</div>
+
+<!-- ================= ROW 2 : MANUAL RTG BLOCKS ================= -->
+<div class="row">
+
+  <!-- RTG TABLE -->
+  <table>
+    <tr class="title">
+      <td colspan="5">LOCATIONS OF MANUAL RTG BLOCKS</td>
+    </tr>
+
+    <tr class="terminal">
+      <td colspan="5">Terminal 2</td>
+    </tr>
+    <tr class="header">
+      <td>Section</td><td>Block</td>
+      <td class="black-col"></td>
+      <td>Section</td><td>Block</td>
+    </tr>
+
+    <tr>
+      <td rowspan="5">Section 1</td><td>T01–T08</td>
+      <td class="black-col"></td>
+      <td rowspan="5">Section 2</td><td>K01</td>
+    </tr>
+    <tr><td>U01–U08</td><td class="black-col"></td><td>L01</td></tr>
+    <tr><td>W01–W09</td><td class="black-col"></td><td>M01</td></tr>
+    <tr><td>X01–X08</td><td class="black-col"></td><td>N01</td></tr>
+    <tr><td>Y01–Y07</td><td class="black-col"></td><td>M01, M10</td></tr>
+
+    <tr class="terminal">
+      <td colspan="5">Terminal 3</td>
+    </tr>
+    <tr class="header">
+      <td>Section</td><td>Block</td>
+      <td class="black-col"></td>
+      <td>Section</td><td>Block</td>
+    </tr>
+
+    <tr>
+      <td rowspan="3">Section 1</td><td>W21–W30</td>
+      <td class="black-col"></td>
+      <td rowspan="3">Section 2</td><td>S01</td>
+    </tr>
+    <tr><td>X21–X30</td><td class="black-col"></td><td>T21–T30</td></tr>
+    <tr><td>Y21–Y30</td><td class="black-col"></td><td>U21–U30</td></tr>
+  </table>
+
+  <!-- RTG IMAGE -->
+  <div class="image-wrapper">
+    <img src="/static/manual_rtg.png" alt="Manual RTG">
+  </div>
+
+</div>
+
+</body>
+</html>

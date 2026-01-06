@@ -1,170 +1,93 @@
-<!-- ================= MODULE 1 ================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Yard Scenario Review</title>
 
 <style>
-  /* Scoped to this module only */
-  .module-1 {
-    margin-top: 12px;
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #fff;
+    color: #000;
   }
 
-  .module-1-title {
-    font-weight: 700;
-    font-size: 16px;
-    margin: 6px 0 12px;
+  h2 {
+    font-size: 18px;
+    margin-bottom: 12px;
   }
 
-  .module-1 table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
+  .section {
+    margin-bottom: 40px;
   }
 
-  .module-1 th,
-  .module-1 td {
-    border: 1px solid #000;
-    padding: 12px 14px;
-    vertical-align: top;
-  }
-
-  .module-1 th {
-    text-align: center;
-    font-weight: 700;
-  }
-
-  /* Task column */
-  .module-1 .task-col {
-    width: 90px;
-    text-align: center;
-    font-weight: 700;
-  }
-
-  /* Lists */
-  .module-1 ul {
-    margin: 0;
-    padding-left: 18px;
-  }
-
-  .module-1 li {
-    margin-bottom: 6px;
-  }
-
-  /* Checklist with checkboxes */
-  .module-1 .checklist {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-  }
-
-  .module-1 .checklist li {
-    margin-bottom: 8px;
+  /* Two images side-by-side */
+  .image-row {
     display: flex;
-    align-items: flex-start;
-    gap: 8px;
+    gap: 20px;
+    flex-wrap: wrap;
   }
 
-  .module-1 .checklist input {
-    margin-top: 2px;
+  .image-box {
+    flex: 1;
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  .image-box img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Single large image */
+  .single-image {
+    border: 1px solid #000;
+    padding: 6px;
+    max-width: 900px;
+  }
+
+  .single-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Optional caption */
+  .caption {
+    font-size: 13px;
+    margin-top: 6px;
+    color: #333;
   }
 </style>
+</head>
 
-<div class="module-1">
+<body>
 
-  <div class="module-1-title">
-    <p><strong>MODULE 2 – IDENTIFY YARD LAYOU</strong><strong>T</strong><strong> &amp; EQUIPMENTS USED ACROSS P1-3</strong></p>
+<!-- ================= SECTION 1 ================= -->
+<div class="section">
+  <h2>Could YAS have prevented these?</h2>
+
+  <div class="image-row">
+    <div class="image-box">
+      <!-- CHANGE image_left.png -->
+      <img src="/static/image_left.png" alt="Yard scenario left">
+    </div>
+
+    <div class="image-box">
+      <!-- CHANGE image_right.png -->
+      <img src="/static/image_right.png" alt="Yard scenario right">
+    </div>
   </div>
-
-  <table>
-    <tr>
-      <th>Task</th>
-      <th>Tasks To Do</th>
-      <th>Task Objectives / Standard to Meet</th>
-      <th>Skills &amp; Knowledge Explained</th>
-      <th>Checklist</th>
-    </tr>
-
-    <!-- ===== CITOS ===== -->
-    <tr>
-      <td class="task-col">YARD CRANES</td>
-      <td>Differences between yard cranes used across the terminal</td>
-      <td>
-        <strong>Logical Yard</strong> – View blocks in respective terminals and container details<br><br>
-        <strong>Yard QCC</strong> – Yard activity list and tools for replanning.
-      </td>
-      <td>
-        <ul>
-          <li>Understand basic feature such as block view panel, enhanced activity and micro plan view mode</li>
-          <li>Able to identify information from yard block activity panel</li>
-          <li>Replan successfully from selected cluster or by blocks</li>
-        </ul>
-      </td>
-      <td>
-        <ul class="checklist">
-          <li><input type="checkbox"> Use the enhance activity view to forecast activity</li>
-          <li><input type="checkbox"> Use of block view panel to view container stacking information</li>
-          <li><input type="checkbox"> Identify and read key information from the yard block activity panel</li>
-          <li><input type="checkbox"> Replanning by selected cluster or by yard block</li>
-        </ul>
-      </td>
-    </tr>
-
-    <!-- ===== VOMC ===== -->
-    <tr>
-      <td class="task-col">
-        VOMC<br>
-        (VESSEL OPERATION<br>MONITOR AND CONTROL)
-      </td>
-      <td>Vessel sequence</td>
-      <td>
-        <strong>Vessel panel</strong> – invoke VPA
-      </td>
-      <td>
-        <ul>
-          <li>Understand basic crane sequencing</li>
-          <li>Difference between view and edit mode</li>
-          <li>Colour code</li>
-        </ul>
-      </td>
-      <td>
-        <ul class="checklist">
-          <li><input type="checkbox"> Identify key panels</li>
-          <li><input type="checkbox"> Able to understand job sequence list</li>
-          <li><input type="checkbox"> Different color denotes different type of operations</li>
-        </ul>
-      </td>
-    </tr>
-
-    <!-- ===== YOMC ===== -->
-    <tr>
-      <td class="task-col">
-        YOMC<br>
-        (YARD OPERATION<br>MONITOR AND CONTROL)
-      </td>
-      <td>
-        YOMC Panel<br>
-        Diversion Panel<br>
-        PM Monitoring
-      </td>
-      <td>
-        <strong>YOMC Panel</strong> – Oversee yard operations.<br><br>
-        <strong>Diversion Panel</strong> – Handle container diversions.<br><br>
-        <strong>PM Monitoring</strong> – Track performance metrics.
-      </td>
-      <td>
-        <ul>
-          <li>Toggle between all terminal / section</li>
-          <li>Double-check container details before diversions</li>
-          <li>Update container location</li>
-          <li>PM no-show monitoring</li>
-        </ul>
-      </td>
-      <td>
-        <ul class="checklist">
-          <li><input type="checkbox"> Proficient use of YOMC interface</li>
-          <li><input type="checkbox"> Able to handle diversion, DG diversion, update job location</li>
-          <li><input type="checkbox"> Able to monitor PM productivity, no-show and location</li>
-        </ul>
-      </td>
-    </tr>
-
-  </table>
-
 </div>
+
+<!-- ================= SECTION 2 ================= -->
+<div class="section">
+  <h2>Example of afterspace failed</h2>
+
+  <div class="single-image">
+    <!-- CHANGE afterspace_failed.png -->
+    <img src="/static/afterspace_failed.png" alt="Afterspace failed example">
+  </div>
+</body>
+</html>
