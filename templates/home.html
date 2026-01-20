@@ -134,7 +134,7 @@
           Daily Analysis
         </button>
 
-        <button type="button" id="trainingBtn" data-url="{{ url_for('yas_booklet.yas_page', page=1) }}">
+        <button type="button" id="trainingBtn">
           Training
         </button>
 
@@ -191,7 +191,29 @@
       </form>
     </div>
   </div>
+  <!-- ===== Training Login Modal ===== -->
+  <div id="trainingModal" class="modal" aria-hidden="true">
+    <div class="modal__dialog">
+      <h3>Training Login</h3>
 
+      <form method="POST" action="{{ url_for('training.training_login') }}">
+        <div class="modal__row">
+          <label>Name</label>
+          <input type="text" name="name" required>
+        </div>
+
+        <div class="modal__row">
+          <label>Role</label>
+          <input type="text" name="role" required placeholder="e.g. YAS">
+        </div>
+
+        <div class="modal__actions">
+          <button type="submit" class="btn btn--primary">Enter</button>
+          <button type="button" class="btn" id="trainingCancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
   <script>
     (function () {
       // ===== Password modal =====
@@ -209,9 +231,16 @@
         .addEventListener('click', () => modal.classList.remove('is-open'));
 
       // ===== Training =====
-      const trainingBtn = document.getElementById('trainingBtn');
-      trainingBtn?.addEventListener('click', () => {
-        window.location.href = trainingBtn.dataset.url;
+      const trainingBtn = document.getElementById("trainingBtn");
+      const trainingModal = document.getElementById("trainingModal");
+      const trainingCancel = document.getElementById("trainingCancel");
+
+      trainingBtn?.addEventListener("click", () => {
+        trainingModal.classList.add("is-open");
+      });
+
+      trainingCancel?.addEventListener("click", () => {
+        trainingModal.classList.remove("is-open");
       });
 
       // ===== Playbook =====

@@ -5,132 +5,137 @@
 <title>PSA OJT Booklet</title>
 
 <style>
-  :root{
-    --ink:#000;
-    --grid:#8a8a8a;
-    --grid-strong:#6f6f6f;
+  :root {
+    --ink: #000;
+    --grid: #8a8a8a;
+    --grid-strong: #6f6f6f;
   }
 
-  body{
+  body {
     font-family: Arial, Helvetica, sans-serif;
-    background:#fff;
-    margin:0;
-    color:var(--ink);
+    background: #fff;
+    margin: 0;
+    color: var(--ink);
   }
 
-  .page-wrap{
-    max-width:1200px;
-    width:95vw;
-    margin:0 auto;
-    padding:18px 0 40px;
-    display:flex;
-    justify-content:center;
+  .page-wrap {
+    max-width: 1200px;
+    width: 95vw;
+    margin: 0 auto;
+    padding: 18px 0 40px;
+    display: flex;
+    justify-content: center;
   }
 
-  .sheet{
-    width:100%;
-    min-height:90vh;
-    display:flex;
-    flex-direction:column;
+  .sheet {
+    width: 100%;
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
   }
 
-  .cover-head{
-    text-align:center;
-    margin-bottom:10px;
+  .cover-head {
+    text-align: center;
+    margin-bottom: 10px;
   }
+
   .cover-line1,
-  .cover-line2{
-    font-weight:700;
-    font-size:28px;
+  .cover-line2 {
+    font-weight: 700;
+    font-size: 28px;
   }
 
-  .section-h{
-    font-weight:700;
-    font-size:13px;
-    margin:12px 0 8px;
+  .section-h {
+    font-weight: 700;
+    font-size: 13px;
+    margin: 12px 0 8px;
   }
 
-  table{
-    width:100%;
-    border-collapse:collapse;
-    table-layout:fixed;
-    font-size:13px;
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 13px;
   }
 
-  /* Trainee details table */
-  .grid-table{
-    border:1px solid var(--grid-strong);
-    margin-bottom:12px;
-  }
-  .grid-table td{
-    border:1px solid var(--grid);
-    padding:10px 12px;
+  .grid-table {
+    border: 1px solid var(--grid-strong);
+    margin-bottom: 12px;
   }
 
-  .label-col{
-    width:260px;
-    font-weight:700;
+  .grid-table td {
+    border: 1px solid var(--grid);
+    padding: 10px 12px;
   }
 
-  .line-input{
-    width:100%;
-    border:none;
-    border-bottom:1px solid var(--grid-strong);
-    outline:none;
-    font-size:13px;
-    padding:2px 0;
-    background:transparent;
+  .label-col {
+    width: 260px;
+    font-weight: 700;
   }
 
-  /* Job / Module box */
-  .big-box-table{
-    border:1px solid var(--grid-strong);
-    margin-top:6px;
-  }
-  .big-box-table td{
-    border:1px solid var(--grid);
-    padding:16px 12px;
-  }
-  .big-left{
-    width:260px;
-    font-weight:700;
-  }
-  .big-right{
-    font-weight:700;
-    text-align:center;
-    font-size:14px;
+  .line-input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid var(--grid-strong);
+    outline: none;
+    font-size: 13px;
+    padding: 2px 0;
+    background: transparent;
   }
 
-  /* Document control */
-  .doc-control{
-    border:1px solid var(--grid-strong);
-    margin-top:6px;
-  }
-  .doc-control td{
-    border:1px solid var(--grid);
-    padding:10px 12px;
-  }
-  .dc-title{
-    font-weight:700;
-  }
-  .dc-head td{
-    font-weight:700;
-    text-align:center;
+  .big-box-table {
+    border: 1px solid var(--grid-strong);
+    margin-top: 6px;
   }
 
-  .dc-input{
-    width:100%;
-    border:none;
-    outline:none;
-    font-size:13px;
-    background:transparent;
+  .big-box-table td {
+    border: 1px solid var(--grid);
+    padding: 16px 12px;
   }
 
-  .footer{
-    margin-top:12px;
-    font-size:11px;
-    line-height:1.35;
-    font-weight:700;
+  .big-left {
+    width: 260px;
+    font-weight: 700;
+  }
+
+  .big-right {
+    font-weight: 700;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  .doc-control {
+    border: 1px solid var(--grid-strong);
+    margin-top: 6px;
+  }
+
+  .doc-control td {
+    border: 1px solid var(--grid);
+    padding: 10px 12px;
+  }
+
+  .dc-title {
+    font-weight: 700;
+  }
+
+  .dc-head td {
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .dc-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 13px;
+    background: transparent;
+  }
+
+  .footer {
+    margin-top: 12px;
+    font-size: 11px;
+    line-height: 1.35;
+    font-weight: 700;
   }
 </style>
 </head>
@@ -150,23 +155,23 @@
     <table class="grid-table">
       <tr>
         <td class="label-col">Name:</td>
-        <td><input class="line-input" type="text"></td>
+        <td><input class="line-input" type="text" name="trainee_name"></td>
       </tr>
       <tr>
         <td class="label-col">Employee Number:</td>
-        <td><input class="line-input" type="text"></td>
+        <td><input class="line-input" type="text" name="employee_number"></td>
       </tr>
       <tr>
         <td class="label-col">Department:</td>
-        <td><input class="line-input" type="text"></td>
+        <td><input class="line-input" type="text" name="department"></td>
       </tr>
       <tr>
         <td class="label-col">Course Start Date:</td>
-        <td><input class="line-input" type="date"></td>
+        <td><input class="line-input" type="date" name="course_start_date"></td>
       </tr>
       <tr>
         <td class="label-col">Course End Date:</td>
-        <td><input class="line-input" type="date"></td>
+        <td><input class="line-input" type="date" name="course_end_date"></td>
       </tr>
     </table>
 
@@ -197,20 +202,20 @@
 
       <tr>
         <td>Drafted by:</td>
-        <td><input class="dc-input" type="text"></td>
-        <td><input class="dc-input" type="date"></td>
+        <td><input class="dc-input" type="text" name="drafted_by_name"></td>
+        <td><input class="dc-input" type="date" name="drafted_by_date"></td>
       </tr>
 
       <tr>
         <td>Vetted by:</td>
-        <td><input class="dc-input" type="text"></td>
-        <td><input class="dc-input" type="date"></td>
+        <td><input class="dc-input" type="text" name="vetted_by_name"></td>
+        <td><input class="dc-input" type="date" name="vetted_by_date"></td>
       </tr>
 
       <tr>
         <td>Approved by:</td>
-        <td><input class="dc-input" type="text"></td>
-        <td><input class="dc-input" type="date"></td>
+        <td><input class="dc-input" type="text" name="approved_by_name"></td>
+        <td><input class="dc-input" type="date" name="approved_by_date"></td>
       </tr>
     </table>
 

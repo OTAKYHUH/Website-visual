@@ -69,7 +69,6 @@
     font-weight: bold;
   }
 
-  /* Make radios look like clean circles */
   input[type="radio"] {
     width: 14px;
     height: 14px;
@@ -108,7 +107,6 @@ Upon completion of the competency assessment, a Senior Officer will conduct the 
     <th></th>
   </tr>
 
-  <!-- ================= PERFORMANCE ASSESSMENT ================= -->
   <tr>
     <td class="task-number">1</td>
     <td class="section-title">Performance Assessment</td>
@@ -146,7 +144,6 @@ Upon completion of the competency assessment, a Senior Officer will conduct the 
     <td></td>
   </tr>
 
-  <!-- ================= MANAGERIAL ASSESSMENT ================= -->
   <tr>
     <td class="task-number">2</td>
     <td class="section-title">Managerial Assessment</td>
@@ -215,6 +212,54 @@ Upon completion of the competency assessment, a Senior Officer will conduct the 
   </tr>
 
 </table>
+
+<!-- ================= AUTOSAVE SCRIPT ================= -->
+<script>
+(function () {
+
+  const PAGE_CODE = "031";
+  const SAVED_DATA = JSON.parse('{{ saved_data | tojson | safe }}');
+
+  const fields = document.querySelectorAll(
+    "input[name], textarea[name], select[name]"
+  );
+
+  // Restore
+  fields.forEach(el => {
+    if (!SAVED_DATA.hasOwnProperty(el.name)) return;
+
+    if (el.type === "radio") {
+      el.checked = (el.value === SAVED_DATA[el.name]);
+    } else {
+      el.value = SAVED_DATA[el.name];
+    }
+  });
+
+  // Autosave
+  let timer = null;
+
+  function autosave(el) {
+    fetch("/training/autosave", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        page_code: PAGE_CODE,
+        field: el.name,
+        value: el.value
+      })
+    });
+  }
+
+  fields.forEach(el => {
+    const handler = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => autosave(el), 200);
+    };
+    el.addEventListener("change", handler);
+  });
+
+})();
+</script>
 
 </body>
 </html>

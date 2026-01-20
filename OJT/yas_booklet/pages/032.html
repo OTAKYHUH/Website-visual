@@ -80,7 +80,7 @@
 
   <div class="paragraph">
     I hereby endorse that the trainee named
-    <input type="text" class="inline-input">
+    <input type="text" class="inline-input" name="p032_trainee_name">
     <br>
     has fulfilled the requirements of the OJT components specified in this YAS
     Programmes.
@@ -90,31 +90,31 @@
 
   <div class="form-row">
     <div class="label">Name</div><div class="colon">:</div>
-    <input type="text" class="line-input">
+    <input type="text" class="line-input" name="p032_sm_name">
   </div>
 
   <div class="form-row">
     <div class="label">Designation</div><div class="colon">:</div>
-    <input type="text" class="line-input">
+    <input type="text" class="line-input" name="p032_sm_designation">
   </div>
 
   <div class="form-row">
     <div class="label">Signature</div><div class="colon">:</div>
-    <input type="text" class="line-input">
+    <input type="text" class="line-input" name="p032_sm_signature">
   </div>
 
   <div class="form-row">
     <div class="label">Date</div><div class="colon">:</div>
-    <input type="text" class="line-input">
+    <input type="text" class="line-input" name="p032_sm_date">
   </div>
 
   <div class="form-row">
     <div class="label">Comments</div><div class="colon">:</div>
-    <input type="text" class="line-input">
+    <input type="text" class="line-input" name="p032_sm_comments">
   </div>
 
-  <textarea class="comments-box"></textarea>
-  <textarea class="comments-box"></textarea>
+  <textarea class="comments-box" name="p032_sm_comments_1"></textarea>
+  <textarea class="comments-box" name="p032_sm_comments_2"></textarea>
 
 </div>
 
@@ -127,33 +127,77 @@
 
   <div class="form-row">
     <div class="label">Name</div><div class="colon">:</div>
-    <input type="text" class="line-input">
+    <input type="text" class="line-input" name="p032_mentor_name">
   </div>
 
   <div class="form-row">
     <div class="label">Designation</div><div class="colon">:</div>
-    <input type="text" class="line-input">
+    <input type="text" class="line-input" name="p032_mentor_designation">
   </div>
 
   <div class="form-row">
     <div class="label">Signature</div><div class="colon">:</div>
-    <input type="text" class="line-input">
+    <input type="text" class="line-input" name="p032_mentor_signature">
   </div>
 
   <div class="form-row">
     <div class="label">Date</div><div class="colon">:</div>
-    <input type="text" class="line-input">
+    <input type="text" class="line-input" name="p032_mentor_date">
   </div>
 
   <div class="form-row">
     <div class="label">Comments</div><div class="colon">:</div>
-    <input type="text" class="line-input">
+    <input type="text" class="line-input" name="p032_mentor_comments">
   </div>
 
-  <textarea class="comments-box"></textarea>
-  <textarea class="comments-box"></textarea>
+  <textarea class="comments-box" name="p032_mentor_comments_1"></textarea>
+  <textarea class="comments-box" name="p032_mentor_comments_2"></textarea>
 
 </div>
+
+<!-- ================= AUTOSAVE SCRIPT ================= -->
+<script>
+(function () {
+
+  const PAGE_CODE = "032";
+  const SAVED_DATA = JSON.parse('{{ saved_data | tojson | safe }}');
+
+  const fields = document.querySelectorAll(
+    "input[name], textarea[name], select[name]"
+  );
+
+  // Restore saved values
+  fields.forEach(el => {
+    if (!SAVED_DATA.hasOwnProperty(el.name)) return;
+    el.value = SAVED_DATA[el.name];
+  });
+
+  // Autosave
+  let timer = null;
+
+  function autosave(el) {
+    fetch("/training/autosave", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        page_code: PAGE_CODE,
+        field: el.name,
+        value: el.value
+      })
+    });
+  }
+
+  fields.forEach(el => {
+    const handler = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => autosave(el), 200);
+    };
+    el.addEventListener("input", handler);
+    el.addEventListener("change", handler);
+  });
+
+})();
+</script>
 
 </body>
 </html>
