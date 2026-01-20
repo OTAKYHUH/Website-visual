@@ -7,9 +7,9 @@
   class="full-width-image"
 />
 
-<!-- ===== Answer Section (Page-specific) ===== -->
+<!-- ===== Answer Section (Page 6 – Editable) ===== -->
 <style>
-  /* Scoped styles for this answer section only */
+  /* Scoped styles for Page 6 answer section only */
   .answer-section {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -27,12 +27,18 @@
 
   .answer-number {
     min-width: 28px;
+    font-weight: 700;
   }
 
-  .answer-blank {
+  /* Editable input styled like printed blank line */
+  .answer-input {
     flex: 1;
-    height: 18px;
+    border: none;
     border-bottom: 1px solid #000;
+    outline: none;
+    font-size: 14px;
+    background: transparent;
+    padding: 2px 0;
   }
 
   .section-title {
@@ -49,27 +55,34 @@
 
 <div class="answer-section">
   <div class="answer-line">
-    <span class="answer-number">9)</span><div class="answer-blank"></div>
+    <span class="answer-number">9)</span>
+    <input type="text" class="answer-input">
   </div>
   <div class="answer-line">
-    <span class="answer-number">13)</span><div class="answer-blank"></div>
-  </div>
-
-  <div class="answer-line">
-    <span class="answer-number">10)</span><div class="answer-blank"></div>
-  </div>
-  <div class="answer-line">
-    <span class="answer-number">14)</span><div class="answer-blank"></div>
+    <span class="answer-number">13)</span>
+    <input type="text" class="answer-input">
   </div>
 
   <div class="answer-line">
-    <span class="answer-number">11)</span><div class="answer-blank"></div>
+    <span class="answer-number">10)</span>
+    <input type="text" class="answer-input">
   </div>
   <div class="answer-line">
-    <span class="answer-number">15)</span><div class="answer-blank"></div>
+    <span class="answer-number">14)</span>
+    <input type="text" class="answer-input">
   </div>
 
   <div class="answer-line">
-    <span class="answer-number">12)</span><div class="answer-blank"></div>
+    <span class="answer-number">11)</span>
+    <input type="text" class="answer-input">
+  </div>
+  <div class="answer-line">
+    <span class="answer-number">15)</span>
+    <input type="text" class="answer-input">
+  </div>
+
+  <div class="answer-line">
+    <span class="answer-number">12)</span>
+    <input type="text" class="answer-input">
   </div>
 </div>

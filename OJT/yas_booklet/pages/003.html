@@ -3,8 +3,8 @@
   /* Scope ALL styling to page 3 only */
   .booklet .p003 td,
   .booklet .p003 th {
-    font-size: 15px;          /* bigger text */
-    padding: 14px 16px;       /* bigger boxes */
+    font-size: 15px;
+    padding: 14px 16px;
     vertical-align: middle;
   }
 
@@ -16,7 +16,7 @@
   .booklet .p003 .curriculum-title {
     text-align: center;
     font-weight: 700;
-    font-size: 18px;          /* stronger title */
+    font-size: 18px;
     letter-spacing: 0.4px;
     margin: 8px 0 20px;
   }
@@ -30,6 +30,26 @@
   .booklet .p003 .hours {
     width: 150px;
     text-align: center;
+  }
+
+  /* Editable inputs */
+  .booklet .p003 .line-input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #6f6f6f;
+    outline: none;
+    font-size: 15px;
+    background: transparent;
+    padding: 2px 0;
+  }
+
+  .booklet .p003 .hour-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    text-align: center;
+    font-size: 15px;
+    background: transparent;
   }
 </style>
 
@@ -59,18 +79,22 @@
       </td>
       <td colspan="2">
         <strong>DIVISION:</strong><br>
+        <input type="text" class="line-input">
       </td>
     </tr>
 
     <tr>
       <td colspan="2">
-        <strong>OJT MODULE:</strong>
+        <strong>OJT MODULE:</strong><br>
+        <input type="text" class="line-input">
       </td>
       <td>
-        <strong>TOTAL TASKS:</strong>
+        <strong>TOTAL TASKS:</strong><br>
+        <input type="number" class="line-input">
       </td>
       <td>
-        <strong>TOTAL OJT HOURS:</strong>
+        <strong>TOTAL OJT HOURS:</strong><br>
+        <input type="number" class="line-input">
       </td>
     </tr>
 
@@ -85,7 +109,9 @@
       <td colspan="2">
         Use of Systems – (Logical Yard Block and Yard QCC) for Operations
       </td>
-      <td class="hours"></td>
+      <td class="hours">
+        <input type="number" class="hour-input">
+      </td>
     </tr>
 
     <tr>
@@ -93,7 +119,9 @@
       <td colspan="2">
         Identify Yard Layout and Equipments used across P1–3
       </td>
-      <td class="hours"></td>
+      <td class="hours">
+        <input type="number" class="hour-input">
+      </td>
     </tr>
 
     <tr>
@@ -101,7 +129,9 @@
       <td colspan="2">
         Monitor Yard Operations and PM Optimization
       </td>
-      <td class="hours"></td>
+      <td class="hours">
+        <input type="number" class="hour-input">
+      </td>
     </tr>
 
     <tr>
@@ -109,7 +139,9 @@
       <td colspan="2">
         Communication and Coordination
       </td>
-      <td class="hours"></td>
+      <td class="hours">
+        <input type="number" class="hour-input">
+      </td>
     </tr>
 
     <tr>
@@ -117,7 +149,9 @@
       <td colspan="2">
         Activity Management
       </td>
-      <td class="hours"></td>
+      <td class="hours">
+        <input type="number" class="hour-input">
+      </td>
     </tr>
 
     <tr>
@@ -125,7 +159,9 @@
       <td colspan="2">
         Handle and Escalate Different Yard Exceptions
       </td>
-      <td class="hours"></td>
+      <td class="hours">
+        <input type="number" class="hour-input">
+      </td>
     </tr>
 
   </table>

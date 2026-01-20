@@ -24,7 +24,15 @@
 
   .paragraph {
     margin-bottom: 20px;
-    line-height: 1.5;
+    line-height: 1.6;
+  }
+
+  .inline-input {
+    border: none;
+    border-bottom: 1px solid #000;
+    outline: none;
+    width: 300px;
+    font-size: 13px;
   }
 
   .form-row {
@@ -41,16 +49,24 @@
     width: 10px;
   }
 
-  .line {
+  .line-input {
     flex: 1;
-    border-bottom: 1px solid #000;
-    height: 14px;
-  }
-
-  .comments-line {
+    border: none;
     border-bottom: 1px solid #000;
     height: 16px;
-    margin-bottom: 8px;
+    font-size: 13px;
+    outline: none;
+  }
+
+  .comments-box {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #000;
+    resize: none;
+    height: 18px;
+    margin-bottom: 6px;
+    font-size: 13px;
+    outline: none;
   }
 </style>
 </head>
@@ -63,7 +79,9 @@
   <div class="section-title">Verification by SM (Ops)</div>
 
   <div class="paragraph">
-    I hereby endorse that the trainee named ________________________________<br>
+    I hereby endorse that the trainee named
+    <input type="text" class="inline-input">
+    <br>
     has fulfilled the requirements of the OJT components specified in this YAS
     Programmes.
   </div>
@@ -71,27 +89,32 @@
   <div class="section-title">Approved by SM (Ops)</div>
 
   <div class="form-row">
-    <div class="label">Name</div><div class="colon">:</div><div class="line"></div>
+    <div class="label">Name</div><div class="colon">:</div>
+    <input type="text" class="line-input">
   </div>
 
   <div class="form-row">
-    <div class="label">Designation</div><div class="colon">:</div><div class="line"></div>
+    <div class="label">Designation</div><div class="colon">:</div>
+    <input type="text" class="line-input">
   </div>
 
   <div class="form-row">
-    <div class="label">Signature</div><div class="colon">:</div><div class="line"></div>
+    <div class="label">Signature</div><div class="colon">:</div>
+    <input type="text" class="line-input">
   </div>
 
   <div class="form-row">
-    <div class="label">Date</div><div class="colon">:</div><div class="line"></div>
+    <div class="label">Date</div><div class="colon">:</div>
+    <input type="text" class="line-input">
   </div>
 
   <div class="form-row">
-    <div class="label">Comments</div><div class="colon">:</div><div class="line"></div>
+    <div class="label">Comments</div><div class="colon">:</div>
+    <input type="text" class="line-input">
   </div>
 
-  <div class="comments-line"></div>
-  <div class="comments-line"></div>
+  <textarea class="comments-box"></textarea>
+  <textarea class="comments-box"></textarea>
 
 </div>
 
@@ -103,27 +126,32 @@
   </div>
 
   <div class="form-row">
-    <div class="label">Name</div><div class="colon">:</div><div class="line"></div>
+    <div class="label">Name</div><div class="colon">:</div>
+    <input type="text" class="line-input">
   </div>
 
   <div class="form-row">
-    <div class="label">Designation</div><div class="colon">:</div><div class="line"></div>
+    <div class="label">Designation</div><div class="colon">:</div>
+    <input type="text" class="line-input">
   </div>
 
   <div class="form-row">
-    <div class="label">Signature</div><div class="colon">:</div><div class="line"></div>
+    <div class="label">Signature</div><div class="colon">:</div>
+    <input type="text" class="line-input">
   </div>
 
   <div class="form-row">
-    <div class="label">Date</div><div class="colon">:</div><div class="line"></div>
+    <div class="label">Date</div><div class="colon">:</div>
+    <input type="text" class="line-input">
   </div>
 
   <div class="form-row">
-    <div class="label">Comments</div><div class="colon">:</div><div class="line"></div>
+    <div class="label">Comments</div><div class="colon">:</div>
+    <input type="text" class="line-input">
   </div>
 
-  <div class="comments-line"></div>
-  <div class="comments-line"></div>
+  <textarea class="comments-box"></textarea>
+  <textarea class="comments-box"></textarea>
 
 </div>
 

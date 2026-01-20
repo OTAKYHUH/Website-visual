@@ -38,7 +38,7 @@
   th, td {
     border: 1px solid #000;
     padding: 6px;
-    vertical-align: top;
+    vertical-align: middle;
   }
 
   th {
@@ -68,6 +68,13 @@
     text-align: center;
     font-weight: bold;
   }
+
+  /* Make radios look like clean circles */
+  input[type="radio"] {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+  }
 </style>
 </head>
 
@@ -76,11 +83,7 @@
 <h1>General Competency Assessment Checklist for Assessor</h1>
 
 <p class="intro">
-Upon completion of the competency assessment, a <strong>Senior Officer</strong> will conduct the
-general competency assessment to determine if the trainee meets the required standards.
-The Senior Officer is responsible for assessing the trainee on the individual components and
-filling in the performance standards between a scale of 0 – 4. A trainee is required to attain
-a score of at least 3 for each component in order to pass the assessment.
+Upon completion of the competency assessment, a Senior Officer will conduct the general competency assessment to determine if the trainee meets the required standards. The Senior Officer is responsible for assessing the trainee on the individual components and filling in the performance standards between a scale of 0 – 4. A trainee is required to attain a score of at least 3 for each component in order to pass the assessment.
 </p>
 
 <p class="scale">
@@ -116,21 +119,30 @@ a score of at least 3 for each component in order to pass the assessment.
   <tr>
     <td></td>
     <td>Grasp of YAS knowledge and requirements</td>
-    <td></td><td></td><td></td><td></td>
+    <td class="level"><input type="radio" name="yas1" value="1"></td>
+    <td class="level"><input type="radio" name="yas1" value="2"></td>
+    <td class="level"><input type="radio" name="yas1" value="3"></td>
+    <td class="level"><input type="radio" name="yas1" value="4"></td>
     <td></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Application of job knowledge</td>
-    <td></td><td></td><td></td><td></td>
+    <td class="level"><input type="radio" name="yas2" value="1"></td>
+    <td class="level"><input type="radio" name="yas2" value="2"></td>
+    <td class="level"><input type="radio" name="yas2" value="3"></td>
+    <td class="level"><input type="radio" name="yas2" value="4"></td>
     <td></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Timeliness in carrying out tasks</td>
-    <td></td><td></td><td></td><td></td>
+    <td class="level"><input type="radio" name="yas3" value="1"></td>
+    <td class="level"><input type="radio" name="yas3" value="2"></td>
+    <td class="level"><input type="radio" name="yas3" value="3"></td>
+    <td class="level"><input type="radio" name="yas3" value="4"></td>
     <td></td>
   </tr>
 
@@ -145,43 +157,60 @@ a score of at least 3 for each component in order to pass the assessment.
   <tr>
     <td></td>
     <td>Planning</td>
-    <td></td><td></td><td></td><td></td>
+    <td class="level"><input type="radio" name="yas4" value="1"></td>
+    <td class="level"><input type="radio" name="yas4" value="2"></td>
+    <td class="level"><input type="radio" name="yas4" value="3"></td>
+    <td class="level"><input type="radio" name="yas4" value="4"></td>
     <td></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Organization of work</td>
-    <td></td><td></td><td></td><td></td>
+    <td class="level"><input type="radio" name="yas5" value="1"></td>
+    <td class="level"><input type="radio" name="yas5" value="2"></td>
+    <td class="level"><input type="radio" name="yas5" value="3"></td>
+    <td class="level"><input type="radio" name="yas5" value="4"></td>
     <td></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Leadership</td>
-    <td></td><td></td><td></td><td></td>
+    <td class="level"><input type="radio" name="yas6" value="1"></td>
+    <td class="level"><input type="radio" name="yas6" value="2"></td>
+    <td class="level"><input type="radio" name="yas6" value="3"></td>
+    <td class="level"><input type="radio" name="yas6" value="4"></td>
     <td></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Decision-making</td>
-    <td></td><td></td><td></td><td></td>
+    <td class="level"><input type="radio" name="yas7" value="1"></td>
+    <td class="level"><input type="radio" name="yas7" value="2"></td>
+    <td class="level"><input type="radio" name="yas7" value="3"></td>
+    <td class="level"><input type="radio" name="yas7" value="4"></td>
     <td></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Communication</td>
-    <td></td><td></td><td></td><td></td>
+    <td class="level"><input type="radio" name="yas8" value="1"></td>
+    <td class="level"><input type="radio" name="yas8" value="2"></td>
+    <td class="level"><input type="radio" name="yas8" value="3"></td>
+    <td class="level"><input type="radio" name="yas8" value="4"></td>
     <td></td>
   </tr>
 
-  <!-- ================= OVERALL RATING ================= -->
   <tr>
     <td></td>
     <td><strong>Overall YAS Rating</strong></td>
-    <td></td><td></td><td></td><td></td>
+    <td class="level"><input type="radio" name="yas9" value="1"></td>
+    <td class="level"><input type="radio" name="yas9" value="2"></td>
+    <td class="level"><input type="radio" name="yas9" value="3"></td>
+    <td class="level"><input type="radio" name="yas9" value="4"></td>
     <td></td>
   </tr>
 

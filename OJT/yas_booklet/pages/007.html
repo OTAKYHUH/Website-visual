@@ -13,16 +13,17 @@
     border: 1px solid #000;
   }
 
-  /* Answer boxes (long horizontal) */
+  /* Editable answer boxes */
   .answer-box {
     position: absolute;
     width: 300px;
     height: 42px;
-    border: 2px solid red;     /* matches screenshot */
+    border: 2px solid red;       /* matches your red marking */
     background: #fff;
     font-size: 14px;
     padding: 4px 8px;
     box-sizing: border-box;
+    outline: none;
   }
 </style>
 
@@ -40,28 +41,28 @@
     alt="Logical Yard page"
   >
 
-  <!-- ===== TOP LEFT (Toolbar icon) ===== -->
+  <!-- ===== 1) TOP LEFT (toolbar icon) ===== -->
   <input
     type="text"
     class="answer-box"
     placeholder="1)"
-    style="top: 0%; left: 28%;"
+    style="top: 2%; left: 26%;"
   >
 
-  <!-- ===== TOP RIGHT (Clusters) ===== -->
+  <!-- ===== 2) TOP RIGHT (clusters / controls) ===== -->
   <input
     type="text"
     class="answer-box"
     placeholder="2)"
-    style="top: 0%; left: 62%;"
+    style="top: 2%; left: 60%;"
   >
 
-  <!-- ===== BOTTOM CENTER (Highlighted yard block) ===== -->
+  <!-- ===== 3) BOTTOM CENTER (highlighted yard block) ===== -->
   <input
     type="text"
     class="answer-box"
     placeholder="3)"
-    style="top: 93%; left: 34%;"
+    style="top: 92%; left: 33%;"
   >
 
 </div>

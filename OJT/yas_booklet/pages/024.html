@@ -35,6 +35,17 @@
       font-weight: bold;
     }
 
+    /* TYPEABLE ANSWER */
+    .ans-input {
+      width: 24px;
+      border: none;
+      border-bottom: 1px solid #000;
+      text-align: center;
+      font-size: 14px;
+      outline: none;
+      background: transparent;
+    }
+
     table {
       border-collapse: collapse;
       width: 100%;
@@ -49,7 +60,7 @@
     }
 
     table tr:first-child td {
-      background-color: #f2a36b; /* orange header */
+      background-color: #f2a36b;
       font-weight: bold;
       text-align: center;
     }
@@ -62,8 +73,9 @@
     li {
       margin-bottom: 6px;
     }
-    .image{
-      width : 350px;
+
+    .image {
+      width: 350px;
     }
   </style>
 </head>
@@ -77,10 +89,11 @@
       Different yard activities require different actions. As a YAS, it is your
       responsibility to understand and respond with the best supervisory action.
     </p>
+
     <img
-        src="/static/ex1.png"
-        alt="map"
-        class = "image"
+      src="/static/ex1.png"
+      alt="map"
+      class="image"
     />
 
     <div class="question">
@@ -96,7 +109,12 @@
         <p>4) None of the above</p>
       </div>
 
-      <p class="answer">Ans: ( &nbsp;&nbsp;&nbsp; )</p>
+      <!-- TYPEABLE ANSWER -->
+      <p class="answer">
+        Ans: (
+        <input type="text" class="ans-input" maxlength="1">
+        )
+      </p>
     </div>
 
     <p><strong>Ideal situation during Peak and Lull period:</strong></p>

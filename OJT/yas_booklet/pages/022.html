@@ -1,5 +1,12 @@
-<p><strong>MODULE 4 – C</strong><strong>ommunication and </strong><strong>C</strong><strong>oordination</strong></p>
-<p>Effective communication in the yard requires quick and clear identification of equipment. Each radioset number is assigned using a standard format to indicate both the equipment type and the individual unit. Radioset numbers are made up of a three-digit prefix that represents the equipment type follow by the crane or prime mover number. Examples in table form as follows,</p>
+<p><strong>MODULE 4 – Communication and Coordination</strong></p>
+
+<p>
+Effective communication in the yard requires quick and clear identification of equipment.
+Each radioset number is assigned using a standard format to indicate both the equipment type
+and the individual unit. Radioset numbers are made up of a three-digit prefix that represents
+the equipment type followed by the crane or prime mover number. Examples in table form as follows,
+</p>
+
 <style>
   table {
     border-collapse: collapse;
@@ -13,10 +20,21 @@
     text-align: center;
   }
 
-  /* Header row styling */
   table tr:first-child td {
     background-color: #e6e6e6;
     font-weight: bold;
+  }
+
+  /* MCQ styling */
+  .mcq label {
+    display: block;
+    margin-left: 16px;
+    cursor: pointer;
+  }
+
+  .mcq input[type="radio"] {
+    margin-right: 6px;
+    cursor: pointer;
   }
 </style>
 
@@ -71,9 +89,28 @@
   </tr>
 </table>
 
-<p>What is the radioset number for Prime Mover 6004?</p>
-<p>A)4606004</p>
-<p>B)466004</p>
-<p>What is the radioset number for FM 057?</p>
-<p>A)450057</p>
-<p>B)45057</p>
+<!-- ===== QUESTION 1 ===== -->
+<p><strong>What is the radioset number for Prime Mover 6004?</strong></p>
+<div class="mcq">
+  <label>
+    <input type="radio" name="q1" value="4606004">
+    A) 4606004
+  </label>
+  <label>
+    <input type="radio" name="q1" value="466004">
+    B) 466004
+  </label>
+</div>
+
+<!-- ===== QUESTION 2 ===== -->
+<p style="margin-top:12px;"><strong>What is the radioset number for FM 057?</strong></p>
+<div class="mcq">
+  <label>
+    <input type="radio" name="q2" value="450057">
+    A) 450057
+  </label>
+  <label>
+    <input type="radio" name="q2" value="45057">
+    B) 45057
+  </label>
+</div>

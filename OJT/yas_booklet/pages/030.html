@@ -25,29 +25,26 @@
     font-style: italic;
   }
 
-  .summary-table {
+  table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 24px;
   }
 
-  .summary-table td {
+  td {
     padding: 6px 4px;
-    vertical-align: top;
+    vertical-align: middle;
   }
 
-  .comp-label {
-    width: 90px;
-  }
-
-  .comp-text {
-    width: auto;
-  }
-
+  .comp-label { width: 90px; }
   .comp-status {
-    width: 60px;
+    width: 80px;
     text-align: right;
     white-space: nowrap;
+  }
+
+  .radio-group label {
+    margin-left: 4px;
+    margin-right: 6px;
   }
 
   .section-title {
@@ -58,7 +55,15 @@
 
   .checkbox-row {
     margin-left: 20px;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
+  }
+
+  .inline-input {
+    width: 50px;
+    border: none;
+    border-bottom: 1px solid #000;
+    text-align: center;
+    outline: none;
   }
 
   .form-row {
@@ -67,24 +72,15 @@
     margin-bottom: 10px;
   }
 
-  .label {
-    width: 90px;
-  }
+  .label { width: 90px; }
+  .colon { width: 10px; }
 
-  .colon {
-    width: 10px;
-  }
-
-  .line {
+  .line-input {
     flex: 1;
-    border-bottom: 1px solid #000;
-    height: 14px;
-  }
-
-  .comments-line {
+    border: none;
     border-bottom: 1px solid #000;
     height: 16px;
-    margin-bottom: 8px;
+    outline: none;
   }
 
   .footer {
@@ -102,83 +98,126 @@
   COMPETENCY ASSESSMENT SUMMARY <em>(To be filled by mentor)</em>
 </div>
 
-<table class="summary-table">
+<table>
+  <!-- Repeat structure for each competency -->
   <tr>
     <td class="comp-label">Competency 1:</td>
-    <td class="comp-text">Use Of Systems</td>
-    <td class="comp-status">C / NYC</td>
+    <td>Use Of Systems</td>
+    <td class="comp-status radio-group">
+      <input type="radio" name="c1" value="C">C
+      <input type="radio" name="c1" value="NYC">NYC
+    </td>
   </tr>
+
   <tr>
     <td class="comp-label">Competency 2:</td>
-    <td class="comp-text">Identify Yard Layout &amp; Equipments Used Across P1-3</td>
-    <td class="comp-status">C / NYC</td>
+    <td>Identify Yard Layout & Equipments Used Across P1-3</td>
+    <td class="comp-status radio-group">
+      <input type="radio" name="c2" value="C">C
+      <input type="radio" name="c2" value="NYC">NYC
+    </td>
   </tr>
+
   <tr>
     <td class="comp-label">Competency 3:</td>
-    <td class="comp-text">Monitor Yard Operations &amp; PM Optimization</td>
-    <td class="comp-status">C / NYC</td>
+    <td>Monitor Yard Operations & PM Optimization</td>
+    <td class="comp-status radio-group">
+      <input type="radio" name="c3" value="C">C
+      <input type="radio" name="c3" value="NYC">NYC
+    </td>
   </tr>
+
   <tr>
     <td class="comp-label">Competency 4:</td>
-    <td class="comp-text">Communication and Coordination</td>
-    <td class="comp-status">C / NYC</td>
+    <td>Communication and Coordination</td>
+    <td class="comp-status radio-group">
+      <input type="radio" name="c4" value="C">C
+      <input type="radio" name="c4" value="NYC">NYC
+    </td>
   </tr>
+
   <tr>
     <td class="comp-label">Competency 5:</td>
-    <td class="comp-text">Activity Management</td>
-    <td class="comp-status">C / NYC</td>
+    <td>Activity Management</td>
+    <td class="comp-status radio-group">
+      <input type="radio" name="c5" value="C">C
+      <input type="radio" name="c5" value="NYC">NYC
+    </td>
   </tr>
+
   <tr>
     <td class="comp-label">Competency 6:</td>
-    <td class="comp-text">Handle &amp; Escalate different yard exceptions</td>
-    <td class="comp-status">C / NYC</td>
+    <td>Handle & Escalate different yard exceptions</td>
+    <td class="comp-status radio-group">
+      <input type="radio" name="c6" value="C">C
+      <input type="radio" name="c6" value="NYC">NYC
+    </td>
   </tr>
+
   <tr>
     <td class="comp-label">Competency 7:</td>
-    <td class="comp-text">Forecast Yard Activities and Equipment Positioning</td>
-    <td class="comp-status">C / NYC</td>
+    <td>Forecast Yard Activities and Equipment Positioning</td>
+    <td class="comp-status radio-group">
+      <input type="radio" name="c7" value="C">C
+      <input type="radio" name="c7" value="NYC">NYC
+    </td>
   </tr>
+
   <tr>
     <td class="comp-label">Competency 8:</td>
-    <td class="comp-text">Handle and Escalate different Yard Exceptions</td>
-    <td class="comp-status">C / NYC</td>
+    <td>Handle and Escalate different Yard Exceptions</td>
+    <td class="comp-status radio-group">
+      <input type="radio" name="c8" value="C">C
+      <input type="radio" name="c8" value="NYC">NYC
+    </td>
   </tr>
+
   <tr>
     <td class="comp-label">Competency 9:</td>
-    <td class="comp-text">Solve Problems and Make Decisions</td>
-    <td class="comp-status">C / NYC</td>
+    <td>Solve Problems and Make Decisions</td>
+    <td class="comp-status radio-group">
+      <input type="radio" name="c9" value="C">C
+      <input type="radio" name="c9" value="NYC">NYC
+    </td>
   </tr>
+
   <tr>
     <td class="comp-label">Competency 10:</td>
-    <td class="comp-text">Manage and Guide Subordinates</td>
-    <td class="comp-status">C / NYC</td>
+    <td>Manage and Guide Subordinates</td>
+    <td class="comp-status radio-group">
+      <input type="radio" name="c10" value="C">C
+      <input type="radio" name="c10" value="NYC">NYC
+    </td>
   </tr>
+
   <tr>
     <td class="comp-label">Competency 11:</td>
-    <td class="comp-text">Manage Job Performance</td>
-    <td class="comp-status">C / NYC</td>
+    <td>Manage Job Performance</td>
+    <td class="comp-status radio-group">
+      <input type="radio" name="c11" value="C">C
+      <input type="radio" name="c11" value="NYC">NYC
+    </td>
   </tr>
 </table>
 
 <div class="section-title">
-  HANDLE &amp; ESCALATE DIFFERENT YARD EXCEPTIONS
+  HANDLE & ESCALATE DIFFERENT YARD EXCEPTIONS
 </div>
 
-<p>
-The trainee is <strong>Competent / Not Yet Competent*</strong>
-</p>
+<p>The trainee is <strong>Competent / Not Yet Competent*</strong></p>
 
-<p style="font-size: 11px; font-style: italic;">
-*delete if inapplicable.
-</p>
+<p style="font-size:11px;font-style:italic;">*delete if inapplicable.</p>
 
 <p><strong>If not yet competent</strong></p>
 
 <div class="checkbox-row">
-  ☐ Recommend for _____ days of additional OJT training
+  <input type="checkbox">
+  Recommend for <input class="inline-input" type="text"> days of additional OJT training
 </div>
+
 <div class="checkbox-row">
-  ☐ Recommend for full recourse of OJT training
+  <input type="checkbox">
+  Recommend for full recourse of OJT training
 </div>
 
 <br>
@@ -186,30 +225,31 @@ The trainee is <strong>Competent / Not Yet Competent*</strong>
 <p><strong>OJT Mentor</strong></p>
 
 <div class="form-row">
-  <div class="label">Name</div><div class="colon">:</div><div class="line"></div>
+  <div class="label">Name</div><div class="colon">:</div>
+  <input class="line-input" type="text">
 </div>
 
 <div class="form-row">
-  <div class="label">Designation</div><div class="colon">:</div><div class="line"></div>
+  <div class="label">Designation</div><div class="colon">:</div>
+  <input class="line-input" type="text">
 </div>
 
 <div class="form-row">
-  <div class="label">Signature</div><div class="colon">:</div><div class="line"></div>
+  <div class="label">Signature</div><div class="colon">:</div>
+  <input class="line-input" type="text">
 </div>
 
 <div class="form-row">
-  <div class="label">Date</div><div class="colon">:</div><div class="line"></div>
+  <div class="label">Date</div><div class="colon">:</div>
+  <input class="line-input" type="text">
 </div>
 
 <div class="form-row">
-  <div class="label">Comments</div><div class="colon">:</div><div class="line"></div>
+  <div class="label">Comments</div><div class="colon">:</div>
+  <input class="line-input" type="text">
 </div>
 
-<div class="comments-line"></div>
-
-<div class="footer">
-  33
-</div>
+<div class="footer">33</div>
 
 </body>
 </html>
