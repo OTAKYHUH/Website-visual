@@ -67,6 +67,15 @@
         <span class="btn disabled">Next →</span>
       {% endif %}
     </div>
+    <form id="jumpForm" style="display:flex; gap:6px; align-items:center;">
+      <input type="number"
+            id="jumpPage"
+            min="1"
+            max="{{ max_page }}"
+            placeholder="Page"
+            style="width:70px; padding:6px;">
+      <button type="submit" class="btn">Go</button>
+    </form>
   </div>
 
   <div class="booklet">
@@ -142,6 +151,21 @@
   });
 
 })();
+</script>
+<script>
+  document.getElementById("jumpForm")?.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const page = Number(document.getElementById("jumpPage").value);
+    const max = Number("{{ max_page }}");   // ✅ SAFE
+
+    if (!page || page < 1 || page > max) {
+      alert("Invalid page number");
+      return;
+    }
+
+    window.location.href = "/yas/" + page;
+  });
 </script>
 
 </body>
