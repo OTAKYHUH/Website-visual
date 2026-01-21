@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>YAS Booklet</title>
+
+  <title>{{ booklet_title }}</title>
 
   <style>
     body {
@@ -25,6 +26,7 @@
       align-items: center;
       gap: 12px;
       margin-bottom: 14px;
+      flex-wrap: wrap;
     }
 
     .btn {
@@ -35,11 +37,16 @@
       color: #000;
       background: #E1C233;
       font-weight: 600;
+      cursor: pointer;
     }
 
     .btn.disabled {
       opacity: .4;
       pointer-events: none;
+    }
+
+    .booklet {
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -47,40 +54,47 @@
 <body>
 
 <div class="wrap">
+
+  <!-- ===== NAV BAR ===== -->
   <div class="nav">
+
     <div>
-      <b>YAS Booklet</b> — Page {{ page }} / {{ max_page }}
+      <b>{{ booklet_title }}</b> — Page {{ page }} / {{ max_page }}
     </div>
 
-    <div style="display:flex; gap:10px;">
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
       <a class="btn" href="{{ url_for('home.role_selection') }}">Home</a>
 
       {% if page > 1 %}
-        <a class="btn" href="{{ url_for('yas_booklet.yas_page', page=page-1) }}">← Prev</a>
+        <a class="btn" href="{{ url_for(booklet_endpoint, page=page-1) }}">← Prev</a>
       {% else %}
         <span class="btn disabled">← Prev</span>
       {% endif %}
 
       {% if page < max_page %}
-        <a class="btn" href="{{ url_for('yas_booklet.yas_page', page=page+1) }}">Next →</a>
+        <a class="btn" href="{{ url_for(booklet_endpoint, page=page+1) }}">Next →</a>
       {% else %}
         <span class="btn disabled">Next →</span>
       {% endif %}
     </div>
+
     <form id="jumpForm" style="display:flex; gap:6px; align-items:center;">
       <input type="number"
-            id="jumpPage"
-            min="1"
-            max="{{ max_page }}"
-            placeholder="Page"
-            style="width:70px; padding:6px;">
+             id="jumpPage"
+             min="1"
+             max="{{ max_page }}"
+             placeholder="Page"
+             style="width:70px; padding:6px;">
       <button type="submit" class="btn">Go</button>
     </form>
+
   </div>
 
+  <!-- ===== BOOKLET CONTENT ===== -->
   <div class="booklet">
     {{ content_html | safe }}
   </div>
+
 </div>
 
 <script>
@@ -142,29 +156,29 @@
       timer = setTimeout(() => autosave(el), 200);
     };
 
-    // text, textarea
     el.addEventListener("input", handler);
-
-    // radio, checkbox, select
     el.addEventListener("change", handler);
 
   });
 
 })();
 </script>
+
 <script>
   document.getElementById("jumpForm")?.addEventListener("submit", function (e) {
     e.preventDefault();
 
     const page = Number(document.getElementById("jumpPage").value);
-    const max = Number("{{ max_page }}");   // ✅ SAFE
+    const max = Number("{{ max_page }}");
 
     if (!page || page < 1 || page > max) {
       alert("Invalid page number");
       return;
     }
 
-    window.location.href = "/yas/" + page;
+    // Go to correct booklet route
+    window.location.href =
+      "{{ url_for(booklet_endpoint, page=1) }}".replace("1", page);
   });
 </script>
 

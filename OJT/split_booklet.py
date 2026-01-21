@@ -2,8 +2,8 @@ from pathlib import Path
 import re
 
 BASE_DIR = Path(__file__).resolve().parent  # folder where split_booklet.py is
-HTML_PATH = BASE_DIR / "YAS Booklet.html"   # file next to the script
-OUT_DIR = BASE_DIR / "yas_booklet" / "pages"
+HTML_PATH = BASE_DIR / "YSS Training Booklet.html"   # file next to the script
+OUT_DIR = BASE_DIR / "yss_booklet" / "pages"
 
 PAGE_BREAK_PATTERN = re.compile(r"<hr[^>]*class=['\"]page-break['\"][^>]*\/?>", re.I)
 

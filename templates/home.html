@@ -87,10 +87,15 @@
     }
     .modal__row { text-align: left; margin-top: 1rem; }
     .modal__row label { font-weight: 600; display:block; margin-bottom: .25rem; }
-    .modal__row input {
-      width: 100%; padding: .7rem .8rem;
-      border-radius: 10px; border: 1px solid #444;
-      background: #111; color: #eee; font-size: 1rem;
+    .modal__row input,
+    .modal__row select {
+      width: 100%;
+      padding: .7rem .8rem;
+      border-radius: 10px;
+      border: 1px solid #444;
+      background: #111;
+      color: #eee;
+      font-size: 1rem;
     }
     .modal__actions {
       margin-top: 1.5rem;
@@ -154,6 +159,7 @@
           data-url="https://globalpsa.sharepoint.com/:x:/s/PSAC-CNBD-YOD-efile/IQDQRbYZAnJeSaHbuUxC4x6yAXaNJ1Bwi693i6NtMbvJPZg?e=Tbd92g">
           Staff Profile
         </button>
+
         <button type="button" id="pptWeeklyBtn">
           PPT Weekly
         </button>
@@ -191,6 +197,7 @@
       </form>
     </div>
   </div>
+
   <!-- ===== Training Login Modal ===== -->
   <div id="trainingModal" class="modal" aria-hidden="true">
     <div class="modal__dialog">
@@ -204,7 +211,11 @@
 
         <div class="modal__row">
           <label>Role</label>
-          <input type="text" name="role" required placeholder="e.g. YAS">
+          <select name="role" required>
+            <option value="" disabled selected>Select role</option>
+            <option value="YAS">YAS</option>
+            <option value="YSS">YSS</option>
+          </select>
         </div>
 
         <div class="modal__actions">
@@ -214,6 +225,7 @@
       </form>
     </div>
   </div>
+
   <script>
     (function () {
       // ===== Password modal =====
@@ -248,6 +260,7 @@
       playbookBtn?.addEventListener('click', () => {
         window.open(playbookBtn.dataset.url, "_blank");
       });
+
       // ===== Staff Profile =====
       const staffProfileBtn = document.getElementById('staffProfileBtn');
       staffProfileBtn?.addEventListener('click', () => {
@@ -270,29 +283,24 @@
       document.getElementById('roleForm')
         .addEventListener('submit', function (e) {
           const btn = e.submitter;
-
           if (!btn) return;
 
-          // SHIFT
           if (btn.value === 'shift') {
             e.preventDefault();
             window.open(SHIFT_PBI_URL, "_blank");
           }
 
-          // DAILY
           if (btn.value === 'daily_analysis') {
             e.preventDefault();
             window.open(DAILY_PBI_URL, "_blank");
           }
         });
 
-      // ===== PPT Weekly =====
       document.getElementById('pptWeeklyBtn')
         .addEventListener('click', () => {
           window.open(PPT_WEEKLY_PBI_URL, "_blank");
         });
 
-      // ===== SHIOK =====
       document.getElementById('shiokBtn')
         .addEventListener('click', () => {
           window.open(SHIOK_PBI_URL, "_blank");

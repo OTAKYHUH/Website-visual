@@ -1,69 +1,49 @@
 # routes/training.py
+
 import sqlite3
-import uuid
 from pathlib import Path
 from flask import (
     Blueprint, request, redirect, url_for,
-    session, abort, send_file, render_template
+    session, abort, render_template
 )
-try:
-    from weasyprint import HTML
-    WEASYPRINT_AVAILABLE = True
-except Exception:
-    WEASYPRINT_AVAILABLE = False
 
 training_bp = Blueprint("training", __name__)
 
-# ===================== DATABASE =====================
+# ===================== PATHS =====================
 
-DB_PATH = Path(__file__).resolve().parents[1] / "data" / "training.db"
-PDF_DIR = Path(__file__).resolve().parents[1] / "pdf" / "generated"
-PDF_DIR.mkdir(parents=True, exist_ok=True)
+BASE_DIR = Path(__file__).resolve().parents[1]
+DB_PATH = BASE_DIR / "data" / "training.db"
 
+# ===================== DB =====================
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
-
-# ===================== ENSURE TABLES =====================
-# 🔹 SAFE: runs every time, does nothing if table already exists
-
-def ensure_submission_table():
-    db = get_db()
-    db.execute("""
-        CREATE TABLE IF NOT EXISTS training_submissions (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          employee_id INTEGER,
-          pdf_path TEXT,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-    db.commit()
-    db.close()
-
-
 # ===================== LOGIN =====================
 
 @training_bp.route("/training/login", methods=["POST"])
 def training_login():
     name = (request.form.get("name") or "").strip()
-    role = (request.form.get("role") or "").strip()
+    role = (request.form.get("role") or "").strip().upper()
 
-    if not name or not role:
-        abort(400, "Name and role are required")
+    # ---------- Validation ----------
+    if not name:
+        abort(400, "Name is required")
+
+    if role not in ("YAS", "YSS"):
+        abort(400, "Invalid role")
 
     db = get_db()
     cur = db.cursor()
 
-    # Create employee if not exists
+    # ---------- Insert / fetch employee ----------
     cur.execute("""
         INSERT OR IGNORE INTO employees (name, role)
         VALUES (?, ?)
     """, (name, role))
 
-    # Fetch employee ID
     cur.execute("""
         SELECT id FROM employees
         WHERE name = ? AND role = ?
@@ -74,14 +54,22 @@ def training_login():
     db.close()
 
     if not row:
-        abort(500, "Failed to fetch employee")
+        abort(500, "Failed to login training user")
 
+    # ---------- Session ----------
     session["training_employee_id"] = row["id"]
     session["training_employee_name"] = name
     session["training_employee_role"] = role
 
-    return redirect(url_for("yas_booklet.yas_page", page=1))
+    # ---------- Role-based routing ----------
+    if role == "YAS":
+        return redirect(url_for("yas_booklet.yas_page", page=1))
 
+    if role == "YSS":
+        return redirect(url_for("yss_booklet.yss_page", page=1))
+
+    # Fallback (should never hit)
+    abort(400, "Unhandled role")
 
 # ===================== AUTOSAVE =====================
 
@@ -122,9 +110,7 @@ def training_autosave():
 
     return {"status": "saved"}
 
-
-# ===================== LOAD AUTOSAVE DATA =====================
-# 🔹 USED FOR PDF GENERATION
+# ===================== LOAD ALL SAVED DATA =====================
 
 def load_autosave_data(employee_id):
     db = get_db()
@@ -138,112 +124,65 @@ def load_autosave_data(employee_id):
 
     data = {}
     for row in cur.fetchall():
-        page = row["page_code"]
-        data.setdefault(page, {})[row["field_name"]] = row["field_value"]
+        data.setdefault(row["page_code"], {})[row["field_name"]] = row["field_value"]
 
     db.close()
     return data
 
+# ===================== PRINT ALL PAGES =====================
 
-# ===================== SUBMIT & GENERATE PDF =====================
-
-@training_bp.route("/training/submit", methods=["POST"])
-def training_submit():
+@training_bp.route("/training/print")
+def training_print():
     if "training_employee_id" not in session:
-        return redirect(url_for("home.role_selection"))
+        abort(401)
 
-    # 🔹 Ensure table exists (SAFE)
-    ensure_submission_table()
+    role = session.get("training_employee_role")
+
+    if role == "YAS":
+        from routes.yas_booklet import PAGES_DIR, yas_page as page_endpoint
+        booklet_endpoint = "yas_booklet.yas_page"
+        template = "yas_booklet/page.html"
+        booklet_title = "YAS Booklet"
+
+    elif role == "YSS":
+        from routes.yss_booklet import PAGES_DIR
+        booklet_endpoint = "yss_booklet.yss_page"
+        template = "yas_booklet/page.html"
+        booklet_title = "YSS Booklet"
+
+    else:
+        abort(400)
 
     employee_id = session["training_employee_id"]
     saved_data = load_autosave_data(employee_id)
 
-    html_pages = []
+    pages = sorted(PAGES_DIR.glob("*.html"))
+    max_page = len(pages)
 
-    for page in range(1, 33):
+    pages_html = []
+
+    for page in range(1, max_page + 1):
         page_code = f"{page:03d}"
+        page_file = PAGES_DIR / f"{page_code}.html"
+
+        if not page_file.exists():
+            continue
+
+        content_html = page_file.read_text(encoding="utf-8")
 
         page_html = render_template(
-            "yas_booklet/page.html",
+            template,
+            content_html=content_html,
             page=page,
-            max_page=32,
-            content_html=render_template(
-                f"yas_booklet/{page_code}.html"
-            ),
-            saved_data=saved_data.get(page_code, {})
+            max_page=max_page,
+            saved_data=saved_data.get(page_code, {}),
+            booklet_title=booklet_title,
+            booklet_endpoint=booklet_endpoint
         )
 
-        html_pages.append(page_html)
+        pages_html.append(page_html)
 
-    final_html = f"""
-    <!doctype html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <style>
-        @page {{
-          size: A4;
-          margin: 15mm;
-        }}
-        .page-break {{
-          page-break-after: always;
-        }}
-      </style>
-    </head>
-    <body>
-      {"<div class='page-break'></div>".join(html_pages)}
-    </body>
-    </html>
-    """
-
-    pdf_id = uuid.uuid4().hex
-    pdf_path = PDF_DIR / f"yas_{employee_id}_{pdf_id}.pdf"
-
-    if not WEASYPRINT_AVAILABLE:
-        abort(501, "PDF generation not available in local development")
-
-    HTML(
-        string=final_html,
-        base_url=str(Path(__file__).parents[1])
-    ).write_pdf(pdf_path)
-
-    db = get_db()
-    db.execute("""
-        INSERT INTO training_submissions (employee_id, pdf_path)
-        VALUES (?, ?)
-    """, (employee_id, str(pdf_path)))
-    db.commit()
-    db.close()
-
-    return redirect(url_for("training.download_pdf", pdf_id=pdf_id))
-
-
-# ===================== DOWNLOAD PDF =====================
-
-@training_bp.route("/training/download/<pdf_id>")
-def download_pdf(pdf_id):
-    if "training_employee_id" not in session:
-        abort(401)
-
-    employee_id = session["training_employee_id"]
-
-    db = get_db()
-    cur = db.cursor()
-    cur.execute("""
-        SELECT pdf_path FROM training_submissions
-        WHERE employee_id = ?
-        ORDER BY created_at DESC
-        LIMIT 1
-    """, (employee_id,))
-
-    row = cur.fetchone()
-    db.close()
-
-    if not row:
-        abort(404)
-
-    return send_file(
-        row["pdf_path"],
-        as_attachment=True,
-        download_name="YAS_OJT_Record.pdf"
+    return render_template(
+        "yas_booklet/print_all.html",
+        pages_html=pages_html
     )
