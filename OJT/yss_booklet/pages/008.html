@@ -1,6 +1,138 @@
-<ul>
-<li>When was this data last refreshed?
-□ 20:40   □ 30/04/2025   □ Both</li>
-<li>If you see "Total PM: 40" but only count 25 in the deployment list, what should you do?</li>
-</ul>
-<p>□ Verify where the excess is from    □ Undeploy all the excess PMs    □ Both<strong> </strong></p>
+<style>
+  /* ================= PAGE BASE ================= */
+  .ojt-page {
+    font-family: Arial, sans-serif;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 10px;
+    font-size: 14px;
+    color: #000;
+  }
+
+  /* ================= IMAGE WRAPPER ================= */
+  .layout-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .layout-wrapper img {
+    width: 100%;
+    border: 1px solid #000;
+  }
+
+  /* ================= ANSWER BOXES ================= */
+  .answer-box {
+    position: absolute;
+    background: #fff;
+    border: 1px solid #000;
+    padding: 6px 8px;
+    width: 180px;           /* SMALLER BOX */
+  }
+
+  .answer-box label {
+    display: block;
+    font-weight: bold;
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+
+  .answer-box input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #000;
+    font-size: 13px;
+    outline: none;
+  }
+
+  /* ================= POSITIONING ================= */
+  /* LEFT BOX — "What area is this?" */
+  .area-box {
+    bottom: 75px;   /* MOVE UP */
+    left: 50px;     /* MOVE RIGHT */
+  }
+
+  /* RIGHT BOX — "What zone is this?" */
+  .zone-box {
+    bottom: 120px;   /* SAME HEIGHT */
+    right: 450px;   /* MOVE LEFT */
+  }
+
+  /* ================= FOOTER ================= */
+  .page-footer {
+    margin-top: 8px;
+    font-size: 11px;
+    color: #666;
+    text-align: right;
+  }
+</style>
+
+<div class="ojt-page">
+
+  <div class="layout-wrapper">
+
+    <!-- ================= MAIN IMAGE ================= -->
+    <img src="/static/layout.png"
+         alt="General Layout Plan of ST2 – Pasir Panjang Terminal">
+
+    <!-- ================= LEFT ANSWER ================= -->
+    <div class="answer-box area-box">
+      <label>What area is this?</label>
+      <input type="text" name="area_answer">
+    </div>
+
+    <!-- ================= RIGHT ANSWER ================= -->
+    <div class="answer-box zone-box">
+      <label>What zone is this?</label>
+      <input type="text" name="zone_answer">
+    </div>
+
+  </div>
+  <script>
+  (function () {
+
+    const PAGE_CODE = "YSS_008";   // change to YSS_014 for page 14
+    const SAVED_DATA = {{ saved_data | default({}) | tojson | safe }};
+
+    const fields = document.querySelectorAll(
+      "input[name], textarea[name], select[name]"
+    );
+
+    // Restore
+    fields.forEach(el => {
+      if (!SAVED_DATA.hasOwnProperty(el.name)) return;
+
+      if (el.type === "radio") {
+        el.checked = (el.value === SAVED_DATA[el.name]);
+      } else if (el.type === "checkbox") {
+        el.checked = SAVED_DATA[el.name] === "true";
+      } else {
+        el.value = SAVED_DATA[el.name];
+      }
+    });
+
+    let timer = null;
+
+    function autosave(el) {
+      fetch("/training/autosave", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          page_code: PAGE_CODE,
+          field: el.name,
+          value: el.type === "checkbox" ? String(el.checked) : el.value
+        })
+      });
+    }
+
+    fields.forEach(el => {
+      const handler = () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => autosave(el), 200);
+      };
+      el.addEventListener("input", handler);
+      el.addEventListener("change", handler);
+    });
+
+  })();
+  </script>
+</div>

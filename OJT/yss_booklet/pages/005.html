@@ -1,14 +1,269 @@
-<ul>
-<li>Based on the information below, is this requested by ICA or Customs?</li>
-<li><strong>___________________________________________________________</strong></li>
-<li>Can a container with a jammed cone be shifted to J13 using a DST? Why?</li>
-<li><strong>_____________________________________________________________________________________________________________________________</strong></li>
-</ul>
-<p><strong>MODULE </strong><strong>3 – DEPLOYMENT &amp; RESOURCE ALLOCATION</strong></p>
-<table>
-<tr><td><strong>Task</strong></td><td><strong>Tasks To Do</strong></td><td><strong>Task Objectives/Standard to Meet</strong></td><td><strong>Skills &amp; Knowledge Explained</strong></td><td><strong>Checklist</strong></td></tr>
-<tr><td><strong>Read Deployment Sheet</strong></td><td>Verify DATE/SHIFT<br/>Locate Total PM list in CT2IYS section<br/>Locate Reefer PM list</td><td>Correct interpretation</td><td>PPMXXX-YYYZZX = PM# + Driver ID<br/>Locate Total PM &amp; Reefer PM lists in the system<br/>Verify <strong>DATE/SHIFT</strong> to ensure correct deployment sheet.</td><td>Able to interpret information from deployment paper<br/>Verified DATE/SHIFT on deployment sheet<br/>Located Total PM list in CT2IYS.<br/>Located Reefer PM list in CT2IYS.<br/>Interpreted PM codes correctly (e.g., PPM023-DR456X = PM#23 + Driver DR456X).</td></tr>
-<tr><td><strong>Verify PM allocation/Reefer PMs</strong></td><td>Count Total No. of PMs in list<br/>Cross-check PMs with IYS pool panel</td><td>Ensure <strong>100% </strong><strong>tally</strong> between system records and physical PMs.</td><td><strong>Accuracy:</strong> Manually tally PMs in the list.<br/><strong>Cross</strong><strong> </strong><strong>Refere</strong><strong>nce</strong><strong>:</strong>  Compare <strong>IYS Pool Panel</strong> vs. physical PMs.</td><td>Counted Total No. of PMs in the list.<br/>Cross-checked IYS Pool Panel for accuracy.<br/>Verified Reefer PMs (if applicable).<br/>Confirmed no mismatches in allocation.</td></tr>
-<tr><td><strong>Monitor PM logon</strong></td><td>Check PM logon status<br/>Account for PMs who did not logon<br/>Follow up with CSO on PM status</td><td>Ensure <strong>100% logon within 15 minutes</strong> of shift start.</td><td><strong>Real-Time Tracking:</strong> Monitor PM logon status in <strong>IYS system</strong>.<br/><strong>Follow-Up Protocol:</strong> Contact <strong>CSO (Control Shift Officer)</strong> for missing logons.<br/><strong>Problem-Solving:</strong> Resolve logon delays (e.g., system issues, miscommunication).</td><td>Checked PM logon status in IYS.<br/>Accounted for PMs who did not logon.<br/>Followed up with CSO for missing logons.<br/>Ensured all PMs logged on within 15 mins.</td></tr>
-<tr><td><strong>Identify Discrepancies</strong></td><td>Compare IYS deployment vs. physical PMs<br/>Account for excess<br/>Report for shortages</td><td>Report <strong>excess/shortages</strong> between system and physical PMs.</td><td><strong>Discrepancy Detection:</strong> Compare <strong>IYS deployment</strong> vs. <strong>physical PM count</strong>.<br/><strong>Reporting Protocol:</strong> Escalate shortages/excess to <strong>CSO</strong><br/><strong>Root Cause</strong><strong> </strong><strong>Analysis:</strong> Investigate mismatches (e.g., wrong deployment, PM breakdowns).</td><td>Compared IYS deployment vs. physical PMs.<br/>Accounted for excess PMs (if any).<br/>Reported shortages immediately.<br/>Documented discrepancies in shift log.</td></tr>
-</table>
+<style>
+  /* ================= PAGE BASE ================= */
+  .ojt-page {
+    font-family: Arial, sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 10px;
+    font-size: 13.5px;
+    color: #000;
+  }
+
+  /* ================= TITLE ================= */
+  .module-title {
+    font-weight: bold;
+    font-size: 15px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  /* ================= TABLE BASE ================= */
+  .module-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  .module-table th,
+  .module-table td {
+    border: 1px solid #000;
+    padding: 8px 10px;
+    vertical-align: top;
+  }
+
+  .module-table th {
+    text-align: center;
+    font-weight: bold;
+  }
+
+  /* ================= COLUMN WIDTHS ================= */
+  .col-task {
+    width: 12%;
+    text-align: center;
+    vertical-align: middle;
+    font-weight: bold;
+    }
+
+    .col-tasks {
+    width: 18%;
+    }
+
+    .col-objectives {
+    width: 24%;
+    }
+
+    .col-skills {
+    width: 24%;
+    }
+
+    .col-checklist {
+    width: 22%;
+    } 
+  /* ================= CELL CONTENT ================= */
+  .cell-lines div {
+    margin-bottom: 6px;
+  }
+
+  .cell-lines div:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ================= CHECKLIST STYLE ================= */
+  .checklist div::before {
+    content: "☐";
+    margin-right: 8px;
+  }
+
+  /* ================= FOOTER ================= */
+  .page-footer {
+    margin-top: 24px;
+    font-size: 11px;
+    color: #666;
+    text-align: right;
+  }
+</style>
+
+<div class="ojt-page">
+
+  <div class="module-title">
+    MODULE 2 – IDENTIFY YARD LAYOUT &amp; EQUIPMENTS USED ACROSS P1-3
+  </div>
+
+  <table class="module-table">
+    <tr>
+      <th class="col-task">Task</th>
+      <th class="col-tasks">Tasks To Do</th>
+      <th class="col-objectives">Task Objectives / Standard to Meet</th>
+      <th class="col-skills">Skills &amp; Knowledge Explained</th>
+      <th class="col-checklist">Checklist</th>
+    </tr>
+
+    <!-- ================= SCANNING LOCATION ================= -->
+    <tr>
+      <td class="col-task">SCANNING<br>LOCATION</td>
+
+      <td class="cell-lines">
+        <div>Email</div>
+        <div>Location</div>
+        <div>Procedure</div>
+        <div>Contact Number</div>
+      </td>
+
+      <td class="cell-lines">
+        <div><strong>Email</strong> – Check and respond to scanning-related emails.</div>
+        <div><strong>Location</strong> – Identify scanning zones in P1–P3.</div>
+        <div><strong>Procedure</strong> – Follow the correct scanning process.</div>
+        <div><strong>Contact Number</strong> – Know whom to call for scanning issues.</div>
+      </td>
+
+      <td class="cell-lines">
+        <div>• Ensure accurate and timely scanning of containers.</div>
+        <div>• Follow up and close email loop.</div>
+      </td>
+
+      <td class="checklist cell-lines">
+        <div>Properly checked and responded to scanning emails</div>
+        <div>Located and scanned containers in the correct area</div>
+        <div>Followed the scanning procedure accurately</div>
+        <div>Used the correct contact number for support</div>
+      </td>
+    </tr>
+
+    <!-- ================= DOOR TURN / BUND / JAMMED CONE ================= -->
+    <tr>
+      <td class="col-task">
+        DOOR TURN /<br>
+        BUND AREA /<br>
+        JAMMED CONE
+      </td>
+
+      <td class="cell-lines">
+        <div><strong>Respective Location</strong> – Identify and manage:</div>
+        <div><strong>Door Turn Areas</strong> (container entry / exit points)</div>
+        <div><strong>Bund Areas</strong> (spill containment zones)</div>
+        <div><strong>Jammed Cones Area</strong></div>
+      </td>
+
+      <td class="cell-lines">
+        <div>Ensure smooth container movement.</div>
+        <div>Prevent spills and hazards in bund areas.</div>
+        <div>Quickly resolve jammed cone situations.</div>
+      </td>
+
+      <td class="cell-lines">
+        <div>• Safety procedures for bund areas.</div>
+        <div>• Troubleshooting jammed equipment.</div>
+      </td>
+
+      <td class="checklist cell-lines">
+        <div>Located door turn, bund and jammed cone areas</div>
+        <div>Followed safety protocols in bund areas</div>
+        <div>Reported and resolved jammed cone issues</div>
+      </td>
+    </tr>
+
+    <!-- ================= P1-6 LAYOUT ================= -->
+    <tr>
+      <td class="col-task">P1–6<br>LAYOUT</td>
+
+      <td class="cell-lines">
+        <div>Reading yard maps</div>
+      </td>
+
+      <td class="cell-lines">
+        <div>Navigate the yard without assistance.</div>
+        <div>Locate containers based on designated zones.</div>
+        <div>Understand segregation rules (e.g. DG containers).</div>
+      </td>
+
+      <td class="cell-lines">
+        <div>• Identifying zone markings.</div>
+        <div>• Understanding container prioritization.</div>
+      </td>
+
+      <td class="checklist cell-lines">
+        <div>Memorized P1–P6 layout</div>
+        <div>Located sample containers in correct zones</div>
+        <div>Understood DG handling rules</div>
+      </td>
+    </tr>
+
+    <!-- ================= CONTACT LIST ================= -->
+    <tr>
+      <td class="col-task">CONTACT<br>LIST</td>
+
+      <td class="cell-lines">
+        <div><strong>Access and Use Contact List</strong> – Know key personnel for:</div>
+        <div>Emergencies</div>
+        <div>Equipment failures</div>
+        <div>Operational queries</div>
+      </td>
+
+      <td class="cell-lines">
+        <div>Quickly reach the right department / person.</div>
+        <div>Reduce downtime by prompt communication.</div>
+      </td>
+
+      <td class="cell-lines">
+        <div>• Navigating the company directory.</div>
+        <div>• Proper escalation procedures.</div>
+      </td>
+
+      <td class="checklist cell-lines">
+        <div>Access to key contact list</div>
+        <div>Successfully contacted the right personnel in a mock scenario</div>
+      </td>
+    </tr>
+
+  </table>
+
+  <div class="page-footer">5 | Page</div>
+  <script>
+  (function () {
+
+    const PAGE_CODE = "YSS_005";   // change to YSS_014 for page 14
+    const SAVED_DATA = {{ saved_data | default({}) | tojson | safe }};
+
+    const fields = document.querySelectorAll(
+      "input[name], textarea[name], select[name]"
+    );
+
+    // Restore
+    fields.forEach(el => {
+      if (!SAVED_DATA.hasOwnProperty(el.name)) return;
+
+      if (el.type === "radio") {
+        el.checked = (el.value === SAVED_DATA[el.name]);
+      } else if (el.type === "checkbox") {
+        el.checked = SAVED_DATA[el.name] === "true";
+      } else {
+        el.value = SAVED_DATA[el.name];
+      }
+    });
+
+    let timer = null;
+
+    function autosave(el) {
+      fetch("/training/autosave", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          page_code: PAGE_CODE,
+          field: el.name,
+          value: el.type === "checkbox" ? String(el.checked) : el.value
+        })
+      });
+    }
+
+    fields.forEach(el => {
+      const handler = () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => autosave(el), 200);
+      };
+      el.addEventListener("input", handler);
+      el.addEventListener("change", handler);
+    });
+
+  })();
+  </script>
+</div>

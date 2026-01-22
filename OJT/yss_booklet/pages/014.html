@@ -1,27 +1,153 @@
-<p><strong>COMPETENCY  ASSESSMENT</strong><strong> </strong><strong>SUMMARY  </strong><em><strong>(</strong></em><em><strong>To </strong></em><em><strong>be  filled</strong></em><em><strong> by</strong></em><em><strong> </strong></em><em><strong>mentor)</strong></em><em><strong> </strong></em></p>
-<table>
-<tr><td>Competency 1:</td><td>Perform Basic Terminal Operations and Monitor Yard Key</td><td><strong>C / NYC</strong></td></tr>
-<tr><td></td><td>Performance Indicators (KPI)</td><td></td></tr>
-<tr><td>Competency 2:</td><td>Identify Yard Layout and Equipment</td><td><strong>C / NYC</strong></td></tr>
-<tr><td>Competency 3:</td><td>Use of UHF set and CCTV for Operations</td><td><strong>C / NYC</strong></td></tr>
-<tr><td>Competency 4:</td><td>Use of Systems - (CITOS, YOMC) for Operations</td><td><strong>C / NYC</strong></td></tr>
-<tr><td>Competency 5:</td><td>PM Deployment &amp; Yard Safety SOPs</td><td><strong>C / NYC</strong></td></tr>
-<tr><td>Competency 6:</td><td>Monitor Yard Operations for YSS</td><td><strong>C / NYC</strong></td></tr>
-<tr><td>Competency 7:</td><td>Forecast Yard Activities</td><td><strong>C / NYC</strong></td></tr>
-<tr><td>Competency 8:</td><td>Handle and Escalate different Yard Exceptions</td><td><strong>C / NYC</strong></td></tr>
-<tr><td>Competency 9:</td><td>Manage PM Resources</td><td><strong>C / NYC</strong></td></tr>
-<tr><td>Competency 10:</td><td>Solve Problems and Make Decisions</td><td><strong>C / NYC</strong></td></tr>
-<tr><td>Competency 11:</td><td>Manage and Guide Subordinates</td><td><strong>C / NYC</strong></td></tr>
-<tr><td>Competency 12:</td><td>Provide Customer Service</td><td><strong>C / NYC</strong></td></tr>
-<tr><td>Competency 13:</td><td>Manage Job Performance</td><td><strong>C / NYC</strong></td></tr>
-</table>
-<p>The trainee is <strong>Competent / Not Yet Competent*</strong></p>
-<p><em>*</em><em>delete</em><em> if inapplicable.</em></p>
-<p>If not yet competent</p>
-<ul>
-<li>Recommend for<u> </u><u> </u>days of additional OJT training</li>
-<li>Recommend for full recourse of OJT training</li>
-</ul>
-<p>OJT Mentor</p>
-<p>Name	:<u> </u> Designation   : <u> </u><u> </u>                                                                                                                             Signature       : <u> </u><u> </u></p>
-<p>Date	:<u> </u> Comments     : <u> </u><u> </u></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PM Status List – Questions</title>
+
+<style>
+  /* ================= PAGE BASE ================= */
+  body {
+    font-family: Arial, sans-serif;
+    background: #fff;
+  }
+
+  .ojt-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px 10px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #000;
+  }
+
+  /* ================= IMAGE ================= */
+  .image-block {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .image-block img {
+    max-width: 100%;
+    border: 1px solid #000;
+  }
+
+  .caption {
+    font-size: 12px;
+    color: #555;
+    margin-top: 6px;
+  }
+
+  /* ================= QUESTIONS ================= */
+  ol.question-list {
+    padding-left: 20px;
+  }
+
+  ol.question-list li {
+    margin-bottom: 18px;
+  }
+
+  /* ================= ANSWER LINE ================= */
+  .answer-line {
+    display: block;
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #000;
+    margin-top: 6px;
+    font-size: 14px;
+    outline: none;
+  }
+
+  /* ================= FOOTER ================= */
+  .page-footer {
+    margin-top: 28px;
+    font-size: 11px;
+    color: #666;
+    text-align: right;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="ojt-page">
+
+  <!-- ================= IMAGE ================= -->
+  <div class="image-block">
+    <!-- CHANGE IMAGE FILE NAME AS NEEDED -->
+    <img src="/static/Shifting.png"
+         alt="PM Status List Screen">
+  </div>
+
+  <!-- ================= QUESTIONS ================= -->
+  <ol class="question-list">
+
+    <li>
+      What does the lookahead jobs mean?
+      <input type="text"
+             name="jobs_mean"
+             class="answer-line">
+    </li>
+
+    <li>
+      Which are the Point Groups with lookahead jobs? 
+      <input type="text"
+             name="Point_Groups"
+             class="answer-line">
+    </li>
+
+  </ol>
+
+  <div class="page-footer">14 | Page</div>
+
+</div>
+<script>
+(function () {
+
+  const PAGE_CODE = "YSS_014";   // change to YSS_014 for page 14
+  const SAVED_DATA = {{ saved_data | default({}) | tojson | safe }};
+
+  const fields = document.querySelectorAll(
+    "input[name], textarea[name], select[name]"
+  );
+
+  // Restore
+  fields.forEach(el => {
+    if (!SAVED_DATA.hasOwnProperty(el.name)) return;
+
+    if (el.type === "radio") {
+      el.checked = (el.value === SAVED_DATA[el.name]);
+    } else if (el.type === "checkbox") {
+      el.checked = SAVED_DATA[el.name] === "true";
+    } else {
+      el.value = SAVED_DATA[el.name];
+    }
+  });
+
+  let timer = null;
+
+  function autosave(el) {
+    fetch("/training/autosave", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        page_code: PAGE_CODE,
+        field: el.name,
+        value: el.type === "checkbox" ? String(el.checked) : el.value
+      })
+    });
+  }
+
+  fields.forEach(el => {
+    const handler = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => autosave(el), 200);
+    };
+    el.addEventListener("input", handler);
+    el.addEventListener("change", handler);
+  });
+
+})();
+</script>
+
+</body>
+</html>

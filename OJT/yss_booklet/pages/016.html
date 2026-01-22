@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PM Status List – Questions</title>
+<title>Deploy PM into IYS Pool</title>
 
 <style>
   /* ================= PAGE BASE ================= */
@@ -20,10 +20,16 @@
     color: #000;
   }
 
+  /* ================= QUESTION ================= */
+  .question {
+    margin-bottom: 14px;
+    font-weight: bold;
+  }
+
   /* ================= IMAGE ================= */
   .image-block {
     text-align: center;
-    margin-bottom: 28px;
+    margin: 18px 0 24px;
   }
 
   .image-block img {
@@ -37,24 +43,29 @@
     margin-top: 6px;
   }
 
-  /* ================= QUESTIONS ================= */
-  ol.question-list {
-    padding-left: 20px;
+  /* ================= STEPS ================= */
+  .steps {
+    margin-top: 12px;
   }
 
-  ol.question-list li {
-    margin-bottom: 18px;
+  .step {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 10px;
   }
 
-  /* ================= ANSWER LINE ================= */
-  .answer-line {
-    display: block;
-    width: 100%;
+  .step-number {
+    width: 22px;
+    font-weight: bold;
+  }
+
+  .step input {
+    flex: 1;
     border: none;
     border-bottom: 1px solid #000;
-    margin-top: 6px;
     font-size: 14px;
     outline: none;
+    padding: 2px 4px;
   }
 
   /* ================= FOOTER ================= */
@@ -71,39 +82,63 @@
 
 <div class="ojt-page">
 
+  <!-- ================= QUESTION ================= -->
+  <div class="question">
+    PM8022 called to inform his PC is on standby.
+    List the steps on how to deploy PM8022 into IYS pool, PG20.
+  </div>
+
   <!-- ================= IMAGE ================= -->
   <div class="image-block">
     <!-- CHANGE IMAGE FILE NAME AS NEEDED -->
-    <img src="/static/PM_Status.png"
-         alt="PM Status List Screen">
+    <img src="/static/PM_IYS.png"
+         alt="Deploy PM into IYS Pool Screen">
   </div>
 
-  <!-- ================= QUESTIONS ================= -->
-  <ol class="question-list">
+  <!-- ================= STEPS ================= -->
+  <div class="steps">
+    <div class="step">
+      <div class="step-number">1.</div>
+      <input type="text" name="deploy_step_1">
+    </div>
 
-    <li>
-      Total number of PMs deployed:
-      <input type="text"
-             name="total_pm_deployed"
-             class="answer-line">
-    </li>
+    <div class="step">
+      <div class="step-number">2.</div>
+      <input type="text" name="deploy_step_2">
+    </div>
 
-    <li>
-      Number of PMs on logoff:
-      <input type="text"
-             name="pm_on_logoff"
-             class="answer-line">
-    </li>
+    <div class="step">
+      <div class="step-number">3.</div>
+      <input type="text" name="deploy_step_3">
+    </div>
 
-  </ol>
+    <div class="step">
+      <div class="step-number">4.</div>
+      <input type="text" name="deploy_step_4">
+    </div>
 
-  <div class="page-footer">13 | Page</div>
+    <div class="step">
+      <div class="step-number">5.</div>
+      <input type="text" name="deploy_step_5">
+    </div>
+
+    <div class="step">
+      <div class="step-number">6.</div>
+      <input type="text" name="deploy_step_6">
+    </div>
+    <div class="step">
+      <div class="step-number">7.</div>
+      <input type="text" name="deploy_step_7">
+    </div>
+  </div>
+
+  <div class="page-footer">16 | Page</div>
 
 </div>
 <script>
 (function () {
 
-  const PAGE_CODE = "YSS_013";   // change to YSS_014 for page 14
+  const PAGE_CODE = "YSS_016";   // change to YSS_014 for page 14
   const SAVED_DATA = {{ saved_data | default({}) | tojson | safe }};
 
   const fields = document.querySelectorAll(

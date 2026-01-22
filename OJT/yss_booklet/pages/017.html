@@ -74,7 +74,7 @@
   <!-- ================= IMAGE ================= -->
   <div class="image-block">
     <!-- CHANGE IMAGE FILE NAME AS NEEDED -->
-    <img src="/static/PM_Status.png"
+    <img src="/static/Fix.png"
          alt="PM Status List Screen">
   </div>
 
@@ -82,28 +82,20 @@
   <ol class="question-list">
 
     <li>
-      Total number of PMs deployed:
+      When do we utilize the Fix Assignment tool?
       <input type="text"
-             name="total_pm_deployed"
+             name="Fix_Assignment"
              class="answer-line">
     </li>
-
-    <li>
-      Number of PMs on logoff:
-      <input type="text"
-             name="pm_on_logoff"
-             class="answer-line">
-    </li>
-
   </ol>
 
-  <div class="page-footer">13 | Page</div>
+  <div class="page-footer">17 | Page</div>
 
 </div>
 <script>
 (function () {
 
-  const PAGE_CODE = "YSS_013";   // change to YSS_014 for page 14
+  const PAGE_CODE = "YSS_017";   // change to YSS_014 for page 14
   const SAVED_DATA = {{ saved_data | default({}) | tojson | safe }};
 
   const fields = document.querySelectorAll(

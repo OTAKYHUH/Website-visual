@@ -1,21 +1,178 @@
-<p><strong>MODULE </strong><strong>4 </strong><strong>–</strong><strong> CMRs, POINT GROUP &amp; PM ALLOCATION</strong></p>
-<p>For each Point Group listed below for P1-3 (PG1-20) while P4-6 (PG1-12), write its primary purpose based on your observation and training.</p>
-<table>
-<tr><td><strong>Point Group</strong></td><td><strong>Reasons</strong></td></tr>
-<tr><td><strong>1</strong></td><td></td></tr>
-<tr><td><strong>2</strong></td><td></td></tr>
-<tr><td><strong>3</strong></td><td></td></tr>
-<tr><td><strong>4</strong></td><td></td></tr>
-<tr><td><strong>5</strong></td><td></td></tr>
-<tr><td><strong>6</strong></td><td></td></tr>
-<tr><td><strong>11</strong></td><td></td></tr>
-<tr><td><strong>12</strong></td><td></td></tr>
-<tr><td><strong>13</strong></td><td></td></tr>
-<tr><td><strong>14</strong></td><td></td></tr>
-<tr><td><strong>15</strong></td><td></td></tr>
-<tr><td><strong>16</strong></td><td></td></tr>
-<tr><td><strong>17</strong></td><td></td></tr>
-<tr><td><strong>18</strong></td><td></td></tr>
-<tr><td><strong>19</strong></td><td></td></tr>
-<tr><td><strong>20</strong></td><td></td></tr>
-</table>
+<style>
+  /* ================= PAGE BASE ================= */
+  .ojt-page {
+    font-family: Arial, sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 10px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #000;
+  }
+
+  /* ================= NUMBERED QUESTIONS ================= */
+  ol.main-q {
+    padding-left: 20px;
+  }
+
+  ol.main-q > li {
+    margin-bottom: 14px;
+  }
+
+  /* ================= DASH ANSWER LINES ================= */
+  ul.dash-list {
+    list-style: none;
+    padding-left: 28px;
+    margin-top: 8px;
+  }
+
+  ul.dash-list li {
+    position: relative;
+    margin-bottom: 10px;
+  }
+
+  ul.dash-list li::before {
+    content: "–";
+    position: absolute;
+    left: -16px;
+  }
+
+  /* ================= TYPEABLE BLANKS ================= */
+  .blank {
+    border: none;
+    border-bottom: 1px solid #000;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    outline: none;
+  }
+
+  .blank.short { width: 120px; }
+  .blank.medium { width: 220px; }
+  .blank.long { width: 100%; }
+
+  /* ================= IMAGE BLOCK ================= */
+  .image-block {
+    margin: 14px 0 18px;
+    text-align: center;
+  }
+
+  .image-block img {
+    max-width: 100%;
+    border: 1px solid #000;
+  }
+
+  .caption {
+    font-size: 12px;
+    color: #555;
+    margin-top: 4px;
+  }
+
+  /* ================= FOOTER ================= */
+  .page-footer {
+    margin-top: 26px;
+    font-size: 11px;
+    color: #666;
+    text-align: right;
+  }
+</style>
+
+<div class="ojt-page">
+
+  <ol class="main-q" start="3">
+
+    <!-- ================= QUESTION 3 ================= -->
+    <li>
+      <strong>
+        Based on the information below, is this requested by
+        <em>ICA</em> or <em>Customs</em>?
+      </strong>
+
+      <ul class="dash-list">
+        <li>
+          <input type="text" name="ica_or_customs" class="blank medium">
+        </li>
+      </ul>
+    </li>
+
+  </ol>
+
+  <!-- ================= IMAGE 1 : EMAIL ================= -->
+  <div class="image-block">
+    <!-- CHANGE IMAGE NAME AS NEEDED -->
+    <img src="/static/yssemail_2.png" alt="Scanning Request Email">
+  </div>
+
+  <!-- ================= IMAGE 2 : CONTAINER TABLE ================= -->
+  <div class="image-block">
+    <!-- CHANGE IMAGE NAME AS NEEDED -->
+    <img src="/static/table.png" alt="Targeted Containers Table">
+  </div>
+
+  <ol class="main-q" start="4">
+
+    <!-- ================= QUESTION 4 ================= -->
+    <li>
+      <strong>
+        Can a container with a jammed cone be shifted to J13 using a DST?
+        Why?
+      </strong>
+
+      <ul class="dash-list">
+        <li>
+          <input type="text" name="jammed_cone_dst_answer" class="blank long">
+        </li>
+      </ul>
+    </li>
+
+  </ol>
+
+  <div class="page-footer">7 | Page</div>
+  <script>
+  (function () {
+
+    const PAGE_CODE = "YSS_007";   // change to YSS_014 for page 14
+    const SAVED_DATA = {{ saved_data | default({}) | tojson | safe }};
+
+    const fields = document.querySelectorAll(
+      "input[name], textarea[name], select[name]"
+    );
+
+    // Restore
+    fields.forEach(el => {
+      if (!SAVED_DATA.hasOwnProperty(el.name)) return;
+
+      if (el.type === "radio") {
+        el.checked = (el.value === SAVED_DATA[el.name]);
+      } else if (el.type === "checkbox") {
+        el.checked = SAVED_DATA[el.name] === "true";
+      } else {
+        el.value = SAVED_DATA[el.name];
+      }
+    });
+
+    let timer = null;
+
+    function autosave(el) {
+      fetch("/training/autosave", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          page_code: PAGE_CODE,
+          field: el.name,
+          value: el.type === "checkbox" ? String(el.checked) : el.value
+        })
+      });
+    }
+
+    fields.forEach(el => {
+      const handler = () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => autosave(el), 200);
+      };
+      el.addEventListener("input", handler);
+      el.addEventListener("change", handler);
+    });
+
+  })();
+  </script>
+</div>

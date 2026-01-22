@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Verification & Endorsement</title>
+
+<style>
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    margin: 40px;
+    color: #000;
+  }
+
+  .section {
+    margin-bottom: 40px;
+  }
+
+  .section-title {
+    font-weight: bold;
+    text-decoration: underline;
+    margin-bottom: 14px;
+  }
+
+  .paragraph {
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+
+  .inline-input {
+    border: none;
+    border-bottom: 1px solid #000;
+    outline: none;
+    width: 300px;
+    font-size: 13px;
+  }
+
+  .form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .label {
+    width: 100px;
+  }
+
+  .colon {
+    width: 10px;
+  }
+
+  .line-input {
+    flex: 1;
+    border: none;
+    border-bottom: 1px solid #000;
+    height: 16px;
+    font-size: 13px;
+    outline: none;
+  }
+
+  .comments-box {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #000;
+    resize: none;
+    height: 18px;
+    margin-bottom: 6px;
+    font-size: 13px;
+    outline: none;
+  }
+  .page-footer {
+    margin-top: 24px;
+    font-size: 11px;
+    color: #666;
+    text-align: right;
+  }
+</style>
+</head>
+
+<body>
+
+<!-- ================= VERIFICATION BY SM (OPS) ================= -->
+<div class="section">
+
+  <div class="section-title">Verification by SM (Ops)</div>
+
+  <div class="paragraph">
+    I hereby endorse that the trainee named
+    <input type="text" class="inline-input" name="yss_p032_trainee_name">
+    <br>
+    has fulfilled the requirements of the OJT components specified in this
+    <strong>YSS Programmes</strong>.
+  </div>
+
+  <div class="section-title">Approved by SM (Ops)</div>
+
+  <div class="form-row">
+    <div class="label">Name</div><div class="colon">:</div>
+    <input type="text" class="line-input" name="yss_p032_sm_name">
+  </div>
+
+  <div class="form-row">
+    <div class="label">Designation</div><div class="colon">:</div>
+    <input type="text" class="line-input" name="yss_p032_sm_designation">
+  </div>
+
+  <div class="form-row">
+    <div class="label">Signature</div><div class="colon">:</div>
+    <input type="text" class="line-input" name="yss_p032_sm_signature">
+  </div>
+
+  <div class="form-row">
+    <div class="label">Date</div><div class="colon">:</div>
+    <input type="text" class="line-input" name="yss_p032_sm_date">
+  </div>
+
+  <div class="form-row">
+    <div class="label">Comments</div><div class="colon">:</div>
+    <input type="text" class="line-input" name="yss_p032_sm_comments">
+  </div>
+
+  <textarea class="comments-box" name="yss_p032_sm_comments_1"></textarea>
+  <textarea class="comments-box" name="yss_p032_sm_comments_2"></textarea>
+
+</div>
+
+<!-- ================= VERIFICATION BY OJT MENTOR ================= -->
+<div class="section">
+
+  <div class="section-title">
+    Verification by OJT Mentor / Competency Assessor
+  </div>
+
+  <div class="form-row">
+    <div class="label">Name</div><div class="colon">:</div>
+    <input type="text" class="line-input" name="yss_p032_mentor_name">
+  </div>
+
+  <div class="form-row">
+    <div class="label">Designation</div><div class="colon">:</div>
+    <input type="text" class="line-input" name="yss_p032_mentor_designation">
+  </div>
+
+  <div class="form-row">
+    <div class="label">Signature</div><div class="colon">:</div>
+    <input type="text" class="line-input" name="yss_p032_mentor_signature">
+  </div>
+
+  <div class="form-row">
+    <div class="label">Date</div><div class="colon">:</div>
+    <input type="text" class="line-input" name="yss_p032_mentor_date">
+  </div>
+
+  <div class="form-row">
+    <div class="label">Comments</div><div class="colon">:</div>
+    <input type="text" class="line-input" name="yss_p032_mentor_comments">
+  </div>
+
+  <textarea class="comments-box" name="yss_p032_mentor_comments_1"></textarea>
+  <textarea class="comments-box" name="yss_p032_mentor_comments_2"></textarea>
+
+</div>
+<div class="page-footer">22 | Page</div>
+<script>
+(function () {
+
+  const PAGE_CODE = "YSS_022";   // change to YSS_014 for page 14
+  const SAVED_DATA = {{ saved_data | default({}) | tojson | safe }};
+
+  const fields = document.querySelectorAll(
+    "input[name], textarea[name], select[name]"
+  );
+
+  // Restore
+  fields.forEach(el => {
+    if (!SAVED_DATA.hasOwnProperty(el.name)) return;
+
+    if (el.type === "radio") {
+      el.checked = (el.value === SAVED_DATA[el.name]);
+    } else if (el.type === "checkbox") {
+      el.checked = SAVED_DATA[el.name] === "true";
+    } else {
+      el.value = SAVED_DATA[el.name];
+    }
+  });
+
+  let timer = null;
+
+  function autosave(el) {
+    fetch("/training/autosave", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        page_code: PAGE_CODE,
+        field: el.name,
+        value: el.type === "checkbox" ? String(el.checked) : el.value
+      })
+    });
+  }
+
+  fields.forEach(el => {
+    const handler = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => autosave(el), 200);
+    };
+    el.addEventListener("input", handler);
+    el.addEventListener("change", handler);
+  });
+
+})();
+</script>
+
+<a href="/training/print" target="_blank">
+  <button type="button"
+          style="padding:10px 16px;font-weight:bold;margin-top:20px;">
+    Generate PDF
+  </button>
+</a>
+</body>
+</html>
