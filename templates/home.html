@@ -155,8 +155,8 @@
           JO Individual Performance
         </button>
 
-        <button type="button" id="staffProfileBtn"
-          data-url="https://globalpsa.sharepoint.com/:x:/s/PSAC-CNBD-YOD-efile/IQDQRbYZAnJeSaHbuUxC4x6yAXaNJ1Bwi693i6NtMbvJPZg?e=Tbd92g">
+        <!-- ✅ Staff Profile now protected server-side -->
+        <button type="button" id="staffProfileBtn">
           Staff Profile
         </button>
 
@@ -175,19 +175,20 @@
   <!-- ===== Login Modal ===== -->
   <div id="passwordModal" class="modal" aria-hidden="true">
     <div class="modal__dialog">
-      <h3>Login</h3>
+      <h3 id="pwTitle">Login</h3>
 
-      <form method="POST" id="passwordForm">
+      <!-- IMPORTANT: action is set dynamically by JS -->
+      <form method="POST" id="passwordForm" action="">
         <input type="hidden" name="role" id="hiddenRole">
 
-        <div class="modal__row">
+        <div class="modal__row" id="usernameRow">
           <label>Username</label>
-          <input type="text" name="username" required>
+          <input type="text" name="username" id="pwUsername" required>
         </div>
 
         <div class="modal__row">
           <label>Password</label>
-          <input type="password" name="password" required>
+          <input type="password" name="password" id="pwPassword" required>
         </div>
 
         <div class="modal__actions">
@@ -211,11 +212,18 @@
 
         <div class="modal__row">
           <label>Role</label>
-          <select name="role" required>
+          <select name="role" id="trainingRoleSelect" required>
             <option value="" disabled selected>Select role</option>
             <option value="YAS">YAS</option>
             <option value="YSS">YSS</option>
+            <option value="ADMIN">ADMIN</option>
           </select>
+        </div>
+
+        <!-- ✅ Only show when ADMIN selected -->
+        <div class="modal__row" id="adminPasswordRow" style="display:none;">
+          <label>Admin Password</label>
+          <input type="password" name="admin_password" id="adminPasswordInput">
         </div>
 
         <div class="modal__actions">
@@ -228,13 +236,45 @@
 
   <script>
     (function () {
-      // ===== Password modal =====
+
+      // ===== Password modal base (SO/JO existing) =====
       const modal = document.getElementById('passwordModal');
       const hiddenRole = document.getElementById('hiddenRole');
+      const passwordForm = document.getElementById('passwordForm');
+
+      const pwTitle = document.getElementById("pwTitle");
+      const usernameRow = document.getElementById("usernameRow");
+      const pwUsername = document.getElementById("pwUsername");
+      const pwPassword = document.getElementById("pwPassword");
+
+      function openPwModal({ role, title, actionUrl, requireUsername }) {
+        hiddenRole.value = role || "";
+        pwTitle.textContent = title || "Login";
+        passwordForm.action = actionUrl || "";
+
+        // show/hide username row depending on requirement
+        usernameRow.style.display = requireUsername ? "block" : "none";
+        pwUsername.required = !!requireUsername;
+        if (!requireUsername) pwUsername.value = "";
+
+        // clear password
+        pwPassword.value = "";
+
+        modal.classList.add("is-open");
+      }
 
       document.querySelectorAll('.pw-open').forEach(btn => {
         btn.addEventListener('click', () => {
-          hiddenRole.value = btn.dataset.role;
+          // Keep your original flow (whatever endpoint your passwordForm uses today)
+          // If you already had an action before, set it here.
+          // Example:
+
+          // If you DON'T have a backend endpoint for SO/JO and it was handled elsewhere,
+          // you can just keep the modal open without action change:
+          hiddenRole.value = btn.dataset.role || "";
+          pwTitle.textContent = "Login";
+          usernameRow.style.display = "block";
+          pwUsername.required = true;
           modal.classList.add('is-open');
         });
       });
@@ -242,7 +282,21 @@
       document.getElementById('pwCancel')
         .addEventListener('click', () => modal.classList.remove('is-open'));
 
-      // ===== Training =====
+      // ===== Staff Profile (server-side protected) =====
+      // When clicked, open same modal but:
+      // - Hide username (only password needed)
+      // - Submit to home.staff_profile_login (backend checks password)
+      const staffProfileBtn = document.getElementById("staffProfileBtn");
+      staffProfileBtn?.addEventListener("click", () => {
+        openPwModal({
+          role: "staff_profile",
+          title: "Staff Profile",
+          actionUrl: "{{ url_for('home.staff_profile_login') }}",
+          requireUsername: false
+        });
+      });
+
+      // ===== Training modal =====
       const trainingBtn = document.getElementById("trainingBtn");
       const trainingModal = document.getElementById("trainingModal");
       const trainingCancel = document.getElementById("trainingCancel");
@@ -255,28 +309,33 @@
         trainingModal.classList.remove("is-open");
       });
 
+      // ✅ Admin password show/hide (Training modal)
+      const trainingRoleSelect = document.getElementById("trainingRoleSelect");
+      const adminPasswordRow = document.getElementById("adminPasswordRow");
+      const adminPasswordInput = document.getElementById("adminPasswordInput");
+
+      function syncAdminPasswordUI() {
+        const isAdmin = (trainingRoleSelect?.value || "").toUpperCase() === "ADMIN";
+        adminPasswordRow.style.display = isAdmin ? "block" : "none";
+        adminPasswordInput.required = isAdmin;
+        if (!isAdmin) adminPasswordInput.value = "";
+      }
+      trainingRoleSelect?.addEventListener("change", syncAdminPasswordUI);
+      syncAdminPasswordUI();
+
       // ===== Playbook =====
       const playbookBtn = document.getElementById('playbookBtn');
       playbookBtn?.addEventListener('click', () => {
         window.open(playbookBtn.dataset.url, "_blank");
       });
 
-      // ===== Staff Profile =====
-      const staffProfileBtn = document.getElementById('staffProfileBtn');
-      staffProfileBtn?.addEventListener('click', () => {
-        window.open(staffProfileBtn.dataset.url, "_blank", "noopener,noreferrer");
-      });
-
       // ===== Power BI Button Logic =====
       const SHIFT_PBI_URL =
         "https://app.powerbi.com/reportEmbed?reportId=b3af80f5-56b8-4b19-8e28-547613d2c6f8&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
-
       const DAILY_PBI_URL =
         "https://app.powerbi.com/reportEmbed?reportId=8f105737-0465-44ee-822a-0791181fc5ca&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
-
       const PPT_WEEKLY_PBI_URL =
         "https://app.powerbi.com/reportEmbed?reportId=08e074d4-3c03-46b9-b533-812c20defe3e&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
-
       const SHIOK_PBI_URL =
         "https://app.powerbi.com/reportEmbed?reportId=c250baad-0d3f-4420-b764-ff3dd9cd1510&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
 

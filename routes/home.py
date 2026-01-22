@@ -1,5 +1,5 @@
 # home.py
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from pathlib import Path
 import pandas as pd
 
@@ -7,6 +7,15 @@ home = Blueprint("home", __name__)
 
 # Adjust this to your actual users.xlsx location if different
 USERS_FILE = (Path(__file__).resolve().parents[1] / "data" / "users.xlsx")
+
+# ✅ Staff Profile password (server-side)
+STAFF_PROFILE_PASSWORD = "cess"
+
+# ✅ Staff Profile URL (kept server-side)
+STAFF_PROFILE_URL = (
+    "https://globalpsa.sharepoint.com/:x:/s/PSAC-CNBD-YOD-efile/"
+    "IQDQRbYZAnJeSaHbuUxC4x6yAXaNJ1Bwi693i6NtMbvJPZg?e=Tbd92g"
+)
 
 def load_users():
     if not USERS_FILE.exists():
@@ -20,6 +29,7 @@ def load_users():
         else:
             df[col] = df[col].astype(str).str.strip()
     return df
+
 
 @home.route("/", methods=["GET", "POST"])
 def role_selection():
@@ -46,6 +56,7 @@ def role_selection():
             if not match.empty:
                 return redirect(url_for("main.index"))
             flash("❌ Invalid username or password for Non-Shift.")
+
         elif role == "avp_vp":
             match = users_df[
                 (users_df["role"] == role) &
@@ -61,6 +72,39 @@ def role_selection():
 
     # GET
     return render_template("home.html")
+
+
+# ===================== STAFF PROFILE (PASSWORD PROTECTED) =====================
+
+@home.route("/staff-profile/login", methods=["POST"])
+def staff_profile_login():
+    """
+    Handles Staff Profile password entry from the shared modal.
+    Expects form field: password
+    """
+    pw = (request.form.get("password") or "").strip()
+
+    if pw != STAFF_PROFILE_PASSWORD:
+        flash("❌ Invalid password for Staff Profile.")
+        return redirect(url_for("home.role_selection"))
+
+    # Mark session as allowed
+    session["staff_profile_ok"] = True
+    return redirect(url_for("home.staff_profile"))
+
+
+@home.route("/staff-profile", methods=["GET"])
+def staff_profile():
+    """
+    Only accessible after successful staff_profile_login.
+    Redirects to the SharePoint Staff Profile link.
+    """
+    if not session.get("staff_profile_ok"):
+        flash("❌ Please enter Staff Profile password first.")
+        return redirect(url_for("home.role_selection"))
+
+    return redirect(STAFF_PROFILE_URL)
+
 
 @home.route("/training", methods=["GET"])
 def training():

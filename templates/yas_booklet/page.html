@@ -48,12 +48,38 @@
     .booklet {
       margin-top: 10px;
     }
+
+    /* Optional admin banner */
+    .admin-banner {
+      width: 100%;
+      background: #111;
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .admin-banner b { letter-spacing: .02em; }
+    .admin-banner .meta { opacity: .85; font-size: 0.95em; }
   </style>
 </head>
 
 <body>
 
 <div class="wrap">
+
+  {% if admin_view %}
+    <div class="admin-banner">
+      <div><b>ADMIN VIEW</b></div>
+      <div class="meta">
+        {{ trainee_name or "" }}{% if trainee_role %} ({{ trainee_role }}){% endif %}
+      </div>
+    </div>
+  {% endif %}
 
   <!-- ===== NAV BAR ===== -->
   <div class="nav">
@@ -64,6 +90,10 @@
 
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
       <a class="btn" href="{{ url_for('home.role_selection') }}">Home</a>
+
+      {% if admin_view and employee_id is defined %}
+        <a class="btn" href="{{ url_for('training.admin_trainee_overview', employee_id=employee_id) }}">Admin</a>
+      {% endif %}
 
       {% if page > 1 %}
         <a class="btn" href="{{ url_for(booklet_endpoint, page=page-1) }}">← Prev</a>
@@ -100,22 +130,22 @@
 <script>
 (function () {
 
-  const PAGE_CODE = "{{ '%03d'|format(page) }}";
-  const SAVED_DATA = JSON.parse('{{ saved_data | tojson | safe }}');
+  // ✅ VSCode-friendly Jinja usage (valid JS before rendering)
+  const ADMIN_VIEW = JSON.parse('{{ admin_view|default(false)|tojson }}');
+  const PAGE_CODE  = '{{ "%03d"|format(page) }}';
+  const SAVED_DATA = JSON.parse('{{ saved_data|default({})|tojson }}');
 
   const LOGIN_DATA = {
-    trainee_name: "{{ session.get('training_employee_name','') }}",
-    trainee_role: "{{ session.get('training_employee_role','') }}"
+    trainee_name: '{{ session.get("training_employee_name","") }}',
+    trainee_role: '{{ session.get("training_employee_role","") }}'
   };
 
-  const fields = document.querySelectorAll(
-    "input[name], textarea[name], select[name]"
-  );
+  const fields = document.querySelectorAll("input[name], textarea[name], select[name]");
 
   // ================= RESTORE VALUES =================
   fields.forEach(el => {
 
-    if (SAVED_DATA.hasOwnProperty(el.name)) {
+    if (Object.prototype.hasOwnProperty.call(SAVED_DATA, el.name)) {
 
       if (el.type === "radio") {
         el.checked = (el.value === SAVED_DATA[el.name]);
@@ -125,13 +155,27 @@
         el.value = SAVED_DATA[el.name];
       }
 
-    } else if (!el.value && LOGIN_DATA.hasOwnProperty(el.name)) {
+    } else if (!ADMIN_VIEW && !el.value && Object.prototype.hasOwnProperty.call(LOGIN_DATA, el.name)) {
+      // Suggest only in trainee mode
       el.value = LOGIN_DATA[el.name];
     }
 
+    // Admin mode: lock fields (read-only)
+    if (ADMIN_VIEW) {
+      if (el.tagName === "SELECT") {
+        el.disabled = true;
+      } else {
+        el.readOnly = true;
+        if (el.type === "radio" || el.type === "checkbox") {
+          el.disabled = true;
+        }
+      }
+    }
   });
 
-  // ================= AUTOSAVE =================
+  // ================= AUTOSAVE (disabled in admin mode) =================
+  if (ADMIN_VIEW) return;
+
   let timer = null;
 
   function autosave(el) {
@@ -141,24 +185,18 @@
       body: JSON.stringify({
         page_code: PAGE_CODE,
         field: el.name,
-        value:
-          el.type === "checkbox"
-            ? String(el.checked)
-            : el.value
+        value: el.type === "checkbox" ? String(el.checked) : el.value
       })
     });
   }
 
   fields.forEach(el => {
-
     const handler = () => {
       clearTimeout(timer);
       timer = setTimeout(() => autosave(el), 200);
     };
-
     el.addEventListener("input", handler);
     el.addEventListener("change", handler);
-
   });
 
 })();
@@ -176,9 +214,9 @@
       return;
     }
 
-    // Go to correct booklet route
-    window.location.href =
-      "{{ url_for(booklet_endpoint, page=1) }}".replace("1", page);
+    // Works for both /yas/1 and /yss/1 patterns:
+    const base = "{{ url_for(booklet_endpoint, page=1) }}";
+    window.location.href = base.replace(/1$/, String(page));
   });
 </script>
 

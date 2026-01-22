@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin — {{ trainee.name }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f6f7fb; color:#111; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+    .topbar {
+      display:flex; justify-content: space-between; align-items: center;
+      gap: 12px; margin-bottom: 14px;
+    }
+    .title { font-size: 22px; font-weight: 800; }
+    .sub { margin-top: 4px; color:#555; font-weight: 700; }
+    .btn {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #444;
+      text-decoration: none;
+      color: #000;
+      background: #E1C233;
+      font-weight: 800;
+      display: inline-block;
+    }
+    .btn.secondary {
+      background:#fff;
+      font-weight: 800;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.06);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 10px; border-bottom: 1px solid #eee; text-align: left; }
+    th { font-size: 13px; color: #555; text-transform: uppercase; letter-spacing: .03em; }
+    tr:hover td { background: #fafafa; }
+    .pill {
+      display:inline-block; padding: 4px 10px; border-radius: 999px;
+      border: 1px solid #ddd; background:#f8fafc; font-weight: 800; font-size: 12px;
+    }
+    .muted { color:#666; font-size: 13px; }
+    .actions { display:flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .empty { padding: 18px; text-align:center; color:#666; }
+
+    .headerRow {
+      display:flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <div class="topbar">
+      <div>
+        <div class="title">Admin — {{ trainee.name }}</div>
+        <div class="sub">
+          <span class="pill">{{ trainee.role }}</span>
+          <span class="muted"> • Employee ID: {{ trainee.id }}</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <a class="btn secondary" href="{{ url_for('training.admin_dashboard') }}">← Back</a>
+        <a class="btn secondary" href="{{ url_for('home.role_selection') }}">Home</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="headerRow">
+        <div>
+          <b>Pages with saved responses</b>
+          <div class="muted">Click “View” to open the booklet page with this trainee’s saved fields.</div>
+        </div>
+
+        <div class="actions">
+          <a class="btn" href="{{ url_for('training.admin_print', employee_id=trainee.id) }}">
+            🖨 Print Full Booklet
+          </a>
+        </div>
+      </div>
+
+      {% if not pages or pages|length == 0 %}
+        <div class="empty">No saved responses yet.</div>
+      {% else %}
+        <table>
+          <thead>
+            <tr>
+              <th>Page</th>
+              <th>Fields Filled</th>
+              <th>Last Updated</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in pages %}
+              <tr>
+                <td><b>{{ p.page_code }}</b></td>
+                <td><span class="pill">{{ p.fields_filled }}</span></td>
+                <td class="muted">
+                  {% if p.last_updated %}
+                    {{ p.last_updated }}
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+                <td>
+                  <div class="actions">
+                    <a class="btn"
+                       href="{{ url_for('training.admin_view_page',
+                                        employee_id=trainee.id,
+                                        page=p.page_code|int) }}">
+                      View
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    </div>
+
+  </div>
+</body>
+</html>
