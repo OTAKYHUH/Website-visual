@@ -1,3 +1,4 @@
+<!-- templates/admin/index.html -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -34,7 +35,6 @@
     }
     .btn.danger:hover { background: #fee2e2; }
 
-    /* NEW: Unlock button styling */
     .btn.unlock {
       background: #fff;
       border-color: #2563eb;
@@ -51,7 +51,6 @@
       box-shadow: 0 3px 14px rgba(0,0,0,0.06);
     }
 
-    /* NEW: controls row */
     .controls{
       display:flex;
       gap: 10px;
@@ -118,10 +117,8 @@
     .actions { display:flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .empty { padding: 18px; text-align:center; color:#666; }
 
-    /* Make form buttons line up nicely */
     .actions form { margin: 0; }
 
-    /* NEW: no results block */
     .no-results{
       display:none;
       padding: 18px;
@@ -146,7 +143,6 @@
         <div class="empty">No trainees found.</div>
       {% else %}
 
-        <!-- ✅ NEW: Search bar + Role filter -->
         <div class="controls">
           <div class="controls-left">
             <div class="control">
@@ -204,11 +200,8 @@
 
                 <td>
                   <div class="actions">
-                    <a class="btn" href="{{ url_for('training.admin_trainee_overview', employee_id=t.id) }}">
-                      View
-                    </a>
+                    <a class="btn" href="{{ url_for('training.admin_trainee_overview', employee_id=t.id) }}">View</a>
 
-                    <!-- ✅ NEW: Unlock button (only show when submitted = 1) -->
                     {% if t.submitted %}
                       <form method="POST"
                             action="{{ url_for('training.admin_unlock_employee', employee_id=t.id) }}"

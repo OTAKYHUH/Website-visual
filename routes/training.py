@@ -2,6 +2,7 @@
 import os
 import sqlite3
 from pathlib import Path
+
 from flask import (
     Blueprint, request, redirect, url_for,
     session, abort, render_template
@@ -14,14 +15,13 @@ training_bp = Blueprint("training", __name__)
 BASE_DIR = Path(__file__).resolve().parents[1]
 DB_PATH = BASE_DIR / "data" / "training.db"
 
-
 # ===================== DB =====================
 
 def get_db():
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
-
 
 # ===================== SCHEMA (SUBMIT / LOCK) =====================
 
@@ -44,7 +44,6 @@ def ensure_schema():
     db.commit()
     db.close()
 
-
 def is_submitted(employee_id: int) -> bool:
     ensure_schema()
     db = get_db()
@@ -54,21 +53,17 @@ def is_submitted(employee_id: int) -> bool:
     db.close()
     return bool(row and row["submitted"] == 1)
 
-
 # ===================== ROLE HELPERS =====================
 
 def is_admin() -> bool:
     return bool(session.get("is_admin")) or session.get("training_employee_role") == "ADMIN"
 
-
 def is_mentor() -> bool:
     return bool(session.get("is_mentor")) or session.get("training_employee_role") == "MENTOR"
-
 
 def require_admin_or_mentor():
     if not (is_admin() or is_mentor()):
         abort(403)
-
 
 # ===================== EDIT / LOCK RULES =====================
 # Page codes like "029", "031"
@@ -85,16 +80,13 @@ TRAINEE_LOCK_PAGES = {
     "YSS": {"019", "020", "021", "022"},
 }
 
-
 def mentor_can_edit(trainee_role: str, page_code: str) -> bool:
     trainee_role = (trainee_role or "").upper()
     return page_code in MENTOR_EDIT_PAGES.get(trainee_role, set())
 
-
 def trainee_page_locked(trainee_role: str, page_code: str) -> bool:
     trainee_role = (trainee_role or "").upper()
     return page_code in TRAINEE_LOCK_PAGES.get(trainee_role, set())
-
 
 # ===================== BOOKLET CONFIG =====================
 
@@ -107,18 +99,16 @@ def _get_booklet_config(role: str):
 
     if role == "YSS":
         from routes.yss_booklet import PAGES_DIR as YSS_PAGES_DIR
-        # (template reused)
+        # template reused
         return (YSS_PAGES_DIR, "yss_booklet.yss_page", "yas_booklet/page.html", "YSS Booklet")
 
     abort(400, "Unknown booklet role")
-
 
 def _max_page_from_dir(pages_dir: Path) -> int:
     if not pages_dir.exists():
         return 0
     pages = sorted(pages_dir.glob("*.html"))
     return len(pages)
-
 
 def _build_nav_context(
     *,
@@ -140,7 +130,6 @@ def _build_nav_context(
             abort(500, "employee_id required for admin navigation")
 
         nav_endpoint = "training.admin_view_page"
-
         nav_prev_url = url_for(nav_endpoint, employee_id=employee_id, page=page - 1) if page > 1 else None
         nav_next_url = url_for(nav_endpoint, employee_id=employee_id, page=page + 1) if page < max_page else None
         nav_jump_base_url = url_for(nav_endpoint, employee_id=employee_id, page=1).rsplit("/", 1)[0]
@@ -151,7 +140,6 @@ def _build_nav_context(
             abort(500, "employee_id required for mentor navigation")
 
         nav_endpoint = "training.mentor_view_page"
-
         nav_prev_url = url_for(nav_endpoint, employee_id=employee_id, page=page - 1) if page > 1 else None
         nav_next_url = url_for(nav_endpoint, employee_id=employee_id, page=page + 1) if page < max_page else None
         nav_jump_base_url = url_for(nav_endpoint, employee_id=employee_id, page=1).rsplit("/", 1)[0]
@@ -162,7 +150,6 @@ def _build_nav_context(
     nav_next_url = url_for(trainee_endpoint, page=page + 1) if page < max_page else None
     nav_jump_base_url = url_for(trainee_endpoint, page=1).rsplit("/", 1)[0]
     return {"nav_prev_url": nav_prev_url, "nav_next_url": nav_next_url, "nav_jump_base_url": nav_jump_base_url}
-
 
 # ===================== LOGIN =====================
 
@@ -258,7 +245,6 @@ def training_login():
 
     abort(400, "Unhandled role")
 
-
 # ===================== SUBMIT / LOCK (TRAINEE) =====================
 
 @training_bp.route("/training/submit", methods=["POST"])
@@ -267,7 +253,6 @@ def training_submit():
         abort(401)
 
     ensure_schema()
-
     employee_id = session["training_employee_id"]
 
     if is_submitted(employee_id):
@@ -286,7 +271,6 @@ def training_submit():
 
     return redirect(url_for("training.confirmation"))
 
-
 @training_bp.route("/training/confirmation")
 def confirmation():
     if "training_employee_id" not in session:
@@ -304,7 +288,6 @@ def confirmation():
 
     return render_template("training/confirmation.html")
 
-
 # ===================== AUTOSAVE =====================
 
 @training_bp.route("/training/autosave", methods=["POST"])
@@ -319,8 +302,6 @@ def training_autosave():
         return {"status": "bad request"}, 400
 
     # ---- Determine who we are saving for ----
-    # Trainees save for themselves
-    # Mentors save for a target trainee (must pass target_employee_id)
     if is_mentor():
         target_employee_id = data.get("target_employee_id")
         if not target_employee_id:
@@ -345,14 +326,10 @@ def training_autosave():
     submitted = int(emp["submitted"] or 0)
 
     # ---- Enforce locks ----
-    # ✅ Trainee: locked on certain pages (even before submit)
-    # ✅ Trainee: locked after submitted
-    # ✅ Mentor: editable only on allowed pages (even if submitted)
     if not is_mentor():
         if trainee_page_locked(trainee_role, page_code):
             db.close()
             return {"status": "locked", "error": "page locked for trainee"}, 403
-
         if submitted == 1:
             db.close()
             return {"status": "locked"}, 403
@@ -377,7 +354,6 @@ def training_autosave():
 
     return {"status": "saved"}
 
-
 # ===================== LOAD ALL SAVED DATA =====================
 
 def load_autosave_data(employee_id: int):
@@ -396,7 +372,6 @@ def load_autosave_data(employee_id: int):
 
     db.close()
     return data
-
 
 # ===================== PRINT ALL PAGES (trainee) =====================
 
@@ -451,9 +426,8 @@ def training_print():
 
     return render_template("yas_booklet/print_all.html", pages_html=pages_html)
 
-
 # ============================================================
-# ===================== ADMIN (existing) ======================
+# ===================== ADMIN ================================
 # ============================================================
 
 @training_bp.route("/training/admin")
@@ -485,6 +459,26 @@ def admin_dashboard():
 
     return render_template("admin/index.html", trainees=trainees)
 
+# ✅ This fixes your BuildError if admin/index.html has an "Unlock" button
+@training_bp.route("/training/admin/unlock/<int:employee_id>", methods=["POST"])
+def admin_unlock_employee(employee_id):
+    if not is_admin():
+        abort(403)
+
+    ensure_schema()
+
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("""
+        UPDATE employees
+        SET submitted = 0,
+            submitted_at = NULL
+        WHERE id = ?
+    """, (employee_id,))
+    db.commit()
+    db.close()
+
+    return redirect(url_for("training.admin_dashboard"))
 
 @training_bp.route("/training/admin/trainee/<int:employee_id>")
 def admin_trainee_overview(employee_id):
@@ -519,7 +513,6 @@ def admin_trainee_overview(employee_id):
         trainee=trainee,
         pages=pages
     )
-
 
 @training_bp.route("/training/admin/booklet/<int:employee_id>/<int:page>")
 def admin_view_page(employee_id, page):
@@ -589,6 +582,30 @@ def admin_view_page(employee_id, page):
         **nav_ctx,
     )
 
+@training_bp.route("/training/admin/delete/<int:employee_id>", methods=["POST"])
+def admin_delete_employee(employee_id):
+    if not is_admin():
+        abort(403)
+
+    db = get_db()
+    cur = db.cursor()
+
+    # 1️⃣ Delete all autosaved answers
+    cur.execute(
+        "DELETE FROM training_progress WHERE employee_id = ?",
+        (employee_id,)
+    )
+
+    # 2️⃣ Delete trainee record
+    cur.execute(
+        "DELETE FROM employees WHERE id = ?",
+        (employee_id,)
+    )
+
+    db.commit()
+    db.close()
+
+    return redirect(url_for("training.admin_dashboard"))
 
 @training_bp.route("/training/admin/print/<int:employee_id>")
 def admin_print(employee_id):
@@ -653,7 +670,6 @@ def admin_print(employee_id):
 
     return render_template("yas_booklet/print_all.html", pages_html=pages_html)
 
-
 # ============================================================
 # ===================== MENTOR DASHBOARD ======================
 # ============================================================
@@ -709,7 +725,6 @@ def mentor_dashboard():
     db.close()
 
     return render_template("mentor/index.html", trainees=trainees, q=q, role_filter=role_filter)
-
 
 @training_bp.route("/training/mentor/booklet/<int:employee_id>/<int:page>")
 def mentor_view_page(employee_id, page):
