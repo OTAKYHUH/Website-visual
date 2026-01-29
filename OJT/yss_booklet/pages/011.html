@@ -178,54 +178,5 @@
   <div class="page-footer">11 | Page</div>
 
 </div>
-<script>
-(function () {
-
-  const PAGE_CODE = "YSS_011";   // change to YSS_014 for page 14
-  const SAVED_DATA = {{ saved_data | default({}) | tojson | safe }};
-
-  const fields = document.querySelectorAll(
-    "input[name], textarea[name], select[name]"
-  );
-
-  // Restore
-  fields.forEach(el => {
-    if (!SAVED_DATA.hasOwnProperty(el.name)) return;
-
-    if (el.type === "radio") {
-      el.checked = (el.value === SAVED_DATA[el.name]);
-    } else if (el.type === "checkbox") {
-      el.checked = SAVED_DATA[el.name] === "true";
-    } else {
-      el.value = SAVED_DATA[el.name];
-    }
-  });
-
-  let timer = null;
-
-  function autosave(el) {
-    fetch("/training/autosave", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        page_code: PAGE_CODE,
-        field: el.name,
-        value: el.type === "checkbox" ? String(el.checked) : el.value
-      })
-    });
-  }
-
-  fields.forEach(el => {
-    const handler = () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => autosave(el), 200);
-    };
-    el.addEventListener("input", handler);
-    el.addEventListener("change", handler);
-  });
-
-})();
-</script>
-
 </body>
 </html>

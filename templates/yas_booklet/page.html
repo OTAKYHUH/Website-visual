@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <title>{{ booklet_title }}</title>
+  {% set role = session.get('training_employee_role', 'YAS') %}
+  <title>{{ role }} OJT Booklet</title>
 
   <style>
     body {
@@ -49,7 +50,7 @@
       margin-top: 10px;
     }
 
-    /* Optional admin banner */
+    /* Optional admin/mentor banner */
     .admin-banner {
       width: 100%;
       background: #111;
@@ -65,6 +66,20 @@
     }
     .admin-banner b { letter-spacing: .02em; }
     .admin-banner .meta { opacity: .85; font-size: 0.95em; }
+
+    /* ===================== PRINT RULES ===================== */
+    @media print {
+      .admin-banner,
+      .nav {
+        display: none !important;
+      }
+      .wrap {
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      * { box-shadow: none !important; }
+    }
   </style>
 </head>
 
@@ -81,6 +96,25 @@
     </div>
   {% endif %}
 
+  {% if mentor_view %}
+    <div class="admin-banner">
+      <div>
+        <b>MENTOR VIEW</b>
+        {% if mentor_editable %}
+          <span style="opacity:.85;">(Editable)</span>
+        {% else %}
+          <span style="opacity:.85;">(Read-only)</span>
+        {% endif %}
+      </div>
+      <div class="meta">
+        {{ trainee_name or "" }}{% if trainee_role %} ({{ trainee_role }}){% endif %}
+        {% if trainee_submitted is defined and trainee_submitted %}
+          — <span style="opacity:.85;">Submitted</span>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
   <!-- ===== NAV BAR ===== -->
   <div class="nav">
 
@@ -91,20 +125,43 @@
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
       <a class="btn" href="{{ url_for('home.role_selection') }}">Home</a>
 
-      {% if admin_view and employee_id is defined %}
+      {# Admin: back to trainee overview #}
+      {% if admin_view and trainee_id is defined %}
+        <a class="btn" href="{{ url_for('training.admin_trainee_overview', employee_id=trainee_id) }}">Admin</a>
+      {% elif admin_view and employee_id is defined %}
         <a class="btn" href="{{ url_for('training.admin_trainee_overview', employee_id=employee_id) }}">Admin</a>
       {% endif %}
 
-      {% if page > 1 %}
-        <a class="btn" href="{{ url_for(booklet_endpoint, page=page-1) }}">← Prev</a>
-      {% else %}
-        <span class="btn disabled">← Prev</span>
+      {# Mentor: back to mentor dashboard #}
+      {% if mentor_view %}
+        <a class="btn" href="{{ url_for('training.mentor_dashboard') }}">Mentor</a>
       {% endif %}
 
-      {% if page < max_page %}
-        <a class="btn" href="{{ url_for(booklet_endpoint, page=page+1) }}">Next →</a>
+      {# ===== Prev / Next ===== #}
+      {% if admin_view or mentor_view %}
+        {% if nav_prev_url %}
+          <a class="btn" href="{{ nav_prev_url }}">← Prev</a>
+        {% else %}
+          <span class="btn disabled">← Prev</span>
+        {% endif %}
+
+        {% if nav_next_url %}
+          <a class="btn" href="{{ nav_next_url }}">Next →</a>
+        {% else %}
+          <span class="btn disabled">Next →</span>
+        {% endif %}
       {% else %}
-        <span class="btn disabled">Next →</span>
+        {% if page > 1 %}
+          <a class="btn" href="{{ url_for(booklet_endpoint, page=page-1) }}">← Prev</a>
+        {% else %}
+          <span class="btn disabled">← Prev</span>
+        {% endif %}
+
+        {% if page < max_page %}
+          <a class="btn" href="{{ url_for(booklet_endpoint, page=page+1) }}">Next →</a>
+        {% else %}
+          <span class="btn disabled">Next →</span>
+        {% endif %}
       {% endif %}
     </div>
 
@@ -130,10 +187,26 @@
 <script>
 (function () {
 
-  // ✅ VSCode-friendly Jinja usage (valid JS before rendering)
-  const ADMIN_VIEW = JSON.parse('{{ admin_view|default(false)|tojson }}');
-  const PAGE_CODE  = '{{ "%03d"|format(page) }}';
-  const SAVED_DATA = JSON.parse('{{ saved_data|default({})|tojson }}');
+  const ADMIN_VIEW   = JSON.parse('{{ admin_view|default(false)|tojson }}');
+  const MENTOR_VIEW  = JSON.parse('{{ mentor_view|default(false)|tojson }}');
+  const MENTOR_EDIT  = JSON.parse('{{ mentor_editable|default(false)|tojson }}');
+  const PAGE_CODE    = '{{ "%03d"|format(page) }}';
+  const SAVED_DATA   = JSON.parse('{{ saved_data|default({})|tojson }}');
+
+  // Mentor saves into trainee's record
+  const TARGET_EMPLOYEE_ID = JSON.parse('{{ target_employee_id | default(none) | tojson }}');
+
+  // Current session trainee role (when in trainee view)
+  const SESSION_ROLE = String('{{ session.get("training_employee_role","") }}').toUpperCase();
+
+  // ✅ Trainees are locked on these pages:
+  // YAS: 029-032
+  // YSS: 019-022
+  const TRAINEE_LOCKED =
+    (!ADMIN_VIEW && !MENTOR_VIEW) && (
+      (SESSION_ROLE === "YAS" && ["029","030","031","032"].includes(PAGE_CODE)) ||
+      (SESSION_ROLE === "YSS" && ["019","020","021","022"].includes(PAGE_CODE))
+    );
 
   const LOGIN_DATA = {
     trainee_name: '{{ session.get("training_employee_name","") }}',
@@ -155,38 +228,77 @@
         el.value = SAVED_DATA[el.name];
       }
 
-    } else if (!ADMIN_VIEW && !el.value && Object.prototype.hasOwnProperty.call(LOGIN_DATA, el.name)) {
-      // Suggest only in trainee mode
+    } else if (!el.value && Object.prototype.hasOwnProperty.call(LOGIN_DATA, el.name)) {
+
+      // Disable session autofill for trainee_name on first page (001)
+      if (PAGE_CODE === "001" && el.name === "trainee_name") {
+        return;
+      }
+
       el.value = LOGIN_DATA[el.name];
     }
+  });
 
-    // Admin mode: lock fields (read-only)
-    if (ADMIN_VIEW) {
+  // ================= LOCKING =================
+
+  // Admin: always locked
+  if (ADMIN_VIEW) {
+    fields.forEach(el => {
       if (el.tagName === "SELECT") {
         el.disabled = true;
       } else {
         el.readOnly = true;
-        if (el.type === "radio" || el.type === "checkbox") {
-          el.disabled = true;
-        }
+        if (el.type === "radio" || el.type === "checkbox") el.disabled = true;
       }
-    }
-  });
+    });
+    return;
+  }
 
-  // ================= AUTOSAVE (disabled in admin mode) =================
-  if (ADMIN_VIEW) return;
+  // Mentor: lock unless editable
+  if (MENTOR_VIEW && !MENTOR_EDIT) {
+    fields.forEach(el => {
+      if (el.tagName === "SELECT") {
+        el.disabled = true;
+      } else {
+        el.readOnly = true;
+        if (el.type === "radio" || el.type === "checkbox") el.disabled = true;
+      }
+    });
+    return;
+  }
 
+  // ✅ Trainee page lock: read-only + no autosave
+  if (TRAINEE_LOCKED) {
+    fields.forEach(el => {
+      if (el.tagName === "SELECT") {
+        el.disabled = true;
+      } else {
+        el.readOnly = true;
+        if (el.type === "radio" || el.type === "checkbox") el.disabled = true;
+      }
+    });
+    return;
+  }
+
+  // ================= AUTOSAVE =================
   let timer = null;
 
   function autosave(el) {
+    const payload = {
+      page_code: PAGE_CODE,
+      field: el.name,
+      value: el.type === "checkbox" ? String(el.checked) : el.value
+    };
+
+    if (MENTOR_VIEW) {
+      if (TARGET_EMPLOYEE_ID === null) return;
+      payload.target_employee_id = TARGET_EMPLOYEE_ID;
+    }
+
     fetch("/training/autosave", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        page_code: PAGE_CODE,
-        field: el.name,
-        value: el.type === "checkbox" ? String(el.checked) : el.value
-      })
+      body: JSON.stringify(payload)
     });
   }
 
@@ -214,7 +326,21 @@
       return;
     }
 
-    // Works for both /yas/1 and /yss/1 patterns:
+    const ADMIN_VIEW  = JSON.parse('{{ admin_view|default(false)|tojson }}');
+    const MENTOR_VIEW = JSON.parse('{{ mentor_view|default(false)|tojson }}');
+
+    // Admin / Mentor view: use nav_jump_base_url (server computed base)
+    if (ADMIN_VIEW || MENTOR_VIEW) {
+      const base = "{{ (nav_jump_base_url or '') }}";
+      if (!base) {
+        alert("Navigation base missing");
+        return;
+      }
+      window.location.href = base + "/" + String(page);
+      return;
+    }
+
+    // Trainee view
     const base = "{{ url_for(booklet_endpoint, page=1) }}";
     window.location.href = base.replace(/1$/, String(page));
   });

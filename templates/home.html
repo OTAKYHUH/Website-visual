@@ -216,6 +216,7 @@
             <option value="" disabled selected>Select role</option>
             <option value="YAS">YAS</option>
             <option value="YSS">YSS</option>
+            <option value="MENTOR">MENTOR</option>
             <option value="ADMIN">ADMIN</option>
           </select>
         </div>
@@ -224,6 +225,12 @@
         <div class="modal__row" id="adminPasswordRow" style="display:none;">
           <label>Admin Password</label>
           <input type="password" name="admin_password" id="adminPasswordInput">
+        </div>
+
+        <!-- ✅ Only show when MENTOR selected -->
+        <div class="modal__row" id="mentorPasswordRow" style="display:none;">
+          <label>Mentor Password</label>
+          <input type="password" name="mentor_password" id="mentorPasswordInput">
         </div>
 
         <div class="modal__actions">
@@ -252,25 +259,16 @@
         pwTitle.textContent = title || "Login";
         passwordForm.action = actionUrl || "";
 
-        // show/hide username row depending on requirement
         usernameRow.style.display = requireUsername ? "block" : "none";
         pwUsername.required = !!requireUsername;
         if (!requireUsername) pwUsername.value = "";
 
-        // clear password
         pwPassword.value = "";
-
         modal.classList.add("is-open");
       }
 
       document.querySelectorAll('.pw-open').forEach(btn => {
         btn.addEventListener('click', () => {
-          // Keep your original flow (whatever endpoint your passwordForm uses today)
-          // If you already had an action before, set it here.
-          // Example:
-
-          // If you DON'T have a backend endpoint for SO/JO and it was handled elsewhere,
-          // you can just keep the modal open without action change:
           hiddenRole.value = btn.dataset.role || "";
           pwTitle.textContent = "Login";
           usernameRow.style.display = "block";
@@ -283,9 +281,6 @@
         .addEventListener('click', () => modal.classList.remove('is-open'));
 
       // ===== Staff Profile (server-side protected) =====
-      // When clicked, open same modal but:
-      // - Hide username (only password needed)
-      // - Submit to home.staff_profile_login (backend checks password)
       const staffProfileBtn = document.getElementById("staffProfileBtn");
       staffProfileBtn?.addEventListener("click", () => {
         openPwModal({
@@ -309,19 +304,31 @@
         trainingModal.classList.remove("is-open");
       });
 
-      // ✅ Admin password show/hide (Training modal)
+      // ✅ Admin + Mentor password show/hide (Training modal)
       const trainingRoleSelect = document.getElementById("trainingRoleSelect");
+
       const adminPasswordRow = document.getElementById("adminPasswordRow");
       const adminPasswordInput = document.getElementById("adminPasswordInput");
 
-      function syncAdminPasswordUI() {
-        const isAdmin = (trainingRoleSelect?.value || "").toUpperCase() === "ADMIN";
+      const mentorPasswordRow = document.getElementById("mentorPasswordRow");
+      const mentorPasswordInput = document.getElementById("mentorPasswordInput");
+
+      function syncTrainingPwUI() {
+        const role = (trainingRoleSelect?.value || "").toUpperCase();
+
+        const isAdmin = role === "ADMIN";
         adminPasswordRow.style.display = isAdmin ? "block" : "none";
         adminPasswordInput.required = isAdmin;
         if (!isAdmin) adminPasswordInput.value = "";
+
+        const isMentor = role === "MENTOR";
+        mentorPasswordRow.style.display = isMentor ? "block" : "none";
+        mentorPasswordInput.required = isMentor;
+        if (!isMentor) mentorPasswordInput.value = "";
       }
-      trainingRoleSelect?.addEventListener("change", syncAdminPasswordUI);
-      syncAdminPasswordUI();
+
+      trainingRoleSelect?.addEventListener("change", syncTrainingPwUI);
+      syncTrainingPwUI();
 
       // ===== Playbook =====
       const playbookBtn = document.getElementById('playbookBtn');

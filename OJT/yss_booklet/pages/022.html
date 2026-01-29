@@ -86,7 +86,7 @@
 
   <div class="paragraph">
     I hereby endorse that the trainee named
-    <input type="text" class="inline-input" name="yss_p032_trainee_name">
+    <input type="text" class="inline-input" name="yss_p022_trainee_name">
     <br>
     has fulfilled the requirements of the OJT components specified in this
     <strong>YSS Programmes</strong>.
@@ -96,31 +96,31 @@
 
   <div class="form-row">
     <div class="label">Name</div><div class="colon">:</div>
-    <input type="text" class="line-input" name="yss_p032_sm_name">
+    <input type="text" class="line-input" name="yss_p022_sm_name">
   </div>
 
   <div class="form-row">
     <div class="label">Designation</div><div class="colon">:</div>
-    <input type="text" class="line-input" name="yss_p032_sm_designation">
+    <input type="text" class="line-input" name="yss_p022_sm_designation">
   </div>
 
   <div class="form-row">
     <div class="label">Signature</div><div class="colon">:</div>
-    <input type="text" class="line-input" name="yss_p032_sm_signature">
+    <input type="text" class="line-input" name="yss_p022_sm_signature">
   </div>
 
   <div class="form-row">
     <div class="label">Date</div><div class="colon">:</div>
-    <input type="text" class="line-input" name="yss_p032_sm_date">
+    <input type="text" class="line-input" name="yss_p022_sm_date">
   </div>
 
   <div class="form-row">
     <div class="label">Comments</div><div class="colon">:</div>
-    <input type="text" class="line-input" name="yss_p032_sm_comments">
+    <input type="text" class="line-input" name="yss_p022_sm_comments">
   </div>
 
-  <textarea class="comments-box" name="yss_p032_sm_comments_1"></textarea>
-  <textarea class="comments-box" name="yss_p032_sm_comments_2"></textarea>
+  <textarea class="comments-box" name="yss_p022_sm_comments_1"></textarea>
+  <textarea class="comments-box" name="yss_p022_sm_comments_2"></textarea>
 
 </div>
 
@@ -133,88 +133,47 @@
 
   <div class="form-row">
     <div class="label">Name</div><div class="colon">:</div>
-    <input type="text" class="line-input" name="yss_p032_mentor_name">
+    <input type="text" class="line-input" name="yss_p022_mentor_name">
   </div>
 
   <div class="form-row">
     <div class="label">Designation</div><div class="colon">:</div>
-    <input type="text" class="line-input" name="yss_p032_mentor_designation">
+    <input type="text" class="line-input" name="yss_p022_mentor_designation">
   </div>
 
   <div class="form-row">
     <div class="label">Signature</div><div class="colon">:</div>
-    <input type="text" class="line-input" name="yss_p032_mentor_signature">
+    <input type="text" class="line-input" name="yss_p022_mentor_signature">
   </div>
 
   <div class="form-row">
     <div class="label">Date</div><div class="colon">:</div>
-    <input type="text" class="line-input" name="yss_p032_mentor_date">
+    <input type="text" class="line-input" name="yss_p022_mentor_date">
   </div>
 
   <div class="form-row">
     <div class="label">Comments</div><div class="colon">:</div>
-    <input type="text" class="line-input" name="yss_p032_mentor_comments">
+    <input type="text" class="line-input" name="yss_p022_mentor_comments">
   </div>
 
-  <textarea class="comments-box" name="yss_p032_mentor_comments_1"></textarea>
-  <textarea class="comments-box" name="yss_p032_mentor_comments_2"></textarea>
+  <textarea class="comments-box" name="yss_p022_mentor_comments_1"></textarea>
+  <textarea class="comments-box" name="yss_p022_mentor_comments_2"></textarea>
 
 </div>
+<div style="margin-top:30px; display:flex; gap:10px; align-items:center;">
+  <form method="POST" action="/training/submit"
+        onsubmit="return confirm('Submit and lock your booklet? You cannot edit after this.');">
+    <button type="submit" style="
+      padding:10px 16px;
+      border-radius:10px;
+      border:1px solid #444;
+      background:#E1C233;
+      font-weight:700;
+      cursor:pointer;
+    ">Submit & Lock</button>
+  </form>
+</div>
 <div class="page-footer">22 | Page</div>
-<script>
-(function () {
 
-  const PAGE_CODE = "YSS_022";   // change to YSS_014 for page 14
-  const SAVED_DATA = {{ saved_data | default({}) | tojson | safe }};
-
-  const fields = document.querySelectorAll(
-    "input[name], textarea[name], select[name]"
-  );
-
-  // Restore
-  fields.forEach(el => {
-    if (!SAVED_DATA.hasOwnProperty(el.name)) return;
-
-    if (el.type === "radio") {
-      el.checked = (el.value === SAVED_DATA[el.name]);
-    } else if (el.type === "checkbox") {
-      el.checked = SAVED_DATA[el.name] === "true";
-    } else {
-      el.value = SAVED_DATA[el.name];
-    }
-  });
-
-  let timer = null;
-
-  function autosave(el) {
-    fetch("/training/autosave", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        page_code: PAGE_CODE,
-        field: el.name,
-        value: el.type === "checkbox" ? String(el.checked) : el.value
-      })
-    });
-  }
-
-  fields.forEach(el => {
-    const handler = () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => autosave(el), 200);
-    };
-    el.addEventListener("input", handler);
-    el.addEventListener("change", handler);
-  });
-
-})();
-</script>
-
-<a href="/training/print" target="_blank">
-  <button type="button"
-          style="padding:10px 16px;font-weight:bold;margin-top:20px;">
-    Generate PDF
-  </button>
-</a>
 </body>
 </html>

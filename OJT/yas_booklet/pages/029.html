@@ -18,9 +18,7 @@
     margin-bottom: 12px;
   }
 
-  .intro {
-    margin-bottom: 6px;
-  }
+  .intro { margin-bottom: 6px; }
 
   .scale {
     text-align: center;
@@ -55,9 +53,7 @@
     text-align: center;
   }
 
-  .comments {
-    width: 30%;
-  }
+  .comments { width: 30%; }
 
   .section-title {
     font-weight: bold;
@@ -73,27 +69,19 @@
   }
 
   /* Sub-section separators — same thickness */
-  .sub-divider td {
-    border-top: 1px solid #000;
-  }
+  .sub-divider td { border-top: 1px solid #000; }
 
   /* Section grouping — same thickness */
-  .section-box td:first-child {
-    border-left: 1px solid #000;
-  }
-
-  .section-box td:last-child {
-    border-right: 1px solid #000;
-  }
+  .section-box td:first-child { border-left: 1px solid #000; }
+  .section-box td:last-child  { border-right: 1px solid #000; }
 
   ul {
     margin: 4px 0 0 16px;
     padding: 0;
   }
 
-  li {
-    margin-bottom: 4px;
-  }
+  li { margin-bottom: 4px; }
+
   /* Clickable circle styling */
   .radio-cell {
     text-align: center;
@@ -105,11 +93,25 @@
     height: 14px;
     cursor: pointer;
   }
-</style>
 
+  /* ✅ Typeable mentor comments box */
+  .comment-box {
+    width: 100%;
+    min-height: 42px;
+    border: none;
+    outline: none;
+    resize: vertical;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    background: transparent;
+    padding: 2px 4px;
+    box-sizing: border-box;
+  }
+</style>
 </head>
 
-<body>
+<!-- ✅ Important: set page code for consistency (wrapper uses page number anyway) -->
+<body data-page-code="029">
 
 <h1>Competency Assessment Checklist for YAS</h1>
 
@@ -165,11 +167,12 @@ trainee on the individual tasks and filling in the performance standards between
         <li>Identify container details correctly.</li>
       </ul>
     </td>
-    <td class="radio-cell"><input type="radio" name="p029_r01" value="1"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r01" value="2"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r01" value="3"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r01" value="4"></td>
-    <td></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r01" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r01" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r01" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r01" value="4"></td>
+    <!-- ✅ FIX: textarea must have name=... (NOT data-field) so wrapper autosave works -->
+    <td><textarea class="comment-box autosave" name="p029_c01"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
@@ -182,11 +185,11 @@ trainee on the individual tasks and filling in the performance standards between
         <li>Recognize colour codes for operations.</li>
       </ul>
     </td>
-    <td class="radio-cell"><input type="radio" name="p029_r02" value="1"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r02" value="2"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r02" value="3"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r02" value="4"></td>
-    <td></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r02" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r02" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r02" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r02" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c02"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
@@ -199,11 +202,11 @@ trainee on the individual tasks and filling in the performance standards between
         <li>Monitor PM productivity and no-shows.</li>
       </ul>
     </td>
-    <td class="radio-cell"><input type="radio" name="p029_r03" value="1"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r03" value="2"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r03" value="3"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r03" value="4"></td>
-    <td></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r03" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r03" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r03" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r03" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c03"></textarea></td>
   </tr>
 
   <!-- ===================== 2 ===================== -->
@@ -221,11 +224,11 @@ trainee on the individual tasks and filling in the performance standards between
         <li>Understand yard characteristics.</li>
       </ul>
     </td>
-    <td class="radio-cell"><input type="radio" name="p029_r04" value="1"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r04" value="2"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r04" value="3"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r04" value="4"></td>
-    <td></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r04" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r04" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r04" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r04" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c04"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
@@ -238,11 +241,11 @@ trainee on the individual tasks and filling in the performance standards between
         <li>Troubleshoot jammed equipment.</li>
       </ul>
     </td>
-    <td class="radio-cell"><input type="radio" name="p029_r05" value="1"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r05" value="2"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r05" value="3"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r05" value="4"></td>
-    <td></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r05" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r05" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r05" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r05" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c05"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
@@ -254,11 +257,11 @@ trainee on the individual tasks and filling in the performance standards between
         <li>Apply segregation rules (DG, reefer, etc.).</li>
       </ul>
     </td>
-    <td class="radio-cell"><input type="radio" name="p029_r06" value="1"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r06" value="2"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r06" value="3"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r06" value="4"></td>
-    <td></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r06" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r06" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r06" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r06" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c06"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
@@ -270,11 +273,11 @@ trainee on the individual tasks and filling in the performance standards between
         <li>Demonstrate correct contact usage in a scenario.</li>
       </ul>
     </td>
-    <td class="radio-cell"><input type="radio" name="p029_r07" value="1"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r07" value="2"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r07" value="3"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r07" value="4"></td>
-    <td></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r07" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r07" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r07" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r07" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c07"></textarea></td>
   </tr>
 
   <!-- ===================== 3 ===================== -->
@@ -294,11 +297,11 @@ trainee on the individual tasks and filling in the performance standards between
         <li>Use reports for optimization.</li>
       </ul>
     </td>
-    <td class="radio-cell"><input type="radio" name="p029_r08" value="1"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r08" value="2"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r08" value="3"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r08" value="4"></td>
-    <td></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r08" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r08" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r08" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r08" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c08"></textarea></td>
   </tr>
 
   <!-- ===================== 4 ===================== -->
@@ -317,11 +320,11 @@ trainee on the individual tasks and filling in the performance standards between
         <li>Accurately identify equipment via radioset numbers.</li>
       </ul>
     </td>
-    <td class="radio-cell"><input type="radio" name="p029_r09" value="1"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r09" value="2"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r09" value="3"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r09" value="4"></td>
-    <td></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r09" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r09" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r09" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r09" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c09"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
@@ -332,11 +335,11 @@ trainee on the individual tasks and filling in the performance standards between
         <li>Draft timely, clear emails highlighting yard congestion, blocks affected, and mitigation actions.</li>
       </ul>
     </td>
-    <td class="radio-cell"><input type="radio" name="p029_r10" value="1"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r10" value="2"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r10" value="3"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r10" value="4"></td>
-    <td></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r10" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r10" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r10" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r10" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c10"></textarea></td>
   </tr>
 
   <!-- ===================== 5 ===================== -->
@@ -357,11 +360,11 @@ trainee on the individual tasks and filling in the performance standards between
         <li>Raise ITT boxes as needed.</li>
       </ul>
     </td>
-    <td class="radio-cell"><input type="radio" name="p029_r11" value="1"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r11" value="2"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r11" value="3"></td>
-    <td class="radio-cell"><input type="radio" name="p029_r11" value="4"></td>
-    <td></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r11" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r11" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r11" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r11" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c11"></textarea></td>
   </tr>
 
   <!-- ===================== 6 ===================== -->
@@ -370,182 +373,188 @@ trainee on the individual tasks and filling in the performance standards between
     <td><strong>Handle &amp; Escalate Yard Exceptions</strong></td>
     <td></td><td></td><td></td><td></td><td></td>
   </tr>
-  <!-- ===================== 6. EXCEPTION HANDLING (DETAILS) ===================== -->
-<tr class="sub-divider">
-  <td></td>
-  <td>
-    <strong>Exception Handling</strong>
-    <ul>
-      <li>Identify missing containers, PM breakdowns, leaks, uncontactable PM, etc.</li>
-      <li>Escalate as per protocol (YODM, SRDO, CSO, etc.).</li>
-      <li>Document exceptions clearly.</li>
-    </ul>
-  </td>
-  <td class="radio-cell"><input type="radio" name="p029_r12" value="1"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r12" value="2"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r12" value="3"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r12" value="4"></td>
-  <td></td>
-</tr>
 
-<!-- ===================== SUPERVISORY SKILLS ===================== -->
-<tr class="section-row section-box">
-  <td></td>
-  <td colspan="6" class="section-title">SUPERVISORY SKILLS ASSESSMENT</td>
-</tr>
+  <tr class="sub-divider">
+    <td></td>
+    <td>
+      <strong>Exception Handling</strong>
+      <ul>
+        <li>Identify missing containers, PM breakdowns, leaks, uncontactable PM, etc.</li>
+        <li>Escalate as per protocol (YODM, SRDO, CSO, etc.).</li>
+        <li>Document exceptions clearly.</li>
+      </ul>
+    </td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r12" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r12" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r12" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r12" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c12"></textarea></td>
+  </tr>
 
-<!-- ===================== 7 ===================== -->
-<tr class="section-row section-box">
-  <td class="task-number">7.</td>
-  <td><strong>Manage Resources</strong></td>
-  <td></td><td></td><td></td><td></td><td></td>
-</tr>
+  <!-- ===================== SUPERVISORY SKILLS ===================== -->
+  <tr class="section-row section-box">
+    <td></td>
+    <td colspan="6" class="section-title">SUPERVISORY SKILLS ASSESSMENT</td>
+  </tr>
 
-<tr>
-  <td></td>
-  <td>Knows the strategies and guidelines to achieve KPI targets</td>
-  <td class="radio-cell"><input type="radio" name="p029_r13" value="1"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r13" value="2"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r13" value="3"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r13" value="4"></td>
-  <td></td>
-</tr>
+  <!-- ===================== 7 ===================== -->
+  <tr class="section-row section-box">
+    <td class="task-number">7.</td>
+    <td><strong>Manage Resources</strong></td>
+    <td></td><td></td><td></td><td></td><td></td>
+  </tr>
 
-<!-- ===================== 8 ===================== -->
-<tr class="section-row section-box">
-  <td class="task-number">8.</td>
-  <td><strong>Solve Problems and Make Decisions</strong></td>
-  <td></td><td></td><td></td><td></td><td></td>
-</tr>
+  <tr>
+    <td></td>
+    <td>Knows the strategies and guidelines to achieve KPI targets</td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r13" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r13" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r13" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r13" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c13"></textarea></td>
+  </tr>
 
-<tr>
-  <td></td>
-  <td>Identify relevant issues and causes of problems</td>
-  <td class="radio-cell"><input type="radio" name="p029_r14" value="1"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r14" value="2"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r14" value="3"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r14" value="4"></td>
-  <td></td>
+  <!-- ===================== 8 ===================== -->
+  <tr class="section-row section-box">
+    <td class="task-number">8.</td>
+    <td><strong>Solve Problems and Make Decisions</strong></td>
+    <td></td><td></td><td></td><td></td><td></td>
+  </tr>
 
-</tr>
+  <tr>
+    <td></td>
+    <td>Identify relevant issues and causes of problems</td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r14" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r14" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r14" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r14" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c14"></textarea></td>
+  </tr>
 
-<tr>
-  <td></td>
-  <td>Make effective and practical decisions</td>
-  <td class="radio-cell"><input type="radio" name="p029_r15" value="1"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r15" value="2"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r15" value="3"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r15" value="4"></td>
-  <td></td>
-</tr>
+  <tr>
+    <td></td>
+    <td>Make effective and practical decisions</td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r15" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r15" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r15" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r15" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c15"></textarea></td>
+  </tr>
 
-<tr>
-  <td></td>
-  <td>Show firmness and impartiality during course of work</td>
-  <td class="radio-cell"><input type="radio" name="p029_r16" value="1"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r16" value="2"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r16" value="3"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r16" value="4"></td>
-  <td></td>
-</tr>
+  <tr>
+    <td></td>
+    <td>Show firmness and impartiality during course of work</td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r16" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r16" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r16" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r16" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c16"></textarea></td>
+  </tr>
 
-<tr>
-  <td></td>
-  <td>Explain the rationale behind work processes</td>
-  <td class="radio-cell"><input type="radio" name="p029_r17" value="1"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r17" value="2"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r17" value="3"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r17" value="4"></td>
-  <td></td>
-</tr>
+  <tr>
+    <td></td>
+    <td>Explain the rationale behind work processes</td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r17" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r17" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r17" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r17" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c17"></textarea></td>
+  </tr>
 
-<!-- ===================== 9 ===================== -->
-<tr class="section-row section-box">
-  <td class="task-number">9.</td>
-  <td><strong>Manage and Guide Subordinates</strong></td>
-  <td></td><td></td><td></td><td></td><td></td>
-</tr>
+  <!-- ===================== 9 ===================== -->
+  <tr class="section-row section-box">
+    <td class="task-number">9.</td>
+    <td><strong>Manage and Guide Subordinates</strong></td>
+    <td></td><td></td><td></td><td></td><td></td>
+  </tr>
 
-<tr>
-  <td></td>
-  <td>Provide guidance and corrections to CES &amp; AES at work</td>
-  <td class="radio-cell"><input type="radio" name="p029_r18" value="1"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r18" value="2"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r18" value="3"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r18" value="4"></td>
-  <td></td>
-</tr>
+  <tr>
+    <td></td>
+    <td>Provide guidance and corrections to CES &amp; AES at work</td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r18" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r18" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r18" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r18" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c18"></textarea></td>
+  </tr>
 
-<!-- ===================== ATTITUDE ASSESSMENT ===================== -->
-<tr class="section-row section-box">
-  <td></td>
-  <td colspan="6" class="section-title">ATTITUDE ASSESSMENT</td>
-</tr>
+  <!-- ===================== ATTITUDE ASSESSMENT ===================== -->
+  <tr class="section-row section-box">
+    <td></td>
+    <td colspan="6" class="section-title">ATTITUDE ASSESSMENT</td>
+  </tr>
 
-<!-- ===================== 10 ===================== -->
-<tr class="section-row section-box">
-  <td class="task-number">10.</td>
-  <td><strong>Provide Customer Service</strong></td>
-  <td></td><td></td><td></td><td></td><td></td>
-</tr>
+  <!-- ===================== 10 ===================== -->
+  <tr class="section-row section-box">
+    <td class="task-number">10.</td>
+    <td><strong>Provide Customer Service</strong></td>
+    <td></td><td></td><td></td><td></td><td></td>
+  </tr>
 
-<tr>
-  <td></td>
-  <td>Answer to customer queries and able to direct to proper personnel involved</td>
-  <td class="radio-cell"><input type="radio" name="p029_r19" value="1"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r19" value="2"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r19" value="3"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r19" value="4"></td>
-  <td></td>
-</tr>
+  <tr>
+    <td></td>
+    <td>Answer to customer queries and able to direct to proper personnel involved</td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r19" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r19" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r19" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r19" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c19"></textarea></td>
+  </tr>
 
-<tr>
-  <td></td>
-  <td>Phone etiquette handling customers</td>
-  <td class="radio-cell"><input type="radio" name="p029_r20" value="1"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r20" value="2"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r20" value="3"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r20" value="4"></td>
-  <td></td>
-</tr>
+  <tr>
+    <td></td>
+    <td>Phone etiquette handling customers</td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r20" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r20" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r20" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r20" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c20"></textarea></td>
+  </tr>
 
-<!-- ===================== 11 ===================== -->
-<tr class="section-row section-box">
-  <td class="task-number">11.</td>
-  <td><strong>Manage Job Performance</strong></td>
-  <td></td><td></td><td></td><td></td><td></td>
-</tr>
+  <!-- ===================== 11 ===================== -->
+  <tr class="section-row section-box">
+    <td class="task-number">11.</td>
+    <td><strong>Manage Job Performance</strong></td>
+    <td></td><td></td><td></td><td></td><td></td>
+  </tr>
 
-<tr>
-  <td></td>
-  <td>Conscientious in execution of duties and responsibilities</td>
-  <td class="radio-cell"><input type="radio" name="p029_r21" value="1"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r21" value="2"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r21" value="3"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r21" value="4"></td>
-  <td></td>
-</tr>
+  <tr>
+    <td></td>
+    <td>Conscientious in execution of duties and responsibilities</td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r21" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r21" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r21" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r21" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c21"></textarea></td>
+  </tr>
 
-<tr>
-  <td></td>
-  <td>Willing and able to change his way of working when required</td>
-  <td class="radio-cell"><input type="radio" name="p029_r22" value="1"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r22" value="2"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r22" value="3"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r22" value="4"></td>
-  <td></td>
-</tr>
+  <tr>
+    <td></td>
+    <td>Willing and able to change his way of working when required</td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r22" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r22" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r22" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r22" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c22"></textarea></td>
+  </tr>
 
-<tr>
-  <td></td>
-  <td>Willing to perform more than what is required of his assignment and job without being told to do so</td>
-  <td class="radio-cell"><input type="radio" name="p029_r23" value="1"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r23" value="2"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r23" value="3"></td>
-  <td class="radio-cell"><input type="radio" name="p029_r23" value="4"></td>
-  <td></td>
-</tr>
+  <tr>
+    <td></td>
+    <td>Willing to perform more than what is required of his assignment and job without being told to do so</td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r23" value="1"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r23" value="2"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r23" value="3"></td>
+    <td class="radio-cell"><input class="autosave" type="radio" name="p029_r23" value="4"></td>
+    <td><textarea class="comment-box autosave" name="p029_c23"></textarea></td>
+  </tr>
 </table>
+
+<!-- ✅ No page-level autosave script needed.
+     Your wrapper templates/yas_booklet/page.html handles:
+     - restore values using saved_data[<field name>]
+     - autosave on input/change
+     - locking for trainee/admin/mentor
+-->
 
 </body>
 </html>

@@ -2,7 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>YAS OJT Booklet</title>
+  {% set role = role or session.get('training_employee_role', 'YAS') %}
+  <title>{{ role }} OJT Booklet</title>
 
   <style>
     @page {
