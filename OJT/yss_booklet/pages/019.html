@@ -79,15 +79,45 @@
 
   li { margin-bottom: 4px; }
 
+  /* ===================== PRINT-SAFE "RADIO" ===================== */
   .radio-cell {
     text-align: center;
     vertical-align: middle;
   }
 
-  .radio-cell input[type="radio"] {
+  /* Wrap the hidden input + our drawn box */
+  .print-radio {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  /* Hide the real radio (so browser print engine doesn't fade it) */
+  .print-radio input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+  }
+
+  /* This is the visible box that prints dark */
+  .radio-box {
     width: 14px;
     height: 14px;
-    cursor: pointer;
+    border: 2px solid #000;
+    box-sizing: border-box;
+    display: inline-block;
+  }
+
+  /* Filled box when selected */
+  .print-radio input[type="radio"]:checked + .radio-box {
+    background: #000;
+  }
+
+  @media print {
+    .radio-box { border: 2px solid #000; }
   }
 
   /* ✅ Mentor comment box styling */
@@ -162,32 +192,30 @@ tasks and filling in the performance standards between a scale of 0 – 4.
   <tr class="sub-divider">
     <td></td>
     <td>Know Control Centre (CC) staff guidelines, different staff roles and contact list</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r01" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r01" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r01" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r01" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r01" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r01" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r01" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r01" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c01"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>Know Basic Terminal Operations flow</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r02" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r02" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r02" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r02" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r02" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r02" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r02" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r02" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c02"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
-    <td>
-      Know Yard KPIs and the tools to monitor them via yard wait time excel and utilize PM NO SHOW panel
-    </td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r03" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r03" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r03" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r03" value="4"></td>
+    <td>Know Yard KPIs and the tools to monitor them via yard wait time excel and utilize PM NO SHOW panel</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r03" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r03" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r03" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r03" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c03"></textarea></td>
   </tr>
 
@@ -201,20 +229,20 @@ tasks and filling in the performance standards between a scale of 0 – 4.
   <tr>
     <td></td>
     <td>Able to explain Yard Layout and Yard details</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r04" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r04" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r04" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r04" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r04" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r04" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r04" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r04" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c04"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>Able to explain Yard Equipment and basic mode of operations</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r05" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r05" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r05" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r05" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r05" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r05" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r05" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r05" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c05"></textarea></td>
   </tr>
 
@@ -228,40 +256,40 @@ tasks and filling in the performance standards between a scale of 0 – 4.
   <tr>
     <td></td>
     <td>Tune to YCO block channels</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r06" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r06" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r06" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r06" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r06" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r06" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r06" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r06" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c06"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Tune to IYS channels</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r07" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r07" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r07" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r07" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r07" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r07" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r07" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r07" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c07"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Private call numbers for PM/TT/RMG/FM</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r08" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r08" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r08" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r08" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r08" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r08" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r08" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r08" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c08"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Familiarize with own Section Yard CCTV numbers</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r09" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r09" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r09" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r09" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r09" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r09" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r09" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r09" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c09"></textarea></td>
   </tr>
 
@@ -275,52 +303,50 @@ tasks and filling in the performance standards between a scale of 0 – 4.
   <tr>
     <td></td>
     <td>Familiar with CITOS functions</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r10" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r10" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r10" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r10" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r10" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r10" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r10" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r10" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c10"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>Familiar with BPMS usage</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r11" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r11" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r11" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r11" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r11" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r11" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r11" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r11" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c11"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>Familiar with use of CITIS functions</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r12" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r12" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r12" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r12" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r12" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r12" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r12" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r12" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c12"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>YOMC – Understand all possible functions of and use to monitor yard operations</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r13" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r13" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r13" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r13" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r13" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r13" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r13" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r13" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c13"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
-    <td>
-      VOMC - Understand vessel sequence and use VPA to view incoming yard activities
-    </td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r14" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r14" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r14" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r14" value="4"></td>
+    <td>VOMC - Understand vessel sequence and use VPA to view incoming yard activities</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r14" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r14" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r14" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r14" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c14"></textarea></td>
   </tr>
 
@@ -334,20 +360,20 @@ tasks and filling in the performance standards between a scale of 0 – 4.
   <tr>
     <td></td>
     <td>Ensure RTG gantry safely and correctly</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r15" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r15" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r15" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r15" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r15" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r15" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r15" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r15" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c15"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Understand Yard Safety SOPs</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r16" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r16" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r16" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r16" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r16" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r16" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r16" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r16" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c16"></textarea></td>
   </tr>
 
@@ -361,80 +387,80 @@ tasks and filling in the performance standards between a scale of 0 – 4.
   <tr class="sub-divider">
     <td></td>
     <td>Use YOMC to monitor IYS mounting/offloading</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r17" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r17" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r17" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r17" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r17" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r17" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r17" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r17" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c17"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>Arrange for equipment parking and log on/off</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r18" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r18" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r18" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r18" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r18" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r18" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r18" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r18" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c18"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>Update equipment fleet status</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r19" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r19" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r19" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r19" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r19" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r19" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r19" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r19" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c19"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>Proper follow up with SR for breakdown</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r20" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r20" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r20" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r20" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r20" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r20" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r20" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r20" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c20"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>Explain workings of ERTG/OHBC/RTG/FM/RMG and their differences</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r21" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r21" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r21" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r21" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r21" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r21" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r21" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r21" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c21"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>Able to identify and evaluate PM performance</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r22" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r22" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r22" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r22" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r22" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r22" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r22" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r22" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c22"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>Understand deployment sheet</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r23" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r23" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r23" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r23" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r23" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r23" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r23" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r23" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c23"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>Plan for equipment mealbreak</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r24" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r24" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r24" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r24" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r24" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r24" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r24" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r24" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c24"></textarea></td>
   </tr>
 
@@ -448,30 +474,30 @@ tasks and filling in the performance standards between a scale of 0 – 4.
   <tr class="sub-divider">
     <td></td>
     <td>Able to differentiate and use both YOMC job list and activity list</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r25" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r25" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r25" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r25" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r25" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r25" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r25" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r25" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c25"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>Use VPA to forecast incoming activities</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r26" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r26" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r26" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r26" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r26" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r26" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r26" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r26" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c26"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>Understand PM diversion SOP and Divert PMs correctly</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r27" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r27" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r27" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r27" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r27" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r27" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r27" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r27" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c27"></textarea></td>
   </tr>
 
@@ -485,70 +511,70 @@ tasks and filling in the performance standards between a scale of 0 – 4.
   <tr class="sub-divider">
     <td></td>
     <td>Equipment breakdown</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r28" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r28" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r28" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r28" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r28" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r28" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r28" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r28" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c28"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>Missing container/Wrongly updated container</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r29" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r29" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r29" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r29" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r29" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r29" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r29" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r29" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c29"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>Leaking DG SOP</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r30" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r30" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r30" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r30" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r30" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r30" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r30" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r30" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c30"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>Spillage in Yard and Bund SOP</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r31" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r31" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r31" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r31" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r31" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r31" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r31" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r31" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c31"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>Reported Damaged containers</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r32" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r32" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r32" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r32" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r32" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r32" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r32" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r32" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c32"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>Reported different containers in Yard/on PM</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r33" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r33" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r33" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r33" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r33" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r33" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r33" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r33" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c33"></textarea></td>
   </tr>
 
   <tr class="sub-divider">
     <td></td>
     <td>Manual yard moves</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r34" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r34" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r34" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r34" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r34" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r34" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r34" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r34" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c34"></textarea></td>
   </tr>
 
@@ -568,10 +594,10 @@ tasks and filling in the performance standards between a scale of 0 – 4.
   <tr>
     <td></td>
     <td>Knows the strategies and guidelines to achieve KPI targets</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r35" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r35" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r35" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r35" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r35" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r35" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r35" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r35" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c35"></textarea></td>
   </tr>
 
@@ -585,40 +611,40 @@ tasks and filling in the performance standards between a scale of 0 – 4.
   <tr>
     <td></td>
     <td>Identify relevant issues and causes of problems</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r36" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r36" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r36" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r36" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r36" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r36" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r36" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r36" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c36"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Make effective and practical decisions</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r37" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r37" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r37" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r37" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r37" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r37" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r37" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r37" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c37"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Show firmness and impartiality during course of work</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r38" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r38" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r38" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r38" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r38" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r38" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r38" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r38" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c38"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Explain the rationale behind work processes</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r39" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r39" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r39" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r39" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r39" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r39" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r39" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r39" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c39"></textarea></td>
   </tr>
 
@@ -632,10 +658,10 @@ tasks and filling in the performance standards between a scale of 0 – 4.
   <tr>
     <td></td>
     <td>Provide guidance and corrections to PMs at work</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r40" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r40" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r40" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r40" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r40" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r40" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r40" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r40" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c40"></textarea></td>
   </tr>
 
@@ -655,20 +681,20 @@ tasks and filling in the performance standards between a scale of 0 – 4.
   <tr>
     <td></td>
     <td>Answer to queries and able to direct to proper personnel involved</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r41" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r41" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r41" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r41" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r41" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r41" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r41" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r41" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c41"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Phone etiquette handling stakeholders</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r42" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r42" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r42" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r42" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r42" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r42" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r42" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r42" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c42"></textarea></td>
   </tr>
 
@@ -682,32 +708,33 @@ tasks and filling in the performance standards between a scale of 0 – 4.
   <tr>
     <td></td>
     <td>Conscientious in execution of duties and responsibilities</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r43" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r43" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r43" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r43" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r43" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r43" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r43" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r43" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c43"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Willing and able to change his way of working when required</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r44" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r44" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r44" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r44" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r44" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r44" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r44" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r44" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c44"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Willing to perform more than what is required of his assignment and job without being told to do so</td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r45" value="1"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r45" value="2"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r45" value="3"></td>
-    <td class="radio-cell"><input class="autosave" type="radio" name="yss_r45" value="4"></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r45" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r45" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r45" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="yss_r45" value="4"><span class="radio-box"></span></label></td>
     <td><textarea class="comment-box autosave" name="yss_c45"></textarea></td>
   </tr>
+
 </table>
 
 <div class="page-footer">19 | Page</div>

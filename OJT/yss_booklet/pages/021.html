@@ -46,22 +46,16 @@
     font-weight: bold;
   }
 
-  .task-col {
-    width: 45%;
-  }
+  .task-col { width: 45%; }
 
   .level {
     width: 40px;
     text-align: center;
   }
 
-  .comments {
-    width: 30%;
-  }
+  .comments { width: 30%; }
 
-  .section-title {
-    font-weight: bold;
-  }
+  .section-title { font-weight: bold; }
 
   .task-number {
     width: 30px;
@@ -69,12 +63,42 @@
     font-weight: bold;
   }
 
-  input[type="radio"] {
-    width: 14px;
-    height: 14px;
+  /* ===================== PRINT-SAFE RADIO ===================== */
+  .print-radio {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
   }
 
+  /* Hide real radio so browser print won't fade it */
+  .print-radio input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+  }
+
+  /* Visible box that prints dark */
+  .radio-box {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #000;
+    box-sizing: border-box;
+    display: inline-block;
+  }
+
+  /* Filled when selected */
+  .print-radio input[type="radio"]:checked + .radio-box {
+    background: #000;
+  }
+
+  @media print {
+    .radio-box { border: 2px solid #000; }
+  }
+
+  /* ===================== COMMENTS ===================== */
   textarea {
     width: 100%;
     height: 40px;
@@ -82,7 +106,12 @@
     resize: vertical;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 12px;
+    background: transparent;
+    outline: none;
+    padding: 2px 4px;
+    box-sizing: border-box;
   }
+
   .page-footer {
     margin-top: 24px;
     font-size: 11px;
@@ -92,7 +121,7 @@
 </style>
 </head>
 
-<body>
+<body data-page-code="021">
 
 <h1>General Competency Assessment Checklist for Assessor</h1>
 
@@ -136,31 +165,31 @@ A trainee is required to attain a score of at least 3 for each component in orde
   <tr>
     <td></td>
     <td>Grasp of YSS knowledge and requirements</td>
-    <td class="level"><input type="radio" name="yss_pa_1" value="1"></td>
-    <td class="level"><input type="radio" name="yss_pa_1" value="2"></td>
-    <td class="level"><input type="radio" name="yss_pa_1" value="3"></td>
-    <td class="level"><input type="radio" name="yss_pa_1" value="4"></td>
-    <td><textarea name="yss_pa_1_comment"></textarea></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_pa_1" value="1"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_pa_1" value="2"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_pa_1" value="3"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_pa_1" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="autosave" name="yss_pa_1_comment"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Application of job knowledge</td>
-    <td class="level"><input type="radio" name="yss_pa_2" value="1"></td>
-    <td class="level"><input type="radio" name="yss_pa_2" value="2"></td>
-    <td class="level"><input type="radio" name="yss_pa_2" value="3"></td>
-    <td class="level"><input type="radio" name="yss_pa_2" value="4"></td>
-    <td><textarea name="yss_pa_2_comment"></textarea></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_pa_2" value="1"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_pa_2" value="2"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_pa_2" value="3"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_pa_2" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="autosave" name="yss_pa_2_comment"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Timeliness in carrying out tasks</td>
-    <td class="level"><input type="radio" name="yss_pa_3" value="1"></td>
-    <td class="level"><input type="radio" name="yss_pa_3" value="2"></td>
-    <td class="level"><input type="radio" name="yss_pa_3" value="3"></td>
-    <td class="level"><input type="radio" name="yss_pa_3" value="4"></td>
-    <td><textarea name="yss_pa_3_comment"></textarea></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_pa_3" value="1"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_pa_3" value="2"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_pa_3" value="3"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_pa_3" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="autosave" name="yss_pa_3_comment"></textarea></td>
   </tr>
 
   <!-- ================= MANAGERIAL ASSESSMENT ================= -->
@@ -175,64 +204,73 @@ A trainee is required to attain a score of at least 3 for each component in orde
   <tr>
     <td></td>
     <td>Planning</td>
-    <td class="level"><input type="radio" name="yss_ma_1" value="1"></td>
-    <td class="level"><input type="radio" name="yss_ma_1" value="2"></td>
-    <td class="level"><input type="radio" name="yss_ma_1" value="3"></td>
-    <td class="level"><input type="radio" name="yss_ma_1" value="4"></td>
-    <td><textarea name="yss_ma_1_comment"></textarea></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_1" value="1"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_1" value="2"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_1" value="3"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_1" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="autosave" name="yss_ma_1_comment"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Organization of work</td>
-    <td class="level"><input type="radio" name="yss_ma_2" value="1"></td>
-    <td class="level"><input type="radio" name="yss_ma_2" value="2"></td>
-    <td class="level"><input type="radio" name="yss_ma_2" value="3"></td>
-    <td class="level"><input type="radio" name="yss_ma_2" value="4"></td>
-    <td><textarea name="yss_ma_2_comment"></textarea></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_2" value="1"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_2" value="2"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_2" value="3"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_2" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="autosave" name="yss_ma_2_comment"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Leadership</td>
-    <td class="level"><input type="radio" name="yss_ma_3" value="1"></td>
-    <td class="level"><input type="radio" name="yss_ma_3" value="2"></td>
-    <td class="level"><input type="radio" name="yss_ma_3" value="3"></td>
-    <td class="level"><input type="radio" name="yss_ma_3" value="4"></td>
-    <td><textarea name="yss_ma_3_comment"></textarea></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_3" value="1"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_3" value="2"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_3" value="3"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_3" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="autosave" name="yss_ma_3_comment"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Decision-making</td>
-    <td class="level"><input type="radio" name="yss_ma_4" value="1"></td>
-    <td class="level"><input type="radio" name="yss_ma_4" value="2"></td>
-    <td class="level"><input type="radio" name="yss_ma_4" value="3"></td>
-    <td class="level"><input type="radio" name="yss_ma_4" value="4"></td>
-    <td><textarea name="yss_ma_4_comment"></textarea></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_4" value="1"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_4" value="2"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_4" value="3"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_4" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="autosave" name="yss_ma_4_comment"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Communication</td>
-    <td class="level"><input type="radio" name="yss_ma_5" value="1"></td>
-    <td class="level"><input type="radio" name="yss_ma_5" value="2"></td>
-    <td class="level"><input type="radio" name="yss_ma_5" value="3"></td>
-    <td class="level"><input type="radio" name="yss_ma_5" value="4"></td>
-    <td><textarea name="yss_ma_5_comment"></textarea></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_5" value="1"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_5" value="2"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_5" value="3"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_ma_5" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="autosave" name="yss_ma_5_comment"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td><strong>Overall YSS Rating</strong></td>
-    <td class="level"><input type="radio" name="yss_overall" value="1"></td>
-    <td class="level"><input type="radio" name="yss_overall" value="2"></td>
-    <td class="level"><input type="radio" name="yss_overall" value="3"></td>
-    <td class="level"><input type="radio" name="yss_overall" value="4"></td>
-    <td><textarea name="yss_overall_comment"></textarea></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_overall" value="1"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_overall" value="2"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_overall" value="3"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yss_overall" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="autosave" name="yss_overall_comment"></textarea></td>
   </tr>
 
 </table>
+
 <div class="page-footer">21 | Page</div>
+
+<!--
+  IMPORTANT:
+  ✅ No page-level autosave script here.
+  Your wrapper templates/yas_booklet/page.html already restores + autosaves
+  all fields that have a name="...".
+-->
+
 </body>
 </html>

@@ -63,13 +63,42 @@
     font-weight: bold;
   }
 
-  input[type="radio"] {
-    width: 14px;
-    height: 14px;
+  /* ===================== PRINT-SAFE RADIO ===================== */
+  .print-radio {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
   }
 
-  /* ✅ NEW: typeable comments box */
+  /* Hide real radio (browser print makes it faded) */
+  .print-radio input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+  }
+
+  /* Visible box that prints dark */
+  .radio-box {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #000;
+    box-sizing: border-box;
+    display: inline-block;
+  }
+
+  /* Fill when selected */
+  .print-radio input[type="radio"]:checked + .radio-box {
+    background: #000;
+  }
+
+  @media print {
+    .radio-box { border: 2px solid #000; }
+  }
+
+  /* ✅ typeable comments box */
   .comment-box {
     width: 100%;
     min-height: 40px;
@@ -125,31 +154,31 @@ Upon completion of the competency assessment, a Senior Officer will conduct the 
   <tr>
     <td></td>
     <td>Grasp of YAS knowledge and requirements</td>
-    <td class="level"><input type="radio" name="yas1" value="1"></td>
-    <td class="level"><input type="radio" name="yas1" value="2"></td>
-    <td class="level"><input type="radio" name="yas1" value="3"></td>
-    <td class="level"><input type="radio" name="yas1" value="4"></td>
-    <td><textarea class="comment-box" name="yas1_comment"></textarea></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas1" value="1"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas1" value="2"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas1" value="3"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas1" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="yas1_comment"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Application of job knowledge</td>
-    <td class="level"><input type="radio" name="yas2" value="1"></td>
-    <td class="level"><input type="radio" name="yas2" value="2"></td>
-    <td class="level"><input type="radio" name="yas2" value="3"></td>
-    <td class="level"><input type="radio" name="yas2" value="4"></td>
-    <td><textarea class="comment-box" name="yas2_comment"></textarea></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas2" value="1"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas2" value="2"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas2" value="3"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas2" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="yas2_comment"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Timeliness in carrying out tasks</td>
-    <td class="level"><input type="radio" name="yas3" value="1"></td>
-    <td class="level"><input type="radio" name="yas3" value="2"></td>
-    <td class="level"><input type="radio" name="yas3" value="3"></td>
-    <td class="level"><input type="radio" name="yas3" value="4"></td>
-    <td><textarea class="comment-box" name="yas3_comment"></textarea></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas3" value="1"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas3" value="2"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas3" value="3"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas3" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="yas3_comment"></textarea></td>
   </tr>
 
   <tr>
@@ -162,73 +191,71 @@ Upon completion of the competency assessment, a Senior Officer will conduct the 
   <tr>
     <td></td>
     <td>Planning</td>
-    <td class="level"><input type="radio" name="yas4" value="1"></td>
-    <td class="level"><input type="radio" name="yas4" value="2"></td>
-    <td class="level"><input type="radio" name="yas4" value="3"></td>
-    <td class="level"><input type="radio" name="yas4" value="4"></td>
-    <td><textarea class="comment-box" name="yas4_comment"></textarea></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas4" value="1"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas4" value="2"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas4" value="3"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas4" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="yas4_comment"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Organization of work</td>
-    <td class="level"><input type="radio" name="yas5" value="1"></td>
-    <td class="level"><input type="radio" name="yas5" value="2"></td>
-    <td class="level"><input type="radio" name="yas5" value="3"></td>
-    <td class="level"><input type="radio" name="yas5" value="4"></td>
-    <td><textarea class="comment-box" name="yas5_comment"></textarea></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas5" value="1"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas5" value="2"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas5" value="3"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas5" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="yas5_comment"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Leadership</td>
-    <td class="level"><input type="radio" name="yas6" value="1"></td>
-    <td class="level"><input type="radio" name="yas6" value="2"></td>
-    <td class="level"><input type="radio" name="yas6" value="3"></td>
-    <td class="level"><input type="radio" name="yas6" value="4"></td>
-    <td><textarea class="comment-box" name="yas6_comment"></textarea></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas6" value="1"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas6" value="2"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas6" value="3"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas6" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="yas6_comment"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Decision-making</td>
-    <td class="level"><input type="radio" name="yas7" value="1"></td>
-    <td class="level"><input type="radio" name="yas7" value="2"></td>
-    <td class="level"><input type="radio" name="yas7" value="3"></td>
-    <td class="level"><input type="radio" name="yas7" value="4"></td>
-    <td><textarea class="comment-box" name="yas7_comment"></textarea></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas7" value="1"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas7" value="2"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas7" value="3"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas7" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="yas7_comment"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td>Communication</td>
-    <td class="level"><input type="radio" name="yas8" value="1"></td>
-    <td class="level"><input type="radio" name="yas8" value="2"></td>
-    <td class="level"><input type="radio" name="yas8" value="3"></td>
-    <td class="level"><input type="radio" name="yas8" value="4"></td>
-    <td><textarea class="comment-box" name="yas8_comment"></textarea></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas8" value="1"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas8" value="2"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas8" value="3"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas8" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="yas8_comment"></textarea></td>
   </tr>
 
   <tr>
     <td></td>
     <td><strong>Overall YAS Rating</strong></td>
-    <td class="level"><input type="radio" name="yas9" value="1"></td>
-    <td class="level"><input type="radio" name="yas9" value="2"></td>
-    <td class="level"><input type="radio" name="yas9" value="3"></td>
-    <td class="level"><input type="radio" name="yas9" value="4"></td>
-    <td><textarea class="comment-box" name="yas9_comment"></textarea></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas9" value="1"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas9" value="2"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas9" value="3"><span class="radio-box"></span></label></td>
+    <td class="level"><label class="print-radio"><input class="autosave" type="radio" name="yas9" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="yas9_comment"></textarea></td>
   </tr>
-
 </table>
 
-<!-- ================= AUTOSAVE SCRIPT ================= -->
+<!-- ================= AUTOSAVE SCRIPT (FIXED FOR RADIO) ================= -->
 <script>
 (function () {
 
   const PAGE_CODE = "031";
   const SAVED_DATA = JSON.parse('{{ saved_data | tojson | safe }}');
 
-  // ✅ includes textarea by name (your new comment boxes)
   const fields = document.querySelectorAll(
     "input[name], textarea[name], select[name]"
   );
@@ -244,30 +271,36 @@ Upon completion of the competency assessment, a Senior Officer will conduct the 
     }
   });
 
-  // Autosave
   let timer = null;
 
-  function autosave(el) {
+  function autosaveField(fieldName, fieldValue) {
     fetch("/training/autosave", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         page_code: PAGE_CODE,
-        field: el.name,
-        value: el.value
+        field: fieldName,
+        value: fieldValue
       })
     });
   }
 
-  fields.forEach(el => {
-    const handler = () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => autosave(el), 200);
-    };
+  function scheduleSave(el) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      if (el.type === "radio") {
+        // save only when a radio becomes checked
+        if (!el.checked) return;
+        autosaveField(el.name, el.value);
+      } else {
+        autosaveField(el.name, el.value);
+      }
+    }, 200);
+  }
 
-    // ✅ textarea typing should trigger save too
-    el.addEventListener("change", handler);
-    el.addEventListener("input", handler);
+  fields.forEach(el => {
+    el.addEventListener("change", () => scheduleSave(el));
+    el.addEventListener("input", () => scheduleSave(el));
   });
 
 })();
