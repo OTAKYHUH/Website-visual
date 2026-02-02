@@ -159,7 +159,7 @@
           SO Individual Performance
         </button>
 
-        <button type="button" data-role="avp_vp" class="pw-open">
+        <button type="submit" name="role" value="JO">
           JO Individual Performance
         </button>
 
@@ -353,6 +353,8 @@
         "https://app.powerbi.com/reportEmbed?reportId=08e074d4-3c03-46b9-b533-812c20defe3e&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
       const SHIOK_PBI_URL =
         "https://app.powerbi.com/reportEmbed?reportId=c250baad-0d3f-4420-b764-ff3dd9cd1510&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
+      const JO_PBI_URL =
+        "https://app.powerbi.com/reportEmbed?reportId=6ff2fa09-409f-42d9-936d-2a959f217b97&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
 
       document.getElementById('roleForm')
         .addEventListener('submit', function (e) {
@@ -367,6 +369,10 @@
           if (btn.value === 'daily_analysis') {
             e.preventDefault();
             window.open(DAILY_PBI_URL, "_blank");
+          }
+          if (btn.value === 'JO') {
+            e.preventDefault();
+            window.open(JO_PBI_URL, "_blank");
           }
         });
 
