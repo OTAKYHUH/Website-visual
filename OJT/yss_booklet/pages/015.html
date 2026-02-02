@@ -1,65 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<meta charset="UTF-8">
-<head>
-<h3>MODULE 3 – MONITOR YARD OPERATIONS & PM OPTIMIZATION</h3>
+<!-- ===== Yard QCC Panel ===== -->
+<p class="section-title">MODULE 3 - MONITOR YARD OPERATIONS & PM OPTIMIZATION</p>
+<p>Write the key functions of each tab.</p>
 
+<img
+  src="/static/console_review.png"
+  alt="Yard QCC Panel"
+  class="full-width-image"
+/>
+
+<!-- ===== Answer Section (Page 15 – Editable) ===== -->
 <style>
-  /* ===== IMAGE CONTAINER ===== */
-  .annotated-container {
-    position: relative;
-    width: 100%;
-    max-width: 1200px;
-    margin: auto;
-    border: 1px solid #000;
+  /* Scoped styles for Page 15 answer section only */
+  .answer-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 60px;
+    row-gap: 12px;
+    margin-top: 20px;
+    font-size: 14px;
   }
 
-  .annotated-container img {
-    width: 100%;
-    display: block;
+  .answer-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
-  /* ===== CALLOUT BOX (base) ===== */
-  .callout {
-    position: absolute;
-    background: #ffffff;
-    border: 2px solid #000;
-    padding: 8px 10px;
-    min-width: 160px;
-    font-size: 13px;
-    box-sizing: border-box;
+  .answer-number {
+    min-width: 28px;
+    font-weight: 700;
   }
 
-  /* ===== MAKE CALLOUTS EDITABLE ===== */
-  .callout-input {
-    resize: none;
+  /* Editable input that looks like a blank line */
+  .answer-input {
+    flex: 1;
+    border: none;
+    border-bottom: 1px solid #000;
     outline: none;
-    background: #ffffff;
+    font-size: 14px;
+    background: transparent;
+    padding: 2px 0;
   }
 
-  /* ===== RED HIGHLIGHT BOX ===== */
-  .highlight {
-    position: absolute;
-    border: 3px solid red;
-    pointer-events: none;
+  .section-title {
+    margin-top: 14px;
+    font-weight: 700;
   }
 
-  /* ===== ARROW ===== */
-  .arrow {
-    position: absolute;
-    width: 120px;
-    height: 2px;
-    background: red;
-  }
-
-  .arrow::after {
-    content: "";
-    position: absolute;
-    right: -6px;
-    top: -4px;
-    border-left: 8px solid red;
-    border-top: 5px solid transparent;
-    border-bottom: 5px solid transparent;
+  .full-width-image {
+    width: 100%;
+    height: auto;
+    display: block;
   }
   .page-footer {
     margin-top: 28px;
@@ -68,85 +59,72 @@
     text-align: right;
   }
 </style>
-</head>
-<div class="annotated-container">
 
-  <img src="/static/console_review.png" alt="PM Console Screen">
+<div class="answer-section">
 
-  <!-- ===== HIGHLIGHT AREAS ===== -->
-  <div class="highlight" style="top: 90px; left: 800px; width: 70px; height: 35px;"></div>
-  <div class="highlight" style="top: 210px; left: 800px; width: 100px; height: 40px;"></div>
-  <div class="highlight" style="top: 300px; left: 260px; width: 90px; height: 35px;"></div>
-  <div class="highlight" style="top: 335px; left: 260px; width: 115px; height: 50px;"></div>
-  <div class="highlight" style="top: 530px; left: 60px; width: 100px; height: 35px;"></div>
-  <div class="highlight" style="top: 530px; left: 290px; width: 100px; height: 35px;"></div>
-  <div class="highlight" style="top: 530px; left: 530px; width: 100px; height: 35px;"></div>
-
-  <!-- ===== ARROWS ===== -->
-  <div class="arrow" style="top: 105px; left: 880px;"></div>
-  <div class="arrow" style="top: 230px; left: 910px;"></div>
-
-  <div class="arrow"
-       style="top: 320px; left: 360px; width: 300px;
-              transform: rotate(-67deg); transform-origin: left center;">
+  <div class="answer-line">
+    <span class="answer-number">1)</span>
+    <input
+      type="text"
+      class="answer-input"
+      name="yss_015_q1"
+    >
   </div>
 
-  <div class="arrow"
-       style="top: 350px; left: 370px; width: 380px;
-              transform: rotate(-45deg); transform-origin: left center;">
+  <div class="answer-line">
+    <span class="answer-number">5)</span>
+    <input
+      type="text"
+      class="answer-input"
+      name="yss_015_q5"
+    >
   </div>
 
-  <!-- ===== EDITABLE CALLOUTS (RENAMED TO YSS) ===== -->
-  <textarea
-    class="callout callout-input"
-    name="yss_020_callout_1"
-    style="top: 90px; left: 1020px;"></textarea>
-
-  <textarea
-    class="callout callout-input"
-    name="yss_020_callout_2"
-    style="top: 220px; left: 1050px;"></textarea>
-
-  <textarea
-    class="callout callout-input"
-    name="yss_020_callout_3"
-    style="top: 20px; left: 350px;"></textarea>
-
-  <textarea
-    class="callout callout-input"
-    name="yss_020_callout_4"
-    style="top: 20px; left: 620px;"></textarea>
-
-  <!-- ===== BOTTOM EDITABLE CALLOUTS ===== -->
-  <div class="arrow"
-       style="top: 580px; left: 115px; width: 50px;
-              transform: rotate(90deg); transform-origin: left center;">
+  <div class="answer-line">
+    <span class="answer-number">2)</span>
+    <input
+      type="text"
+      class="answer-input"
+      name="yss_015_q2"
+    >
   </div>
 
-  <textarea
-    class="callout callout-input"
-    name="yss_020_callout_5"
-    style="top: 640px; left: 20px;"></textarea>
-
-  <div class="arrow"
-       style="top: 580px; left: 350px; width: 50px;
-              transform: rotate(90deg); transform-origin: left center;">
+  <div class="answer-line">
+    <span class="answer-number">6)</span>
+    <input
+      type="text"
+      class="answer-input"
+      name="yss_015_q6"
+    >
   </div>
 
-  <textarea
-    class="callout callout-input"
-    name="yss_020_callout_6"
-    style="top: 640px; left: 245px;"></textarea>
-
-  <div class="arrow"
-       style="top: 580px; left: 580px; width: 50px;
-              transform: rotate(90deg); transform-origin: left center;">
+  <div class="answer-line">
+    <span class="answer-number">3)</span>
+    <input
+      type="text"
+      class="answer-input"
+      name="yss_015_q3"
+    >
   </div>
 
-  <textarea
-    class="callout callout-input"
-    name="yss_020_callout_7"
-    style="top: 640px; left: 490px;"></textarea>
+  <div class="answer-line">
+    <span class="answer-number">7)</span>
+    <input
+      type="text"
+      class="answer-input"
+      name="yss_015_q7"
+    >
+  </div>
+
+  <div class="answer-line">
+    <span class="answer-number">4)</span>
+    <input
+      type="text"
+      class="answer-input"
+      name="yss_015_q4"
+    >
+  </div>
+
 </div>
 <div class="page-footer">15 | Page</div>
 </div>
