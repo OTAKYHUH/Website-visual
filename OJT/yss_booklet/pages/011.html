@@ -74,6 +74,7 @@
     font-size: 14px;
     font-family: Arial, sans-serif;
     resize: vertical;
+    box-sizing: border-box;
   }
 
   /* ================= FOOTER ================= */
@@ -108,75 +109,65 @@
     </thead>
 
     <tbody>
-      <tr>
-        <td>1</td>
-        <td><textarea name="pg_1_reason" class="reason-input"></textarea></td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td><textarea name="pg_2_reason" class="reason-input"></textarea></td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td><textarea name="pg_3_reason" class="reason-input"></textarea></td>
-      </tr>
-      <tr>
-        <td>4</td>
-        <td><textarea name="pg_4_reason" class="reason-input"></textarea></td>
-      </tr>
-      <tr>
-        <td>5</td>
-        <td><textarea name="pg_5_reason" class="reason-input"></textarea></td>
-      </tr>
-      <tr>
-        <td>6</td>
-        <td><textarea name="pg_6_reason" class="reason-input"></textarea></td>
-      </tr>
-      <tr>
-        <td>11</td>
-        <td><textarea name="pg_11_reason" class="reason-input"></textarea></td>
-      </tr>
-      <tr>
-        <td>12</td>
-        <td><textarea name="pg_12_reason" class="reason-input"></textarea></td>
-      </tr>
-      <tr>
-        <td>13</td>
-        <td><textarea name="pg_13_reason" class="reason-input"></textarea></td>
-      </tr>
-      <tr>
-        <td>14</td>
-        <td><textarea name="pg_14_reason" class="reason-input"></textarea></td>
-      </tr>
-      <tr>
-        <td>15</td>
-        <td><textarea name="pg_15_reason" class="reason-input"></textarea></td>
-      </tr>
-      <tr>
-        <td>16</td>
-        <td><textarea name="pg_16_reason" class="reason-input"></textarea></td>
-      </tr>
-      <tr>
-        <td>17</td>
-        <td><textarea name="pg_17_reason" class="reason-input"></textarea></td>
-      </tr>
-      <tr>
-        <td>18</td>
-        <td><textarea name="pg_18_reason" class="reason-input"></textarea></td>
-      </tr>
-      <tr>
-        <td>19</td>
-        <td><textarea name="pg_19_reason" class="reason-input"></textarea></td>
-      </tr>
-      <tr>
-        <td>20</td>
-        <td><textarea name="pg_20_reason" class="reason-input"></textarea></td>
-      </tr>
+      <tr><td>1</td><td><textarea name="pg_1_reason" class="reason-input"></textarea></td></tr>
+      <tr><td>2</td><td><textarea name="pg_2_reason" class="reason-input"></textarea></td></tr>
+      <tr><td>3</td><td><textarea name="pg_3_reason" class="reason-input"></textarea></td></tr>
+      <tr><td>4</td><td><textarea name="pg_4_reason" class="reason-input"></textarea></td></tr>
+      <tr><td>5</td><td><textarea name="pg_5_reason" class="reason-input"></textarea></td></tr>
+      <tr><td>6</td><td><textarea name="pg_6_reason" class="reason-input"></textarea></td></tr>
+
+      <tr><td>11</td><td><textarea name="pg_11_reason" class="reason-input"></textarea></td></tr>
+      <tr><td>12</td><td><textarea name="pg_12_reason" class="reason-input"></textarea></td></tr>
+      <tr><td>13</td><td><textarea name="pg_13_reason" class="reason-input"></textarea></td></tr>
+      <tr><td>14</td><td><textarea name="pg_14_reason" class="reason-input"></textarea></td></tr>
+      <tr><td>15</td><td><textarea name="pg_15_reason" class="reason-input"></textarea></td></tr>
+      <tr><td>16</td><td><textarea name="pg_16_reason" class="reason-input"></textarea></td></tr>
+      <tr><td>17</td><td><textarea name="pg_17_reason" class="reason-input"></textarea></td></tr>
+      <tr><td>18</td><td><textarea name="pg_18_reason" class="reason-input"></textarea></td></tr>
+      <tr><td>19</td><td><textarea name="pg_19_reason" class="reason-input"></textarea></td></tr>
+      <tr><td>20</td><td><textarea name="pg_20_reason" class="reason-input"></textarea></td></tr>
     </tbody>
   </table>
 
   <div class="page-footer">11 | Page</div>
 
 </div>
+
+<!-- Prevent LF/CR/TAB in this page's textareas -->
+<script>
+(function () {
+  const textareas = document.querySelectorAll("textarea.reason-input");
+  if (!textareas.length) return;
+
+  const clean = (v) => (v || "").replace(/[\r\n\t]+/g, " ");
+
+  textareas.forEach((ta) => {
+    // Prevent Enter key from inserting newline
+    ta.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+      }
+    });
+
+    // Sanitize on input (covers mobile enter behavior + auto-fill)
+    ta.addEventListener("input", () => {
+      const cleaned = clean(ta.value);
+      if (cleaned !== ta.value) {
+        const pos = ta.selectionStart ?? cleaned.length;
+        ta.value = cleaned;
+        ta.setSelectionRange(pos, pos);
+      }
+    });
+
+    // Sanitize after paste (covers WhatsApp/Notes/Word)
+    ta.addEventListener("paste", () => {
+      setTimeout(() => {
+        ta.value = clean(ta.value);
+      }, 0);
+    });
+  });
+})();
+</script>
+
 </body>
 </html>
