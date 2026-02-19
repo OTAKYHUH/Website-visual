@@ -89,7 +89,14 @@
 
   {% if admin_view %}
     <div class="admin-banner">
-      <div><b>ADMIN VIEW</b></div>
+      <div>
+        <b>ADMIN VIEW</b>
+        {% if admin_editable %}
+          <span style="opacity:.85;">(Editable)</span>
+        {% else %}
+          <span style="opacity:.85;">(Read-only)</span>
+        {% endif %}
+      </div>
       <div class="meta">
         {{ trainee_name or "" }}{% if trainee_role %} ({{ trainee_role }}){% endif %}
       </div>
@@ -187,13 +194,14 @@
 <script>
 (function () {
 
-  const ADMIN_VIEW   = JSON.parse('{{ admin_view|default(false)|tojson }}');
-  const MENTOR_VIEW  = JSON.parse('{{ mentor_view|default(false)|tojson }}');
-  const MENTOR_EDIT  = JSON.parse('{{ mentor_editable|default(false)|tojson }}');
-  const PAGE_CODE    = '{{ "%03d"|format(page) }}';
-  const SAVED_DATA   = JSON.parse('{{ saved_data|default({})|tojson }}');
+  const ADMIN_VIEW     = JSON.parse('{{ admin_view|default(false)|tojson }}');
+  const ADMIN_EDIT     = JSON.parse('{{ admin_editable|default(false)|tojson }}');
+  const MENTOR_VIEW    = JSON.parse('{{ mentor_view|default(false)|tojson }}');
+  const MENTOR_EDIT    = JSON.parse('{{ mentor_editable|default(false)|tojson }}');
+  const PAGE_CODE      = '{{ "%03d"|format(page) }}';
+  const SAVED_DATA     = JSON.parse('{{ saved_data|default({})|tojson }}');
 
-  // Mentor saves into trainee's record
+  // Admin/Mentor saves into trainee's record
   const TARGET_EMPLOYEE_ID = JSON.parse('{{ target_employee_id | default(none) | tojson }}');
 
   // Current session trainee role (when in trainee view)
@@ -240,9 +248,17 @@
   });
 
   // ================= LOCKING =================
+  // Rules:
+  // - Admin: editable only if ADMIN_EDIT is true
+  // - Mentor: editable only if MENTOR_EDIT is true
+  // - Trainee: locked if TRAINEE_LOCKED is true
 
-  // Admin: always locked
-  if (ADMIN_VIEW) {
+  const shouldLock =
+    (ADMIN_VIEW && !ADMIN_EDIT) ||
+    (MENTOR_VIEW && !MENTOR_EDIT) ||
+    TRAINEE_LOCKED;
+
+  if (shouldLock) {
     fields.forEach(el => {
       if (el.tagName === "SELECT") {
         el.disabled = true;
@@ -251,33 +267,7 @@
         if (el.type === "radio" || el.type === "checkbox") el.disabled = true;
       }
     });
-    return;
-  }
-
-  // Mentor: lock unless editable
-  if (MENTOR_VIEW && !MENTOR_EDIT) {
-    fields.forEach(el => {
-      if (el.tagName === "SELECT") {
-        el.disabled = true;
-      } else {
-        el.readOnly = true;
-        if (el.type === "radio" || el.type === "checkbox") el.disabled = true;
-      }
-    });
-    return;
-  }
-
-  // ✅ Trainee page lock: read-only + no autosave
-  if (TRAINEE_LOCKED) {
-    fields.forEach(el => {
-      if (el.tagName === "SELECT") {
-        el.disabled = true;
-      } else {
-        el.readOnly = true;
-        if (el.type === "radio" || el.type === "checkbox") el.disabled = true;
-      }
-    });
-    return;
+    return; // no autosave
   }
 
   // ================= AUTOSAVE =================
@@ -290,7 +280,8 @@
       value: el.type === "checkbox" ? String(el.checked) : el.value
     };
 
-    if (MENTOR_VIEW) {
+    // Mentor/Admin saving someone else
+    if (ADMIN_VIEW || MENTOR_VIEW) {
       if (TARGET_EMPLOYEE_ID === null) return;
       payload.target_employee_id = TARGET_EMPLOYEE_ID;
     }

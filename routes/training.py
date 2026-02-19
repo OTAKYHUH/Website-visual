@@ -188,7 +188,7 @@ def training_login():
     # ✅ MENTOR path
     if role == "MENTOR":
         mentor_pw = (request.form.get("mentor_password") or "").strip()
-        expected = os.environ.get("TRAINING_MENTOR_PASSWORD", "mentorcess")
+        expected = os.environ.get("TRAINING_MENTOR_PASSWORD", "cess")
 
         if not expected:
             abort(500, "TRAINING_MENTOR_PASSWORD not set on server")
@@ -302,7 +302,7 @@ def training_autosave():
         return {"status": "bad request"}, 400
 
     # ---- Determine who we are saving for ----
-    if is_mentor():
+    if is_admin() or is_mentor():
         target_employee_id = data.get("target_employee_id")
         if not target_employee_id:
             return {"status": "bad request", "error": "missing target_employee_id"}, 400
@@ -326,17 +326,22 @@ def training_autosave():
     submitted = int(emp["submitted"] or 0)
 
     # ---- Enforce locks ----
-    if not is_mentor():
+    if is_admin():
+        # ✅ ADMIN can edit ANY page (including YSS page 22), even after submit
+        pass
+    elif is_mentor():
+        # mentor only allowed on configured pages
+        if not mentor_can_edit(trainee_role, page_code):
+            db.close()
+            return {"status": "locked", "error": "mentor not allowed on this page"}, 403
+    else:
+        # trainee locks
         if trainee_page_locked(trainee_role, page_code):
             db.close()
             return {"status": "locked", "error": "page locked for trainee"}, 403
         if submitted == 1:
             db.close()
             return {"status": "locked"}, 403
-    else:
-        if not mentor_can_edit(trainee_role, page_code):
-            db.close()
-            return {"status": "locked", "error": "mentor not allowed on this page"}, 403
 
     # ---- Save ----
     cur.execute("""
@@ -419,6 +424,7 @@ def training_print():
             admin_view=False,
             mentor_view=False,
             mentor_editable=False,
+            admin_editable=False,
             target_employee_id=None,
             **nav_ctx,
         )
@@ -459,7 +465,6 @@ def admin_dashboard():
 
     return render_template("admin/index.html", trainees=trainees)
 
-# ✅ This fixes your BuildError if admin/index.html has an "Unlock" button
 @training_bp.route("/training/admin/unlock/<int:employee_id>", methods=["POST"])
 def admin_unlock_employee(employee_id):
     if not is_admin():
@@ -575,7 +580,8 @@ def admin_view_page(employee_id, page):
         admin_view=True,
         mentor_view=False,
         mentor_editable=False,
-        target_employee_id=None,
+        admin_editable=True,
+        target_employee_id=trainee["id"],  # ✅ IMPORTANT for admin autosave
         trainee_name=trainee["name"],
         trainee_role=trainee["role"],
         trainee_id=trainee["id"],
@@ -660,7 +666,8 @@ def admin_print(employee_id):
             admin_view=True,
             mentor_view=False,
             mentor_editable=False,
-            target_employee_id=None,
+            admin_editable=True,
+            target_employee_id=trainee["id"],  # ✅ IMPORTANT for admin autosave
             trainee_name=trainee["name"],
             trainee_role=trainee["role"],
             trainee_id=trainee["id"],
@@ -791,6 +798,7 @@ def mentor_view_page(employee_id, page):
         admin_view=False,
         mentor_view=True,
         mentor_editable=editable,
+        admin_editable=False,
         target_employee_id=trainee["id"],
         trainee_name=trainee["name"],
         trainee_role=trainee["role"],

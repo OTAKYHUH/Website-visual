@@ -143,7 +143,8 @@
           YWT Champion<br>(Team Performance Drive)
         </button>
 
-        <button type="submit" name="role" value="daily_analysis">
+        <!-- ✅ Daily Analysis (password modal) -->
+        <button type="button" id="dailyAnalysisBtn">
           Daily Analysis
         </button>
 
@@ -155,7 +156,8 @@
           Playbook
         </button>
 
-        <button type="button" data-role="non_shift" class="pw-open">
+        <!-- ✅ SO Individual Performance (password modal, no users.xlsx) -->
+        <button type="button" id="soPerformanceBtn">
           SO Individual Performance
         </button>
 
@@ -163,7 +165,7 @@
           JO Individual Performance
         </button>
 
-        <!-- ✅ Staff Profile now protected server-side -->
+        <!-- ✅ Staff Profile (password modal) -->
         <button type="button" id="staffProfileBtn">
           Staff Profile
         </button>
@@ -180,15 +182,16 @@
     </form>
   </div>
 
-  <!-- ===== Login Modal ===== -->
+  <!-- ===== Login Modal (shared) ===== -->
   <div id="passwordModal" class="modal" aria-hidden="true">
     <div class="modal__dialog">
       <h3 id="pwTitle">Login</h3>
 
-      <!-- IMPORTANT: action is set dynamically by JS -->
+      <!-- action is set dynamically by JS -->
       <form method="POST" id="passwordForm" action="">
         <input type="hidden" name="role" id="hiddenRole">
 
+        <!-- Kept, but hidden for password-only flows -->
         <div class="modal__row" id="usernameRow">
           <label>Username</label>
           <input type="text" name="username" id="pwUsername" required>
@@ -229,13 +232,11 @@
           </select>
         </div>
 
-        <!-- ✅ Only show when ADMIN selected -->
         <div class="modal__row" id="adminPasswordRow" style="display:none;">
           <label>Admin Password</label>
           <input type="password" name="admin_password" id="adminPasswordInput">
         </div>
 
-        <!-- ✅ Only show when MENTOR selected -->
         <div class="modal__row" id="mentorPasswordRow" style="display:none;">
           <label>Mentor Password</label>
           <input type="password" name="mentor_password" id="mentorPasswordInput">
@@ -252,7 +253,7 @@
   <script>
     (function () {
 
-      // ===== Password modal base (SO/JO existing) =====
+      // ===== Shared password modal =====
       const modal = document.getElementById('passwordModal');
       const hiddenRole = document.getElementById('hiddenRole');
       const passwordForm = document.getElementById('passwordForm');
@@ -275,29 +276,41 @@
         modal.classList.add("is-open");
       }
 
-      document.querySelectorAll('.pw-open').forEach(btn => {
-        btn.addEventListener('click', () => {
-          hiddenRole.value = btn.dataset.role || "";
-          pwTitle.textContent = "Login";
-          usernameRow.style.display = "block";
-          pwUsername.required = true;
-          modal.classList.add('is-open');
-        });
-      });
-
       document.getElementById('pwCancel')
-        .addEventListener('click', () => modal.classList.remove('is-open'));
+        ?.addEventListener('click', () => modal.classList.remove('is-open'));
 
-      // ===== Staff Profile (server-side protected) =====
-      const staffProfileBtn = document.getElementById("staffProfileBtn");
-      staffProfileBtn?.addEventListener("click", () => {
-        openPwModal({
-          role: "staff_profile",
-          title: "Staff Profile",
-          actionUrl: "{{ url_for('home.staff_profile_login') }}",
-          requireUsername: false
+      // ✅ Staff Profile (server-side protected)
+      document.getElementById("staffProfileBtn")
+        ?.addEventListener("click", () => {
+          openPwModal({
+            role: "staff_profile",
+            title: "Staff Profile",
+            actionUrl: "{{ url_for('home.staff_profile_login') }}",
+            requireUsername: false
+          });
         });
-      });
+
+      // ✅ Daily Analysis (server-side protected)
+      document.getElementById("dailyAnalysisBtn")
+        ?.addEventListener("click", () => {
+          openPwModal({
+            role: "daily_analysis",
+            title: "Daily Analysis",
+            actionUrl: "{{ url_for('home.daily_analysis_login') }}",
+            requireUsername: false
+          });
+        });
+
+      // ✅ SO Individual Performance (server-side protected)
+      document.getElementById("soPerformanceBtn")
+        ?.addEventListener("click", () => {
+          openPwModal({
+            role: "so_performance",
+            title: "SO Individual Performance",
+            actionUrl: "{{ url_for('home.so_performance_login') }}",
+            requireUsername: false
+          });
+        });
 
       // ===== Training modal =====
       const trainingBtn = document.getElementById("trainingBtn");
@@ -344,11 +357,9 @@
         window.open(playbookBtn.dataset.url, "_blank");
       });
 
-      // ===== Power BI Button Logic =====
+      // ===== Power BI Button Logic (non-protected ones remain direct) =====
       const SHIFT_PBI_URL =
         "https://app.powerbi.com/reportEmbed?reportId=b3af80f5-56b8-4b19-8e28-547613d2c6f8&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
-      const DAILY_PBI_URL =
-        "https://app.powerbi.com/reportEmbed?reportId=8f105737-0465-44ee-822a-0791181fc5ca&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
       const PPT_WEEKLY_PBI_URL =
         "https://app.powerbi.com/reportEmbed?reportId=08e074d4-3c03-46b9-b533-812c20defe3e&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
       const SHIOK_PBI_URL =
@@ -357,7 +368,7 @@
         "https://app.powerbi.com/reportEmbed?reportId=6ff2fa09-409f-42d9-936d-2a959f217b97&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
 
       document.getElementById('roleForm')
-        .addEventListener('submit', function (e) {
+        ?.addEventListener('submit', function (e) {
           const btn = e.submitter;
           if (!btn) return;
 
@@ -366,10 +377,8 @@
             window.open(SHIFT_PBI_URL, "_blank");
           }
 
-          if (btn.value === 'daily_analysis') {
-            e.preventDefault();
-            window.open(DAILY_PBI_URL, "_blank");
-          }
+          // ✅ daily_analysis removed from submit handler (now modal)
+
           if (btn.value === 'JO') {
             e.preventDefault();
             window.open(JO_PBI_URL, "_blank");
@@ -377,14 +386,10 @@
         });
 
       document.getElementById('pptWeeklyBtn')
-        .addEventListener('click', () => {
-          window.open(PPT_WEEKLY_PBI_URL, "_blank");
-        });
+        ?.addEventListener('click', () => window.open(PPT_WEEKLY_PBI_URL, "_blank"));
 
       document.getElementById('shiokBtn')
-        .addEventListener('click', () => {
-          window.open(SHIOK_PBI_URL, "_blank");
-        });
+        ?.addEventListener('click', () => window.open(SHIOK_PBI_URL, "_blank"));
 
     })();
   </script>

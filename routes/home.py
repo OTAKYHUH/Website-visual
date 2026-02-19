@@ -1,15 +1,16 @@
-# home.py
+# routes/home.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
-from pathlib import Path
-import pandas as pd
+import os
 
 home = Blueprint("home", __name__)
 
-# Adjust this to your actual users.xlsx location if different
-USERS_FILE = (Path(__file__).resolve().parents[1] / "data" / "users.xlsx")
+# ===================== PASSWORDS (SERVER-SIDE) =====================
+# Set these in your server env vars (PythonAnywhere recommended).
+STAFF_PROFILE_PASSWORD = os.environ.get("STAFF_PROFILE_PASSWORD", "cess")
+DAILY_ANALYSIS_PASSWORD = os.environ.get("DAILY_ANALYSIS_PASSWORD", "cess")
+SO_PERFORMANCE_PASSWORD = os.environ.get("SO_PERFORMANCE_PASSWORD", "cess")
 
-# ✅ Staff Profile password (server-side)
-STAFF_PROFILE_PASSWORD = "cess"
+# ===================== URLS (SERVER-SIDE) =====================
 
 # ✅ Staff Profile URL (kept server-side)
 STAFF_PROFILE_URL = (
@@ -17,60 +18,25 @@ STAFF_PROFILE_URL = (
     "IQDQRbYZAnJeSaHbuUxC4x6yAXaNJ1Bwi693i6NtMbvJPZg?e=Tbd92g"
 )
 
-def load_users():
-    if not USERS_FILE.exists():
-        # Safe default schema
-        return pd.DataFrame(columns=["role", "username", "password"])
-    df = pd.read_excel(USERS_FILE, engine="openpyxl")
-    df.columns = [c.strip().lower() for c in df.columns]
-    for col in ["role", "username", "password"]:
-        if col not in df.columns:
-            df[col] = ""
-        else:
-            df[col] = df[col].astype(str).str.strip()
-    return df
+# ✅ Daily Analysis Power BI URL (kept server-side)
+DAILY_ANALYSIS_URL = (
+    "https://app.powerbi.com/reportEmbed?reportId=8f105737-0465-44ee-822a-0791181fc5ca"
+    "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
+)
 
+# ===================== HOME PAGE =====================
 
 @home.route("/", methods=["GET", "POST"])
 def role_selection():
     """
-    GET  -> show the landing page (buttons for Shift / Non-Shift / AVP/VP)
-    POST -> handle Non-Shift and AVP/VP only (Shift opens Power BI via JS on the client)
+    This page is mostly driven by JS buttons.
+    We keep POST for compatibility, but we no longer authenticate using users.xlsx.
     """
     if request.method == "POST":
-        role = (request.form.get("role") or "").strip().lower()
-        username = (request.form.get("username") or "").strip()
-        password = (request.form.get("password") or "").strip()
+        # If anything posts here accidentally, just go back with a message.
+        flash("Please use the login popup for protected pages.")
+        return redirect(url_for("home.role_selection"))
 
-        users_df = load_users()
-        if "role" in users_df.columns:
-            users_df["role"] = users_df["role"].str.lower()
-
-        # Shift is handled on the client; ignore here
-        if role == "non_shift":
-            match = users_df[
-                (users_df["role"] == role) &
-                (users_df["username"].str.casefold() == username.casefold()) &
-                (users_df["password"] == password)
-            ]
-            if not match.empty:
-                return redirect(url_for("main.index"))
-            flash("❌ Invalid username or password for Non-Shift.")
-
-        elif role == "avp_vp":
-            match = users_df[
-                (users_df["role"] == role) &
-                (users_df["username"].str.casefold() == username.casefold()) &
-                (users_df["password"] == password)
-            ]
-            if not match.empty:
-                return redirect(url_for("nonshift.index"))
-            flash("❌ Invalid username or password for AVP/VP.")
-
-        # Fallthrough: show page again with message (if any)
-        return render_template("home.html")
-
-    # GET
     return render_template("home.html")
 
 
@@ -78,27 +44,18 @@ def role_selection():
 
 @home.route("/staff-profile/login", methods=["POST"])
 def staff_profile_login():
-    """
-    Handles Staff Profile password entry from the shared modal.
-    Expects form field: password
-    """
     pw = (request.form.get("password") or "").strip()
 
     if pw != STAFF_PROFILE_PASSWORD:
         flash("❌ Invalid password for Staff Profile.")
         return redirect(url_for("home.role_selection"))
 
-    # Mark session as allowed
     session["staff_profile_ok"] = True
     return redirect(url_for("home.staff_profile"))
 
 
 @home.route("/staff-profile", methods=["GET"])
 def staff_profile():
-    """
-    Only accessible after successful staff_profile_login.
-    Redirects to the SharePoint Staff Profile link.
-    """
     if not session.get("staff_profile_ok"):
         flash("❌ Please enter Staff Profile password first.")
         return redirect(url_for("home.role_selection"))
@@ -106,7 +63,58 @@ def staff_profile():
     return redirect(STAFF_PROFILE_URL)
 
 
+# ===================== DAILY ANALYSIS (PASSWORD PROTECTED) =====================
+
+@home.route("/daily-analysis/login", methods=["POST"])
+def daily_analysis_login():
+    pw = (request.form.get("password") or "").strip()
+
+    if pw != DAILY_ANALYSIS_PASSWORD:
+        flash("❌ Invalid password for Daily Analysis.")
+        return redirect(url_for("home.role_selection"))
+
+    session["daily_analysis_ok"] = True
+    return redirect(url_for("home.daily_analysis"))
+
+
+@home.route("/daily-analysis", methods=["GET"])
+def daily_analysis():
+    if not session.get("daily_analysis_ok"):
+        flash("❌ Please enter Daily Analysis password first.")
+        return redirect(url_for("home.role_selection"))
+
+    return redirect(DAILY_ANALYSIS_URL)
+
+
+# ===================== SO PERFORMANCE (PASSWORD PROTECTED) =====================
+
+@home.route("/so-performance/login", methods=["POST"])
+def so_performance_login():
+    pw = (request.form.get("password") or "").strip()
+
+    if pw != SO_PERFORMANCE_PASSWORD:
+        flash("❌ Invalid password for SO Individual Performance.")
+        return redirect(url_for("home.role_selection"))
+
+    session["so_performance_ok"] = True
+    return redirect(url_for("home.so_performance"))
+
+
+@home.route("/so-performance", methods=["GET"])
+def so_performance():
+    """
+    Redirect to your existing SO Performance page.
+    Previously: redirect(url_for("main.index"))
+    """
+    if not session.get("so_performance_ok"):
+        flash("❌ Please enter SO Performance password first.")
+        return redirect(url_for("home.role_selection"))
+
+    return redirect(url_for("main.index"))
+
+
+# ===================== TRAINING PAGE (PUBLIC) =====================
+
 @home.route("/training", methods=["GET"])
 def training():
-    """Public Training page (no password)."""
     return render_template("training.html")
