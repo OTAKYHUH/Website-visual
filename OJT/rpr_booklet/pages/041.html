@@ -1,0 +1,205 @@
+<!-- 040.html — RP Booklet (Replanner) Page 40
+     Task 8: Diversion Basic Knowledge (continued)
+     ✅ Matches screenshot layout:
+        - Underlined heading: "Understanding of the Indication:"
+        - Top: one big diagram image centered
+        - Bottom: 4-column table with 4 rows (Landed / Planned / Shut / ATM)
+     ✅ Namespaced CSS (won't affect navbar)
+
+     NOTE: Replace image filenames with your actual /static/ files:
+       /static/indication_diagram.png
+       /static/landed_left.png   /static/landed_right.png
+       /static/planned_left.png  /static/planned_right.png
+       /static/shut_mid.png
+       /static/atm_1.png         /static/atm_2.png
+-->
+<style>
+  .p040-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+    line-height: 1.5;
+  }
+
+  .p040-title{
+    max-width: 1080px;
+    margin: 0 auto 12px;
+    font-size: 22px;
+    font-weight: 900;
+    text-decoration: underline;
+  }
+
+  .p040-topimg{
+    max-width: 1080px;
+    margin: 0 auto 16px;
+    display:flex;
+    justify-content:center;
+  }
+  .p040-topimg img{
+    width: 820px;
+    max-width: 95%;
+    height: auto;
+    display:block;
+  }
+
+  /* ===== table ===== */
+  .p040-table{
+    width: 1080px;
+    max-width: 100%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 18px;
+  }
+
+  .p040-table th,
+  .p040-table td{
+    border: 1.5px solid #000;
+    padding: 14px 12px;
+    vertical-align: middle;
+  }
+
+  .p040-table th{
+    font-size: 20px;
+    font-weight: 900;
+    text-align: left;
+  }
+
+  .p040-col-type{ width: 18%; }
+  .p040-col-desc{ width: 36%; }
+  .p040-col-left{ width: 23%; }
+  .p040-col-right{ width: 23%; }
+
+  .p040-type{
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  .p040-desc{
+    font-size: 18px;
+  }
+
+  .p040-imgcell{
+    text-align: center;
+  }
+
+  .p040-mini{
+    width: 210px;
+    max-width: 100%;
+    height: auto;
+    display:inline-block;
+  }
+
+  .p040-mini-stack{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .p040-mini-stack img{
+    width: 220px;
+    max-width: 100%;
+    height: auto;
+    display:block;
+  }
+
+  /* Shut row shows ONE image spanning both right columns */
+  .p040-span2{
+    padding: 18px 12px;
+    text-align: center;
+  }
+  .p040-span2 img{
+    width: 260px;
+    max-width: 100%;
+    height: auto;
+    display:inline-block;
+  }
+
+  @media (max-width: 1100px){
+    .p040-table{ font-size: 16px; }
+    .p040-table th{ font-size: 18px; }
+  }
+
+  @media print{
+    .p040-page{ max-width:none; padding:0; }
+  }
+</style>
+
+<div class="p040-page">
+
+  <div class="p040-title">Understanding of the Indication:</div>
+
+  <div class="p040-topimg">
+    <img src="/static/understand_in.png" alt="Understanding of the Indication diagram">
+  </div>
+
+  <table class="p040-table">
+    <thead>
+      <tr>
+        <th class="p040-col-type">Types of Containers</th>
+        <th class="p040-col-desc">Description</th>
+        <th class="p040-col-left">Opening the block without selecting any vessel cluster</th>
+        <th class="p040-col-right">Opening the block by selecting the vessel cluster</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <!-- Landed -->
+      <tr>
+        <td class="p040-type">Landed Container</td>
+        <td class="p040-desc">
+          Container that lied / landed in the location. Can be identified by the strip lines.
+        </td>
+        <td class="p040-imgcell">
+          <img class="p040-mini" src="/static/landed_left.png" alt="Landed - without vessel cluster">
+        </td>
+        <td class="p040-imgcell">
+          <img class="p040-mini" src="/static/landed_right.png" alt="Landed - with vessel cluster">
+        </td>
+      </tr>
+
+      <!-- Planned -->
+      <tr>
+        <td class="p040-type">Planned Container</td>
+        <td class="p040-desc">
+          Container that planned to move to the location. No stripe lines will be shown in the planned container.
+        </td>
+        <td class="p040-imgcell">
+          <img class="p040-mini" src="/static/planted_left.png" alt="Planned - without vessel cluster">
+        </td>
+        <td class="p040-imgcell">
+          <img class="p040-mini" src="/static/planned_right.png" alt="Planned - with vessel cluster">
+        </td>
+      </tr>
+
+      <!-- Shut (image spans 2 columns like screenshot) -->
+      <tr>
+        <td class="p040-type">Shut Container</td>
+        <td class="p040-desc">
+          Container that will not be loaded onto the vessel. May be due to change in the loading vessel.
+        </td>
+        <td class="p040-span2" colspan="2">
+          <img src="/static/shut_mid.png" alt="Shut container example">
+        </td>
+      </tr>
+
+      <!-- ATM -->
+      <tr>
+        <td class="p040-type">ATM Container</td>
+        <td class="p040-desc">
+          Container that has a long stay in the yard. There is neither a specific port mark nor the port stays of the container.
+        </td>
+        <td class="p040-span2" colspan="2">
+          <div class="p040-mini-stack">
+            <img src="/static/atm_1.png" alt="ATM container example 1">
+            <img src="/static/atm_2.png" alt="ATM container example 2">
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

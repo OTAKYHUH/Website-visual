@@ -1,0 +1,154 @@
+<!-- 009.html — RP Booklet (Replanner) Page 9
+     2.1 : Equipment’s Layout and Special Stowage Area
+     ✅ Left tables = HTML
+     ✅ Right circled blocks = images
+     ✅ Namespaced CSS so it won't break navbar
+-->
+<style>
+  .p009-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 18px 10px;
+    font-size: 13px;
+  }
+
+  .p009-title{
+    font-weight: 900;
+    font-size: 14px;
+    margin: 0 0 10px;
+  }
+  .p009-title u{ font-weight: 900; }
+
+  /* Layout */
+  .p009-layout{
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 18px 22px;
+    align-items: start;
+  }
+
+  /* Left tables */
+  .p009-left{
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .p009-mini{
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 10px;
+  }
+  .p009-mini th, .p009-mini td{
+    border: 1px solid #000;
+    padding: 3px 4px;
+    text-align: center;
+    vertical-align: middle;
+  }
+  .p009-cap{
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+  .p009-subcap{
+    font-weight: 800;
+  }
+  .p009-hdr{
+    background:#f5f5f5;
+    font-weight: 800;
+  }
+
+  .p009-cap-orange{ background:#f7c39a; }
+  .p009-cap-blue{ background:#89c9d9; }
+  .p009-cap-purple{ background:#b9abd2; }
+
+  /* Right images area */
+  .p009-right{
+    display: grid;
+    grid-template-columns: 260px 260px;
+    grid-auto-rows: min-content;
+    gap: 22px 28px;
+    justify-content: start;
+    padding-top: 6px;
+  }
+  .p009-img{
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .p009-i1{ grid-column: 1; grid-row: 1; }
+  .p009-i2{ grid-column: 1; grid-row: 2; }
+  .p009-i3{ grid-column: 2; grid-row: 2; }
+  .p009-i4{ grid-column: 1; grid-row: 3; }
+
+  @media (max-width: 900px){
+    .p009-layout{ grid-template-columns: 1fr; }
+    .p009-right{ grid-template-columns: 1fr; }
+    .p009-i1,.p009-i2,.p009-i3,.p009-i4{ grid-column: 1; }
+  }
+
+  @media print{
+    .p009-page{ max-width:none; padding:0; }
+  }
+</style>
+
+<div class="p009-page">
+  <div class="p009-title">2.1 : <u>Equipment’s Layout</u> and Special Stowage Area</div>
+
+  <div class="p009-layout">
+
+    <!-- LEFT: HTML tables -->
+    <div class="p009-left">
+
+      <table class="p009-mini">
+        <tr><th class="p009-cap p009-cap-orange" colspan="2">LOCATIONS OF RTG BLOCKS</th></tr>
+        <tr><th class="p009-subcap p009-cap-orange" colspan="2">Terminal P4</th></tr>
+        <tr class="p009-hdr"><th>Section</th><th>Block</th></tr>
+
+        <tr><td rowspan="4">Section 1</td><td>TR04</td></tr>
+        <tr><td>TS04</td></tr>
+        <tr><td>TS05</td></tr>
+        <tr><td>TT04</td></tr>
+      </table>
+
+      <table class="p009-mini">
+        <tr><th class="p009-cap p009-cap-blue" colspan="2">LOCATIONS OF RTG/ERTG BLOCKS</th></tr>
+        <tr><th class="p009-subcap p009-cap-blue" colspan="2">Terminal P56SE</th></tr>
+        <tr class="p009-hdr"><th>Section</th><th>Block</th></tr>
+
+        <tr><td rowspan="4">Section 1</td><td>TL06</td></tr>
+        <tr><td>TM07</td></tr>
+        <tr><td>TN07</td></tr>
+        <tr><td>TM08</td></tr>
+
+        <tr><td rowspan="3">Section 2</td><td>TH06</td></tr>
+        <tr><td>TH07</td></tr>
+        <tr><td>TH08</td></tr>
+      </table>
+
+      <table class="p009-mini">
+        <tr><th class="p009-cap p009-cap-purple" colspan="2">LOCATIONS OF OH BLOCKS</th></tr>
+        <tr><th class="p009-subcap p009-cap-purple" colspan="2">Terminal P56SE</th></tr>
+        <tr class="p009-hdr"><th>Section</th><th>Block</th></tr>
+
+        <tr><td rowspan="3">Section 1</td><td>TM06</td></tr>
+        <tr><td>TN06</td></tr>
+        <tr><td>TN08</td></tr>
+      </table>
+
+    </div>
+
+    <!-- RIGHT: images only (circled part) -->
+    <div class="p009-right">
+      <img class="p009-img p009-i1" src="/static/PPT4RTG.png" alt="PPT4 RTG Block">
+      <img class="p009-img p009-i2" src="/static/PPT5RTG.png" alt="PPT5 RTG Block">
+      <img class="p009-img p009-i3" src="/static/PPT6ERTG.png" alt="PPT6 ERTG Block">
+      <img class="p009-img p009-i4" src="/static/PPT5OH.png" alt="PPT5 OH Block">
+    </div>
+
+  </div>
+</div>

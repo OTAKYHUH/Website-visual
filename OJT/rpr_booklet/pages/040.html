@@ -1,0 +1,166 @@
+<!-- 039.html — RP Booklet (Replanner) Page 39
+     Task 8: Diversion Basic Knowledge (continued)
+     8.2 : Stacking Height
+     8.3 : Illustration of Containers in the Yard
+     ✅ Matches screenshot layout:
+        - 8.2 heading
+        - 2-column table (Types of Containers / Stacking Height)
+        - footnote line for TK
+        - 8.3 heading
+        - big 2-column table with bold headers + 2 images
+     ✅ Namespaced CSS (won't affect navbar)
+
+     NOTE: Replace image filenames with your actual /static/ files:
+       /static/yard_illus_left.png
+       /static/yard_illus_right.png
+-->
+<style>
+  .p039-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+    line-height: 1.55;
+  }
+
+  .p039-h2{
+    max-width: 1080px;
+    margin: 0 auto 10px;
+    font-weight: 900;
+    font-size: 22px;
+  }
+
+  /* ===== 8.2 table ===== */
+  .p039-small-table{
+    width: 560px;
+    max-width: 95%;
+    border-collapse: collapse;
+    margin: 0 0 10px 55px; /* left aligned like screenshot */
+    font-size: 20px;
+  }
+  .p039-small-table th,
+  .p039-small-table td{
+    border: 1.5px solid #000;
+    padding: 10px 12px;
+    vertical-align: middle;
+  }
+  .p039-small-table th{
+    font-weight: 900;
+    text-align: left;
+  }
+
+  .p039-foot{
+    max-width: 1080px;
+    margin: 8px auto 22px 55px;
+    font-size: 22px;
+  }
+  .p039-foot b{ font-weight: 900; }
+
+  /* ===== 8.3 big table ===== */
+  .p039-bigtable{
+    width: 1080px;
+    max-width: 100%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  .p039-bigtable th,
+  .p039-bigtable td{
+    border: 1.5px solid #000;
+    padding: 14px 10px;
+    vertical-align: middle;
+  }
+  .p039-bigtable th{
+    font-size: 26px;
+    font-weight: 900;
+    text-align: center;
+  }
+
+  .p039-imgcell{
+    height: 480px;
+    padding: 10px;
+  }
+
+  .p039-imgwrap{
+    width: 100%;
+    height: 100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#fff;
+    overflow:hidden;
+  }
+  .p039-imgwrap img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display:block;
+  }
+
+  @media (max-width: 900px){
+    .p039-small-table,
+    .p039-foot{ margin-left: 0; }
+    .p039-bigtable th{ font-size: 20px; }
+    .p039-imgcell{ height: 360px; }
+  }
+
+  @media print{
+    .p039-page{ max-width:none; padding:0; }
+  }
+</style>
+
+<div class="p039-page">
+
+  <div class="p039-h2">8.2: Stacking Height</div>
+
+  <table class="p039-small-table">
+    <tr>
+      <th>Types of Containers</th>
+      <th style="width:180px;">Stacking Height</th>
+    </tr>
+    <tr>
+      <td>GP, HC, MT, MH, MR, RH</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <td>TE, OT</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td>*TK, DG, DM, FE</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>FR</td>
+      <td>1</td>
+    </tr>
+  </table>
+
+  <div class="p039-foot">
+    * <b>TK</b> must be planned / diverted at RTG block inner row (row 2 to row 5)
+  </div>
+
+  <div class="p039-h2">8.3: Illustration of Containers in the Yard</div>
+
+  <table class="p039-bigtable">
+    <tr>
+      <th>Opening the block without<br>selecting any vessel cluster</th>
+      <th>Opening the block by selecting<br>the vessel cluster</th>
+    </tr>
+    <tr>
+      <td class="p039-imgcell">
+        <div class="p039-imgwrap">
+          <img src="/static/8_3_1.png" alt="Opening block without selecting vessel cluster">
+        </div>
+      </td>
+      <td class="p039-imgcell">
+        <div class="p039-imgwrap">
+          <img src="/static/8_3_2.png" alt="Opening block by selecting vessel cluster">
+        </div>
+      </td>
+    </tr>
+  </table>
+
+</div>

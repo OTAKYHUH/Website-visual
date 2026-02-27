@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Competency Assessment Checklist for RP</title>
+
+<style>
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    margin: 24px;
+    color: #000;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .intro { margin-bottom: 6px; }
+
+  .scale {
+    text-align: center;
+    font-style: italic;
+    margin-bottom: 16px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    border: 1px solid #000;
+    padding: 6px;
+    vertical-align: top;
+  }
+
+  th {
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .task-number {
+    width: 35px;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .score {
+    width: 40px;
+    text-align: center;
+  }
+
+  .comments { width: 30%; }
+
+  .section-title {
+    font-weight: bold;
+    background: #f2f2f2;
+  }
+
+  .section-row td {
+    border-left: none;
+    border-right: none;
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #000;
+  }
+
+  .sub-divider td { border-top: 1px solid #000; }
+
+  .section-box td:first-child { border-left: 1px solid #000; }
+  .section-box td:last-child  { border-right: 1px solid #000; }
+
+  ul {
+    margin: 4px 0 0 16px;
+    padding: 0;
+  }
+
+  li { margin-bottom: 4px; }
+
+  /* ===================== PRINT-SAFE "RADIO" ===================== */
+  .radio-cell {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .print-radio {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .print-radio input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+  }
+
+  .radio-box {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #000;
+    box-sizing: border-box;
+    display: inline-block;
+  }
+
+  .print-radio input[type="radio"]:checked + .radio-box {
+    background: #000;
+  }
+
+  @media print {
+    .radio-box { border: 2px solid #000; }
+  }
+
+  /* ✅ Mentor comment box styling */
+  .comment-box {
+    width: 100%;
+    min-height: 42px;
+    border: none;
+    outline: none;
+    resize: vertical;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    background: transparent;
+    padding: 2px 4px;
+    box-sizing: border-box;
+  }
+
+  .page-footer {
+    margin-top: 24px;
+    font-size: 11px;
+    color: #666;
+    text-align: right;
+  }
+</style>
+</head>
+
+<!-- ✅ RPM page code: change to your RPM page number -->
+<body data-page-code="001">
+
+<h1>Competency Assessment Checklist for RP</h1>
+
+<p class="intro">
+At the end of OJT, a mentor will be assigned to conduct the competency assessment to determine the current standing of the trainee. The mentor is responsible for assessing the trainee on the individual tasks and filling in the performance standards between a scale of 0 – 4.
+</p>
+
+<p class="scale">
+1 – Need more practice, 2 – Pass, 3 – Good, 4 – Excellent
+</p>
+
+<table>
+  <!-- HEADER -->
+  <tr>
+    <th class="task-number"></th>
+    <th>Task Outcome</th>
+    <th colspan="4">Performance Standard</th>
+    <th class="comments">Mentor’s Comments</th>
+  </tr>
+
+  <tr>
+    <th></th>
+    <th></th>
+    <th class="score">1</th>
+    <th class="score">2</th>
+    <th class="score">3</th>
+    <th class="score">4</th>
+    <th></th>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td colspan="6" class="section-title">PERFORMANCE ASSESSMENT</td>
+  </tr>
+
+  <!-- ===================== 1 ===================== -->
+  <tr class="section-row section-box">
+    <td class="task-number">1.</td>
+    <td><strong>Perform Basic Terminal Operations and Monitor Yard Key Performance Indicators (KPI)</strong></td>
+    <td></td><td></td><td></td><td></td>
+    <td></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>Know Control Centre (CC) staff guidelines, different staff roles and contact list</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r01" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r01" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r01" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r01" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c01"></textarea></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>Know Basic Terminal Operations flow</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r02" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r02" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r02" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r02" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c02"></textarea></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>Know Yard KPIs and the tools to monitor them via yard wait time excel and utilize PM NO SHOW panel</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r03" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r03" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r03" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r03" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c03"></textarea></td>
+  </tr>
+
+  <!-- ===================== 2 ===================== -->
+  <tr class="section-row section-box">
+    <td class="task-number">2.</td>
+    <td><strong>Identify Yard Layout and Equipment</strong></td>
+    <td></td><td></td><td></td><td></td><td></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Able to explain Yard Layout and Yard details</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r04" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r04" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r04" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r04" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c04"></textarea></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>Able to explain Yard Equipment and basic mode of operations</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r05" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r05" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r05" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r05" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c05"></textarea></td>
+  </tr>
+
+  <!-- ===================== 3 ===================== -->
+  <tr class="section-row section-box">
+    <td class="task-number">3.</td>
+    <td><strong>Use of UHF set and CCTV for Operations</strong></td>
+    <td></td><td></td><td></td><td></td><td></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Tune to RTG block channels</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r06" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r06" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r06" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r06" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c06"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Tune to RP and SOC channels</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r07" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r07" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r07" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r07" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c07"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Private call numbers for PM / RTG / FM / Reach Stacker</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r08" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r08" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r08" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r08" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c08"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Familiarize with Yard CCTV numbers</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r09" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r09" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r09" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r09" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c09"></textarea></td>
+  </tr>
+
+  <!-- ===================== 4 ===================== -->
+  <tr class="section-row section-box">
+    <td class="task-number">4.</td>
+    <td><strong>Use of Systems for Operations</strong></td>
+    <td></td><td></td><td></td><td></td><td></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Familiar with CITOS functions</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r10" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r10" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r10" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r10" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c10"></textarea></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>Familiar with use of CITIS functions</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r11" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r11" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r11" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r11" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c11"></textarea></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>YOMC – Understand all possible functions of and use to monitor yard operations</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r12" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r12" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r12" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r12" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c12"></textarea></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>Familiar with use of logical yard and yard QCC</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r13" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r13" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r13" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r13" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c13"></textarea></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>Familiar with use of CANS</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r14" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r14" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r14" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r14" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c14"></textarea></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>VOMC - Understand vessel sequence and use VPA to view incoming yard activities</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r15" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r15" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r15" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r15" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c15"></textarea></td>
+  </tr>
+
+  <!-- ===================== 5 ===================== -->
+  <tr class="section-row section-box">
+    <td class="task-number">5.</td>
+    <td><strong>Gantry of RTGs and Yard Safety SOPs</strong></td>
+    <td></td><td></td><td></td><td></td><td></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Tune to correct RTG block channels</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r16" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r16" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r16" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r16" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c16"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Ensure RTG gantry safely and correctly</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r17" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r17" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r17" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r17" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c17"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Understand Yard Safety SOPs</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r18" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r18" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r18" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r18" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c18"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Escalation of any safely infringement to necessary parities</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r19" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r19" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r19" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r19" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c19"></textarea></td>
+  </tr>
+
+  <!-- ===================== 6 ===================== -->
+  <tr class="section-row section-box">
+    <td class="task-number">6.</td>
+    <td><strong>Monitor Yard Operations and Equipment</strong></td>
+    <td></td><td></td><td></td><td></td><td></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>Use YOMC to monitor ship ops mounting / offloading</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r20" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r20" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r20" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r20" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c20"></textarea></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>Differentiate and understand how to handle L&amp;R, Overland, Shut Out</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r21" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r21" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r21" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r21" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c21"></textarea></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>Understand every non-ship ops yard operation and how to manage their activities</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r22" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r22" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r22" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r22" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c22"></textarea></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>Explain workings of ERTG / OH / RTG / FM / ARMG and their differences</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r23" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r23" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r23" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r23" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c23"></textarea></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>Understand deployment sheet</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r24" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r24" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r24" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r24" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c24"></textarea></td>
+  </tr>
+
+  <!-- ===================== 7 ===================== -->
+  <tr class="section-row section-box">
+    <td class="task-number">7.</td>
+    <td><strong>Forecast RTG Yard Activities and Equipment Positioning</strong></td>
+    <td></td><td></td><td></td><td></td><td></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>Reposition RTGs matching operator skill to yard activities</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r25" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r25" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r25" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r25" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c25"></textarea></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>Use of RTG activities forecast email to position RTG for heavy yard activities</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r26" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r26" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r26" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r26" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c26"></textarea></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>Able to differentiate and use both YOMC job list and activity list</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r27" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r27" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r27" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r27" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c27"></textarea></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>Use of logical yard (enhance activities) to forecast incoming activities</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r28" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r28" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r28" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r28" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c28"></textarea></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>Understand PM diversion SOP and Divert PMs correctly</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r29" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r29" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r29" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r29" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c29"></textarea></td>
+  </tr>
+
+  <!-- ===================== 8 ===================== -->
+  <tr class="section-row section-box">
+    <td class="task-number">8.</td>
+    <td><strong>Prime Mover (PM) Diversions</strong></td>
+    <td></td><td></td><td></td><td></td><td></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>Identify different types of container categories</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r30" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r30" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r30" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r30" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c30"></textarea></td>
+  </tr>
+
+  <tr class="sub-divider">
+    <td></td>
+    <td>PM Diversion SOPs</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r31" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r31" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r31" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r31" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c31"></textarea></td>
+  </tr>
+
+  <!-- ===================== 9 ===================== -->
+  <tr class="section-row section-box">
+    <td class="task-number">9.</td>
+    <td><strong>Handle and Escalate Different Yard Exceptions</strong></td>
+    <td></td><td></td><td></td><td></td><td></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Missing container / Wrongly updated container</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r32" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r32" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r32" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r32" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c32"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Leaking DG or Non-DG container</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r33" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r33" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r33" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r33" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c33"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Reported damaged container</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r34" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r34" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r34" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r34" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c34"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Spillage in Yard and Bund SOP</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r35" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r35" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r35" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r35" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c35"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>PM Breakdown</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r36" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r36" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r36" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r36" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c36"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>PM driver reported mounting / offloading different container number</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r37" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r37" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r37" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r37" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c37"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>PM driver reported container wrongly declared (size or category)</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r38" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r38" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r38" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r38" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c38"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>PM driver uncontactable</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r39" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r39" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r39" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r39" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c39"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>IYS PM driver does not deploy the following shift</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r40" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r40" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r40" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r40" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c40"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>System / PC related issues</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r41" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r41" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r41" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r41" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c41"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>ARMG or RTG breakdown / PTW (crane servicing) / TID (lane maintenance work)</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r42" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r42" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r42" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r42" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c42"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Manual yard moves</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r43" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r43" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r43" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r43" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c43"></textarea></td>
+  </tr>
+
+  <!-- ===================== SUPERVISORY SKILLS ===================== -->
+  <tr class="section-row section-box">
+    <td></td>
+    <td colspan="6" class="section-title">SUPERVISORY SKILLS ASSESSMENT</td>
+  </tr>
+
+  <!-- ===================== 10 ===================== -->
+  <tr class="section-row section-box">
+    <td class="task-number">10.</td>
+    <td><strong>Manage Resources</strong></td>
+    <td></td><td></td><td></td><td></td><td></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Knows the strategies and guidelines to achieve KPI targets</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r44" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r44" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r44" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r44" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c44"></textarea></td>
+  </tr>
+
+  <!-- ===================== 11 ===================== -->
+  <tr class="section-row section-box">
+    <td class="task-number">11.</td>
+    <td><strong>Solve Problems and Make Decisions</strong></td>
+    <td></td><td></td><td></td><td></td><td></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Identify relevant issues and causes of problems</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r45" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r45" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r45" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r45" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c45"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Make effective and practical decisions</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r46" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r46" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r46" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r46" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c46"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Show firmness and impartiality during course of work</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r47" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r47" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r47" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r47" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c47"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Explain the rationale behind work processes</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r48" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r48" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r48" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r48" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c48"></textarea></td>
+  </tr>
+
+  <!-- ===================== ATTITUDE ASSESSMENT ===================== -->
+  <tr class="section-row section-box">
+    <td></td>
+    <td colspan="6" class="section-title">ATTITUDE ASSESSMENT</td>
+  </tr>
+
+  <!-- ===================== 12 ===================== -->
+  <tr class="section-row section-box">
+    <td class="task-number">12.</td>
+    <td><strong>Provide Customer Service</strong></td>
+    <td></td><td></td><td></td><td></td><td></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Answer customer queries and be able to direct the proper personnel involved</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r49" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r49" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r49" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r49" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c49"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Phone etiquette handling customers</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r50" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r50" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r50" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r50" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c50"></textarea></td>
+  </tr>
+
+  <!-- ===================== 13 ===================== -->
+  <tr class="section-row section-box">
+    <td class="task-number">13.</td>
+    <td><strong>Manage Job Performance</strong></td>
+    <td></td><td></td><td></td><td></td><td></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Conscientious in execution of duties and responsibilities</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r51" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r51" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r51" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r51" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c51"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Willing and able to change his way of working when required</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r52" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r52" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r52" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r52" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c52"></textarea></td>
+  </tr>
+
+  <tr>
+    <td></td>
+    <td>Willing to perform more than what is required of his assignment and job without being told to do so</td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r53" value="1"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r53" value="2"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r53" value="3"><span class="radio-box"></span></label></td>
+    <td class="radio-cell"><label class="print-radio"><input class="autosave" type="radio" name="rpm_r53" value="4"><span class="radio-box"></span></label></td>
+    <td><textarea class="comment-box autosave" name="rpm_c53"></textarea></td>
+  </tr>
+
+</table>
+</body>
+</html>

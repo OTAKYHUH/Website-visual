@@ -1,0 +1,101 @@
+<!-- 032.html — RP Booklet (Replanner) Page 32
+     Task 6: Monitor Yard Operations (continued)
+     ✅ Matches screenshot layout:
+        - Item 3 text (single paragraph)
+        - Two images side-by-side (boxed)
+        - Item 4 text (single paragraph)
+        - Two images side-by-side (boxed)
+     ✅ Namespaced CSS (won't affect navbar)
+
+     NOTE: Replace image filenames with your actual /static/ files:
+       /static/task6_3a.png  /static/task6_3b.png
+       /static/task6_4a.png  /static/task6_4b.png
+-->
+<style>
+  .p032-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+    line-height: 1.5;
+  }
+
+  .p032-item{
+    max-width: 1080px;
+    margin: 0 auto 10px;
+    font-size: 18px;
+  }
+
+  .p032-item .num{
+    font-weight: 500;
+  }
+
+  .p032-row2{
+    max-width: 1080px;
+    margin: 8px auto 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+
+  .p032-imgbox{
+    border: 3px solid #000;
+    background:#fff;
+    overflow:hidden;
+  }
+
+  .p032-imgbox img{
+    width: 100%;
+    height: auto;
+    display:block;
+  }
+
+  @media (max-width: 1100px){
+    .p032-row2{ grid-template-columns: 1fr; }
+  }
+
+  @media print{
+    .p032-page{ max-width:none; padding:0; }
+    .p032-imgbox{ border-width:2px; }
+  }
+</style>
+
+<div class="p032-page">
+
+  <!-- 3 -->
+  <div class="p032-item">
+    <span class="num">3.</span>
+    Immediately informing SOC possible to stagger or reduce PMs ratio if encounter heavy block mounting and working
+    with AOC to put restricted region at the slot to focus on ship operation single point mounting job. Fully utilizing
+    both ARMG lanes (lane 0 and lane 11) by changing PM lane if required.
+  </div>
+
+  <div class="p032-row2">
+    <div class="p032-imgbox">
+      <img src="/static/6_3_1.png" alt="Task 6 - Item 3 (Left)">
+    </div>
+    <div class="p032-imgbox">
+      <img src="/static/6_3_2.png" alt="Task 6 - Item 3 (Right)">
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="p032-item">
+    <span class="num">4.</span>
+    Forecasted single point mounting slot, raising CMRs for ARMG to side shuffling loading container to other slot,
+    these may utilize both ARMG crane for mounting when the job is assigned.
+  </div>
+
+  <div class="p032-row2">
+    <div class="p032-imgbox">
+      <img src="/static/6_4_1.png" alt="Task 6 - Item 4 (Left)">
+    </div>
+    <div class="p032-imgbox">
+      <img src="/static/6_4_2.png" alt="Task 6 - Item 4 (Right)">
+    </div>
+  </div>
+
+</div>

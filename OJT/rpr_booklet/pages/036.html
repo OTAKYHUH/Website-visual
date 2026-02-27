@@ -1,0 +1,84 @@
+<!-- 035.html — RP Booklet (Replanner) Page 35
+     Task 6: Monitor Yard Operations (continued)
+     ✅ Matches screenshot layout:
+        - Line 7 sentence
+        - Underlined title: "TN05: Lane Management or Informing Reefer Control to Divert Offloading Job"
+        - Two stacked images (BEFORE on top, AFTER below)
+     ✅ Namespaced CSS (won't affect navbar)
+
+     NOTE: Replace image filenames with your actual /static/ files:
+       /static/TN05_before.png
+       /static/TN05_after.png
+-->
+<style>
+  .p035-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+    line-height: 1.5;
+  }
+
+  .p035-line{
+    max-width: 1080px;
+    margin: 0 auto 10px;
+    font-size: 20px;
+  }
+
+  .p035-title{
+    max-width: 1080px;
+    margin: 0 auto 14px;
+    font-size: 22px;
+    font-weight: 900;
+    text-decoration: underline;
+  }
+
+  .p035-stack{
+    max-width: 1080px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .p035-imgbox{
+    border: 3px solid #000;
+    background:#fff;
+    overflow:hidden;
+  }
+
+  .p035-imgbox img{
+    width: 100%;
+    height: auto;
+    display:block;
+  }
+
+  @media print{
+    .p035-page{ max-width:none; padding:0; }
+    .p035-imgbox{ border-width:2px; }
+  }
+</style>
+
+<div class="p035-page">
+
+  <div class="p035-line">
+    7. Haulier or prime mover reefer job remains plugged in, blocking the other prime mover from discharging the container.
+  </div>
+
+  <div class="p035-title">
+    TN05: Lane Management or Informing Reefer Control to Divert Offloading Job
+  </div>
+
+  <div class="p035-stack">
+    <div class="p035-imgbox">
+      <img src="/static/TN05_1.png" alt="TN05 - BEFORE">
+    </div>
+
+    <div class="p035-imgbox">
+      <img src="/static/TN05_2.png" alt="TN05 - AFTER">
+    </div>
+  </div>
+
+</div>

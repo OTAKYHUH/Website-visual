@@ -1,0 +1,68 @@
+<style>
+  .pCANS-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1250px;
+    margin: 0 auto;
+    padding: 18px 10px;
+    font-size: 14px;
+  }
+
+  .pCANS-title{ font-weight:700; font-size:20px; margin:0 0 10px; }
+  .pCANS-subtitle{ font-weight:700; font-size:18px; margin:0 0 14px; }
+
+  /* ✅ Center the whole content block (the “red box” area) */
+  .pCANS-centerWrap{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .pCANS-layout{
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+
+    /* keeps it from stretching too wide, so it sits centered nicely */
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  .pCANS-left{
+    flex: 0 0 78%;
+  }
+
+  .pCANS-imgWrap{
+    border: none;
+    padding: 0;
+    background: transparent;
+  }
+
+  .pCANS-img{
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  @media (max-width: 900px){
+    .pCANS-layout{ flex-direction: column; }
+    .pCANS-left{ flex: 1 1 auto; }
+  }
+</style>
+
+<div class="pCANS-page">
+  <div class="pCANS-title">4.3 : Common Alert &amp; Notification System (CANS)</div>
+  <div class="pCANS-subtitle">4.3.1 : CANS Panel</div>
+
+  <!-- ✅ Centered block -->
+  <div class="pCANS-centerWrap">
+    <div class="pCANS-layout">
+      <div class="pCANS-left">
+        <div class="pCANS-imgWrap">
+          <img class="pCANS-img" src="/static/CANS.png" alt="CANS Panel Screenshot" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

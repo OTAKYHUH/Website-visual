@@ -1,0 +1,60 @@
+<!-- 024.html — RP Booklet (Replanner) Page 24
+     4.2.5 : PM Unavailable / Deployed / Standby
+     ✅ Title + paragraph + screenshot image
+     ✅ Namespaced CSS (won't affect navbar)
+-->
+<style>
+  .p024-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+  }
+
+  .p024-title{
+    font-weight: 900;
+    font-size: 20px;
+    margin: 0 0 10px;
+  }
+
+  .p024-text{
+    font-size: 18px;
+    margin: 0 0 14px 70px; /* slight indent like screenshot */
+    max-width: 1020px;
+  }
+
+  .p024-imgwrap{
+    max-width: 1050px;
+    margin: 0 auto;
+  }
+
+  .p024-img{
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  @media print{
+    .p024-page{ max-width:none; padding:0; }
+    .p024-imgwrap{ max-width:none; }
+  }
+</style>
+
+<div class="p024-page">
+  <div class="p024-title">4.2.5 : PM Unavailable / Deployed / Standby</div>
+
+  <div class="p024-text">
+    Monitor PM Unavailable / Deployed / Standby closely to identify no yard allocation, PM should be diverted
+    as soon as possible to prevent PM for incurring high waiting time. Below is the example page of a PM
+    unavailable / deployed / standby.
+  </div>
+
+  <!-- Screenshot is an image -->
+  <div class="p024-imgwrap">
+    <img class="p024-img"
+         src="/static/PM Unavailable.png"
+         alt="PM Unavailable / Deployed / Standby example screen">
+  </div>
+</div>

@@ -2,7 +2,8 @@
 """
 DOCX -> HTML (same folder), ready for VSCode "Run Python File".
 
-- Preferred: uses `mammoth` for better DOCX->HTML + image extraction.
+- Preferred: uses `mammoth` for better DOCX->HTML.
+  ✅ Images are embedded as base64 data URLs (NO assets folder).
 - Fallback: uses `python-docx` basic converter (headings/paras/lists/tables),
   and can detect page breaks and insert <hr class="page-break">.
 
@@ -13,6 +14,7 @@ Run:
 
 from __future__ import annotations
 
+import base64
 import html
 import os
 import re
@@ -39,7 +41,6 @@ def main() -> int:
         return 2
 
     out_html_path = docx_path.with_suffix(".html")
-    assets_dir = docx_path.with_name(f"{docx_path.stem}_assets")
 
     # If you really want to force the basic converter:
     # set environment variable FORCE_BASIC=1
@@ -50,7 +51,7 @@ def main() -> int:
 
     if not force_basic:
         try:
-            body_html, warnings = convert_with_mammoth(docx_path, assets_dir)
+            body_html, warnings = convert_with_mammoth_inline_images(docx_path)
         except Exception as e:
             print(f"[INFO] Mammoth not available/failed ({e}). Using basic converter.")
             body_html = convert_with_python_docx_basic(docx_path)
@@ -74,9 +75,6 @@ def main() -> int:
     out_html_path.write_text(final_html, encoding="utf-8")
     print(f"[OK] Wrote: {out_html_path}")
 
-    if assets_dir.exists():
-        print(f"[OK] Assets folder: {assets_dir}")
-
     if warnings:
         print("[NOTES]")
         for w in warnings[:20]:
@@ -95,7 +93,7 @@ def get_input_path() -> Path:
     docxs = sorted(script_dir.glob("*.docx"))
 
     # Prefer your known name if present
-    preferred = script_dir / "YAS Booklet.docx"
+    preferred = script_dir / "RP Booklet (Replanner Guideline).docx"
     if preferred.exists():
         return preferred
 
@@ -107,34 +105,28 @@ def get_input_path() -> Path:
 
 
 # ----------------------------
-# Preferred conversion: mammoth
+# Preferred conversion: mammoth (INLINE images, no assets folder)
 # ----------------------------
-def convert_with_mammoth(docx_path: Path, assets_dir: Path) -> tuple[str, list[str]]:
+def convert_with_mammoth_inline_images(docx_path: Path) -> tuple[str, list[str]]:
     """
-    Convert using mammoth. Extract images to assets_dir and reference them in HTML.
+    Convert using mammoth. Images are embedded into HTML as base64 data URLs.
+    No assets folder is created.
     """
     try:
         import mammoth  # pip install mammoth
     except ImportError as ie:
         raise RuntimeError("mammoth is not installed. Run: pip install mammoth") from ie
 
-    assets_dir.mkdir(parents=True, exist_ok=True)
-    img_counter = {"n": 0}
-
-    def _save_image(image) -> dict:
-        img_counter["n"] += 1
-        ext = image.content_type.split("/")[-1].lower()
-        if ext == "jpeg":
-            ext = "jpg"
-        filename = f"image_{img_counter['n']:03d}.{ext}"
-        out_path = assets_dir / filename
-        out_path.write_bytes(image.read())
-        return {"src": f"{assets_dir.name}/{filename}"}
+    def _inline_image(image) -> dict:
+        content_type = (image.content_type or "image/png").lower()
+        data = image.read()
+        b64 = base64.b64encode(data).decode("ascii")
+        return {"src": f"data:{content_type};base64,{b64}"}
 
     with open(docx_path, "rb") as f:
         result = mammoth.convert_to_html(
             f,
-            convert_image=mammoth.images.img_element(_save_image),
+            convert_image=mammoth.images.img_element(_inline_image),
         )
 
     warnings: list[str] = []

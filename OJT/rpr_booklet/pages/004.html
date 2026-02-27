@@ -1,0 +1,91 @@
+<!-- 004.html — RP Booklet (Replanner) Page 4
+     ✅ The big boxed diagram is ONE image (inserted below)
+     ✅ No autosave fields needed (no inputs on this page)
+-->
+
+<style>
+  .ojt-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 18px 10px;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .task-title{
+    font-weight: 800;
+    text-decoration: underline;
+    margin: 0 0 10px;
+  }
+
+  .sub-title{
+    font-weight: 700;
+    margin: 0 0 10px 22px;
+  }
+
+  /* Diagram image (the boxed up one) */
+  .diagram-wrap{
+    margin: 10px 0 14px;
+  }
+  .diagram-img{
+    width: 100%;
+    max-width: 760px;     /* keeps it looking like the screenshot */
+    height: auto;
+    display: block;
+  }
+
+  .legend-title{
+    font-weight: 800;
+    text-decoration: underline;
+    margin: 10px 0 6px;
+  }
+
+  .legend{
+    margin: 0 0 0 22px;
+    padding: 0;
+    list-style: none;
+    font-size: 12px;
+  }
+  .legend li{
+    margin: 2px 0;
+  }
+  .legend .k{
+    display: inline-block;
+    width: 40px;
+    font-weight: 700;
+  }
+</style>
+
+<div class="ojt-page">
+
+  <div class="task-title">
+    Task 1: Perform Basic Terminal Operations and Monitor Yard Key Performance Indicators (KPI)
+  </div>
+
+  <div class="sub-title">1.1 : Perform Basic Terminal Operations</div>
+
+  <!-- ✅ BOXED DIAGRAM IMAGE -->
+  <div class="diagram-wrap">
+    <!-- Put your image file in: static/rp_booklet/images/page004_diagram.png
+         Then use the Jinja url_for below. If you’re not using Jinja, replace src with a direct path.
+    -->
+    <img
+      class="diagram-img"
+      src="/static/TOperations.png"
+      alt="Terminal Operations Diagram"
+    >
+  </div>
+
+  <div class="legend-title">Legends:</div>
+  <ul class="legend">
+    <li><span class="k">CT:</span> Container Terminal</li>
+    <li><span class="k">K:</span> Keppel</li>
+    <li><span class="k">B:</span> Brani</li>
+    <li><span class="k">ITH:</span> Inter-Terminal Haulage</li>
+    <li><span class="k">IGH:</span> Inter-Gateway Haulage</li>
+  </ul>
+
+</div>

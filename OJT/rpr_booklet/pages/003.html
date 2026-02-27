@@ -1,0 +1,207 @@
+<!-- 003.html — RP Booklet (Replanner) Page 3
+     ✅ Fix: header block no longer follows OJT HOURS column width
+     ✅ Tasks table keeps small S/N + small OJT HOURS, wide TASKS
+-->
+<style>
+  .ojt-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 18px 10px;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .page-title{
+    text-align: center;
+    font-weight: 800;
+    letter-spacing: .5px;
+    margin: 6px 0 14px;
+    font-size: 14px;
+    text-transform: uppercase;
+  }
+
+  table{
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  td, th{
+    border: 1px solid #000;
+    padding: 6px 8px;
+    vertical-align: middle;
+  }
+  b{ text-transform: uppercase; }
+
+  /* ===== HEADER BLOCK (separate table) ===== */
+  .hdr td{ font-size: 11px; }
+  .hdr-left{ width: 66%; }
+  .hdr-right{ width: 34%; padding: 0; }
+
+  .hdr-right table{
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  .hdr-right td{
+    border: none;
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+  .hdr-right .row{
+    padding: 6px 10px;          /* <-- controls the spacing you want */
+    border-bottom: 1px solid #000;
+    box-sizing: border-box;
+  }
+  .hdr-right .row:last-child{
+    border-bottom: none;
+  }
+  .hdr-right .two-col{
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  .hdr-right .two-col td{
+    border: none;
+    padding: 6px 8px;
+    text-align: center;
+  }
+  .hdr-right .two-col td + td{
+    border-left: 1px solid #000;
+  }
+
+  /* ===== TASKS TABLE ===== */
+  .tasks th{
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    text-align: center;
+    padding: 6px 6px;
+  }
+
+  .sn{
+    width: 40px;         /* small */
+    text-align: center;
+    font-weight: 700;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .hours{
+    width: 86px;         /* small */
+    text-align: center;
+    font-weight: 700;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .taskcell{
+    padding: 10px 10px;
+    word-wrap: break-word;
+  }
+</style>
+
+<div class="ojt-page">
+  <div class="page-title">REPLANNER GUIDELINE CURRICULUM</div>
+
+  <!-- ✅ HEADER BLOCK (2 columns only) -->
+  <table class="hdr">
+    <colgroup>
+      <col style="width:66%">
+      <col style="width:34%">
+    </colgroup>
+
+    <tr>
+      <td class="hdr-left"><b>JOB TITLE:</b> Replanner</td>
+      <td class="hdr-right">
+        <div class="row"><b>SECTION:</b> P4-P56SE</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="hdr-left"><b>DEPARTMENT:</b> Yard Operation Department</td>
+      <td class="hdr-right">
+        <div class="row"><b>DIVISION:</b> Container Division</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="hdr-left"><b>OJT MODULE:</b> Replanner Course</td>
+      <td class="hdr-right">
+        <table class="two-col">
+          <tr>
+            <td><b>TOTAL TASKS:</b> 10</td>
+            <td><b>TOTAL OJT HOURS:</b> 262</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  <!-- ✅ TASKS TABLE (3 columns) -->
+  <table class="tasks">
+    <colgroup>
+      <col style="width:40px">
+      <col style="width:auto">
+      <col style="width:86px">
+    </colgroup>
+
+    <tr>
+      <th class="sn">S/N</th>
+      <th>TASKS</th>
+      <th class="hours">OJT HOURS</th>
+    </tr>
+
+    <tr>
+      <td class="sn">1</td>
+      <td class="taskcell">Perform Basic Terminal Operations and Monitor Yard Key Performance Indicators (KPI)</td>
+      <td class="hours">12</td>
+    </tr>
+    <tr>
+      <td class="sn">2</td>
+      <td class="taskcell">Identify Yard Layout and Equipment</td>
+      <td class="hours">24</td>
+    </tr>
+    <tr>
+      <td class="sn">3</td>
+      <td class="taskcell">Use of UHF set and CCTV for Operations</td>
+      <td class="hours">12</td>
+    </tr>
+    <tr>
+      <td class="sn">4</td>
+      <td class="taskcell">Use of Systems for Operations</td>
+      <td class="hours">36</td>
+    </tr>
+    <tr>
+      <td class="sn">5</td>
+      <td class="taskcell">Gantry of RTGs and Yard Safety SOPs</td>
+      <td class="hours">12</td>
+    </tr>
+    <tr>
+      <td class="sn">6</td>
+      <td class="taskcell">Monitor Yard Operations and Equipment</td>
+      <td class="hours">36</td>
+    </tr>
+    <tr>
+      <td class="sn">7</td>
+      <td class="taskcell">Forecast Yard Activities and Equipment Positioning</td>
+      <td class="hours">12</td>
+    </tr>
+    <tr>
+      <td class="sn">8</td>
+      <td class="taskcell">Prime Mover (PM) Diversions SOP</td>
+      <td class="hours">36</td>
+    </tr>
+    <tr>
+      <td class="sn">9</td>
+      <td class="taskcell">Handle and Escalate different Yard Exceptions</td>
+      <td class="hours">12</td>
+    </tr>
+    <tr>
+      <td class="sn">10</td>
+      <td class="taskcell">YPD attachment (After 1 month’s experience)</td>
+      <td class="hours">36</td>
+    </tr>
+  </table>
+</div>

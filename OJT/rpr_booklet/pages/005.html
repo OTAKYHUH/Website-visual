@@ -1,0 +1,255 @@
+<!-- 006.html — RP Booklet (Replanner) Page 6
+     ✅ COMBINES BOTH SETS = 5 TABLES TOTAL
+        1) (OLD) PPT4–PPT56SE Yard Operation Teams (Blue)
+        2) (OLD) PPT4–PPT56SE Ship Operation Teams (Orange)
+        3) (NEW) CT2 PPT1-3 Ship/Yard Operation Teams (Green)
+        4) (NEW) Others (Blue)
+        5) (NEW) Resource (Pink)
+
+     ✅ All tables are compact + centered
+     ✅ No autosave fields
+-->
+<style>
+  .ojt-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 18px 10px;
+  }
+
+  /* ===== compact shared table style ===== */
+  .tbl{
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-weight: 800;
+    font-size: 14px;      /* compact */
+    line-height: 1.05;
+    width: 100%;
+  }
+  .tbl th, .tbl td{
+    border: 1px solid #000;
+    padding: 4px 10px;    /* compact */
+    vertical-align: middle;
+  }
+  .cap{
+    text-align: left;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: .2px;
+  }
+  .hdr th{
+    text-align: left;
+    font-size: 16px;
+    font-weight: 900;
+  }
+  .wrap{ word-break: break-word; }
+
+  /* ===== page layout ===== */
+  .stack{
+    max-width: 820px;     /* makes tables smaller than page */
+    margin: 0 auto;
+  }
+  .mb-22{ margin-bottom: 22px; }
+  .mb-32{ margin-bottom: 32px; }
+
+  .row{
+    max-width: 820px;
+    margin: 0 auto;
+    display: flex;
+    gap: 34px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .col-2-left{ flex: 1 1 520px; }
+  .col-2-right{ flex: 1 1 260px; }
+
+  /* ===== color themes ===== */
+  .blue .cap{ background:#9fd3df; }
+  .blue .hdr th{ background:#bfe3ee; }
+  .blue td{ background:#dceff6; }
+
+  .orange .cap{ background:#f29a4a; }
+  .orange .hdr th{ background:#f6be8f; }
+  .orange td{ background:#f9e2d0; }
+
+  .green .cap{ background:#9bbb59; }
+  .green .hdr th{ background:#c4d79b; }
+  .green td{ background:#eaf1dd; }
+
+  .blue2 .cap{ background:#4f81bd; color:#000; }
+  .blue2 .hdr th{ background:#95b3d7; }
+  .blue2 td{ background:#dce6f1; }
+
+  .pink .cap{ background:#d99694; }
+  .pink .hdr th{ background:#e6b8b7; }
+  .pink td{ background:#f2dcdb; }
+
+  /* column widths */
+  .w-role-2{ width: 34%; }
+  .w-tel-2{ width: 66%; }
+
+  .w-dept{ width: 30%; }
+  .w-role{ width: 20%; }
+  .w-berth{ width: 22%; text-align:center; }
+  .w-tel{ width: 28%; }
+
+  .w-role-3{ width: 30%; }
+  .w-berth-3{ width: 40%; }
+  .w-tel-3{ width: 30%; }
+
+  .w-role-ot{ width: 45%; }
+  .w-tel-ot{ width: 55%; }
+
+  .w-role-res{ width: 40%; }
+  .w-tel-res{ width: 60%; }
+
+  .dept-cell{
+    font-weight: 900;
+    padding-left: 14px;
+  }
+
+  @media print{
+    .ojt-page{ max-width:none; padding:0; }
+  }
+</style>
+
+<div class="ojt-page">
+
+  <!-- ===== 1) OLD: PPT4–PPT56SE Yard Operation Teams (Blue) ===== -->
+  <div class="stack mb-22">
+    <table class="tbl blue">
+      <colgroup>
+        <col class="w-role-2">
+        <col class="w-tel-2">
+      </colgroup>
+      <tr><th class="cap" colspan="2">PPT4 – PPT56SE Yard Operation Teams</th></tr>
+      <tr class="hdr"><th>Roles:</th><th>Tel:</th></tr>
+
+      <tr><td>PPT4 AAOC</td><td class="wrap">6731 (AAOC) / (Radioset: PPT5 AOC-1)</td></tr>
+      <tr><td>PPT5 AOC / AAOC</td><td class="wrap">6508 (AOC) / 6526 (AAOC) / (Radioset: PPT5 AOC-1)</td></tr>
+      <tr><td>PPT6 AOC / AAOC</td><td class="wrap">7908 (AOC / AAOC) (Radioset: PPT6 AOC-1)</td></tr>
+      <tr><td>aYDM 4</td><td class="wrap">6738 (HP: 82234074)</td></tr>
+      <tr><td>aYDM 5 / 6</td><td class="wrap">6813 / 6817</td></tr>
+      <tr><td>YSS</td><td class="wrap">6725 / (Radioset: CT3 Yard-Ops)</td></tr>
+      <tr><td>YPDM</td><td class="wrap">6601</td></tr>
+      <tr><td>Reefer Yard IC</td><td class="wrap">6613 / 6607</td></tr>
+      <tr><td>Reefer Repair</td><td class="wrap">6265 7535</td></tr>
+    </table>
+  </div>
+
+  <!-- ===== 2) OLD: PPT4–PPT56SE Ship Operation Teams (Orange) ===== -->
+  <div class="stack mb-32">
+    <table class="tbl orange">
+      <colgroup>
+        <col class="w-dept">
+        <col class="w-role">
+        <col class="w-berth">
+        <col class="w-tel">
+      </colgroup>
+
+      <tr><th class="cap" colspan="4">PPT4 – PPT56SE Ship Operation Teams</th></tr>
+      <tr class="hdr">
+        <th>Department / Section:</th>
+        <th>Roles:</th>
+        <th>Berth:</th>
+        <th>Tel:</th>
+      </tr>
+
+      <!-- PPT4 -->
+      <tr>
+        <td class="dept-cell" rowspan="4">PPT4</td>
+        <td>TDM 4</td>
+        <td rowspan="4" class="w-berth">P27 – P29</td>
+        <td class="wrap">6450 / (HP: 97326782)</td>
+      </tr>
+      <tr><td>TOC 4</td><td class="wrap">6281</td></tr>
+      <tr><td>VOC 4A</td><td class="wrap">6449</td></tr>
+      <tr><td>VOC 4 B</td><td class="wrap">6819</td></tr>
+
+      <!-- PP56SE -->
+      <tr>
+        <td class="dept-cell" rowspan="11">PP56SE</td>
+        <td>TDM 5 / 6</td>
+        <td rowspan="2" class="w-berth">P30 – P41</td>
+        <td class="wrap">6509</td>
+      </tr>
+      <tr><td>TOC 1</td><td class="wrap">6810</td></tr>
+      <tr><td>SDM A</td><td class="w-berth">P30 – P34</td><td class="wrap">6501 / (HP: 96363771)</td></tr>
+      <tr><td>VOC 1</td><td class="w-berth">P30 – P31</td><td class="wrap">6502</td></tr>
+      <tr><td>VOC2</td><td class="w-berth">P32 – P34</td><td class="wrap">6733</td></tr>
+      <tr><td>TOC 2</td><td class="w-berth">P35 – P41</td><td class="wrap">6739</td></tr>
+      <tr><td>SDM B</td><td class="w-berth">P35 – P38</td><td class="wrap">6723 / (HP: 98308127)</td></tr>
+      <tr><td>SDM C</td><td class="w-berth">P39 – P41</td><td class="wrap">6812 / (HP: 97399078)</td></tr>
+      <tr><td>VOC 3</td><td class="w-berth">P35 – P36</td><td class="wrap">6721</td></tr>
+      <tr><td>VOC 4</td><td class="w-berth">P37 – P38</td><td class="wrap">6555</td></tr>
+      <tr><td>VOC 5</td><td class="w-berth">P39 – P41</td><td class="wrap">6507</td></tr>
+    </table>
+  </div>
+
+  <!-- ===== 3) NEW: CT2 PPT1-3 Ship / Yard Operation Teams (Green) ===== -->
+  <div class="stack mb-32">
+    <table class="tbl green">
+      <colgroup>
+        <col class="w-role-3">
+        <col class="w-berth-3">
+        <col class="w-tel-3">
+      </colgroup>
+
+      <tr><th class="cap" colspan="3">CT2 PPT1-3 Ship / Yard Operation Teams</th></tr>
+      <tr class="hdr"><th>Roles:</th><th>Berth:</th><th>Tel:</th></tr>
+
+      <tr><td>TDM 1</td><td>P01 – P06</td><td>7721 (PPT 1)</td></tr>
+      <tr><td>TDM 2</td><td>P07 – P11 / P23 – P26</td><td>7722 (PPT 2)</td></tr>
+      <tr><td>TDM 3</td><td>P15 – P22</td><td>7723 (PPT 3)</td></tr>
+      <tr><td>YDM</td><td>--</td><td>7570 (YARD)</td></tr>
+      <tr><td>HYSTER</td><td>--</td><td>7576 (YARD)</td></tr>
+      <tr><td>OHBC</td><td>--</td><td>7558 (YARD)</td></tr>
+    </table>
+  </div>
+
+  <!-- ===== 4 + 5) NEW: Others (Blue) + Resource (Pink) side-by-side ===== -->
+  <div class="row">
+
+    <!-- 4) Others -->
+    <div class="col-2-left">
+      <table class="tbl blue2">
+        <colgroup>
+          <col class="w-role-ot">
+          <col class="w-tel-ot">
+        </colgroup>
+
+        <tr><th class="cap">Others:</th><th class="cap"></th></tr>
+        <tr class="hdr"><th>Roles:</th><th>Tel:</th></tr>
+
+        <tr><td>ITT</td><td>6291</td></tr>
+        <tr><td>IGH</td><td class="wrap">6710 / 6711 / 6713</td></tr>
+        <tr><td>IT Helpdesk</td><td>5459 / 1580</td></tr>
+        <tr><td>Gate IC</td><td class="wrap">6308 / 6309 / 6320</td></tr>
+        <tr><td>CHEMCARE</td><td>96175895</td></tr>
+        <tr><td>SRDO</td><td class="wrap">6964 / (HP: 98245715)</td></tr>
+        <tr><td>Emergency (ERT)</td><td>7730</td></tr>
+      </table>
+    </div>
+
+    <!-- 5) Resource -->
+    <div class="col-2-right">
+      <table class="tbl pink">
+        <colgroup>
+          <col class="w-role-res">
+          <col class="w-tel-res">
+        </colgroup>
+
+        <tr><th class="cap" colspan="2">Resource:</th></tr>
+        <tr class="hdr"><th>Roles:</th><th>Tel:</th></tr>
+
+        <tr><td>Logistics</td><td>6539</td></tr>
+        <tr><td>PMOC</td><td>6401</td></tr>
+        <tr><td>APM Controller</td><td class="wrap">6541 / (Radioset: 680101)</td></tr>
+      </table>
+    </div>
+
+  </div>
+
+</div>

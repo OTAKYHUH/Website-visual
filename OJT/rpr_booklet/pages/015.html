@@ -1,0 +1,65 @@
+<!-- 016.html — RP Booklet (Replanner) Page 16
+     Task 4: Use of Systems for Operations
+     4.1 : CITIS
+     4.1.1 : Enquiry of Container Information (ENQC)
+     ✅ Boxed screenshot is ONE image
+     ✅ Namespaced CSS (won't affect navbar)
+-->
+<style>
+  .p016-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+  }
+
+  .p016-h1{
+    font-weight: 900;
+    font-size: 22px;
+    text-decoration: underline;
+    margin: 0 0 12px;
+  }
+
+  .p016-h2{
+    font-weight: 900;
+    font-size: 18px;
+    margin: 0 0 16px 70px; /* indent like screenshot */
+  }
+
+  .p016-h3{
+    font-weight: 900;
+    font-size: 18px;
+    margin: 0 0 14px 140px; /* deeper indent like screenshot */
+  }
+
+  .p016-imgwrap{
+    max-width: 980px;
+    margin: 0 auto;
+  }
+
+  .p016-img{
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  @media print{
+    .p016-page{ max-width:none; padding:0; }
+    .p016-imgwrap{ max-width:none; }
+  }
+</style>
+
+<div class="p016-page">
+  <div class="p016-h1">Task 4: Use of Systems for Operations</div>
+  <div class="p016-h2">4.1 : CITIS</div>
+  <div class="p016-h3">4.1.1 : Enquiry of Container Information (ENQC)</div>
+
+  <!-- Boxed screenshot is an image -->
+  <div class="p016-imgwrap">
+    <img class="p016-img"
+         src="/static/CITIS.png"
+         alt="CITIS - Enquiry of Container Information (ENQC) screen">
+  </div>
+</div>

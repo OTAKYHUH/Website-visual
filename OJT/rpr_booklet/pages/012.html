@@ -1,0 +1,212 @@
+<!-- 013.html — RP Booklet (Replanner) Page 13
+     2.3 : Common Container Types
+     ✅ Extra image is OUTSIDE the table (next to ISO section)
+     ✅ Namespaced CSS (won't affect navbar)
+-->
+<style>
+  .p013-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 18px 10px;
+    font-size: 14px;
+  }
+
+  .p013-title{
+    font-weight: 900;
+    font-size: 16px;
+    margin: 0 0 10px;
+  }
+
+  .p013-table{
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  .p013-table td{
+    border: 1px solid #000;
+    vertical-align: top;
+    padding: 10px 12px;
+  }
+
+  .p013-imgcell{
+    height: 120px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 12px;
+  }
+  .p013-img{
+    max-height: 115px;
+    max-width: 95%;
+    width: auto;
+    height: auto;
+    display: inline-block;
+  }
+
+  .p013-name{
+    font-weight: 900;
+    text-align: center;
+    vertical-align: middle;
+    padding: 10px 12px;
+  }
+
+  .p013-desc{
+    height: 85px;
+    vertical-align: top;
+  }
+
+  .p013-sizes{
+    vertical-align: top;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  /* ===== Bottom layout: 2-col table + outside image ===== */
+  .p013-bottom-wrap{
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    gap: 16px;                 /* spacing between ISO box and the outside image */
+    align-items: flex-start;   /* keep top aligned */
+  }
+
+  .p013-bottom-table{
+    flex: 1 1 auto;
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+  }
+  .p013-bottom-table td{
+    border: 1px solid #000;
+    vertical-align: top;
+    padding: 10px 12px;
+  }
+
+  .p013-sideimg-wrap{
+    flex: 0 0 280px;           /* adjust width of the outside image column */
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 260px;         /* roughly matches bottom section height */
+  }
+
+  .p013-sideimg{
+    width: 400px;
+    height: 200px;
+    display: block;
+  }
+
+  /* Optional placeholder if you haven't added the image yet */
+  .p013-placeholder{
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
+    border: 1px dashed #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  @media print{
+    .p013-page{ max-width:none; padding:0; }
+    .p013-bottom-wrap{ gap: 10px; }
+  }
+</style>
+
+<div class="p013-page">
+  <div class="p013-title">2.3 : Common Container Types</div>
+
+  <!-- ===== TOP SECTION (3 columns) ===== -->
+  <table class="p013-table">
+    <colgroup>
+      <col style="width:33.33%">
+      <col style="width:33.33%">
+      <col style="width:33.33%">
+    </colgroup>
+
+    <tr>
+      <td class="p013-imgcell">
+        <img class="p013-img" src="/static/Dry.png" alt="Dry Containers (GP/HC)">
+      </td>
+      <td class="p013-imgcell">
+        <img class="p013-img" src="/static/reefer.png" alt="Reefer Containers (RF)">
+      </td>
+      <td class="p013-imgcell">
+        <img class="p013-img" src="/static/open top.png" alt="Open Top Containers (OT)">
+      </td>
+    </tr>
+
+    <tr>
+      <td class="p013-name">Dry Containers (GP / HC)</td>
+      <td class="p013-name">Reefer Containers (RF)</td>
+      <td class="p013-name">Open Top Containers (OT)</td>
+    </tr>
+
+    <tr>
+      <td class="p013-desc">Suitable for dry cargo.</td>
+      <td class="p013-desc">Suitable for temperature-controlled cargo. Mainly used for food items.</td>
+      <td class="p013-desc">Suitable for over-height cargo.</td>
+    </tr>
+
+    <tr>
+      <td class="p013-sizes">Sizes: 20ft / 40ft / 45ft</td>
+      <td class="p013-sizes">Sizes: 20ft / 40ft</td>
+      <td class="p013-sizes">Sizes: 20ft / 40ft</td>
+    </tr>
+  </table>
+
+  <!-- ===== BOTTOM SECTION (2 columns) + OUTSIDE image ===== -->
+  <div class="p013-bottom-wrap" style="margin-top: 0;">
+    <!-- Left: 2-column table -->
+    <table class="p013-bottom-table">
+      <colgroup>
+        <col style="width:50%">
+        <col style="width:50%">
+      </colgroup>
+
+      <tr>
+        <td class="p013-imgcell">
+          <img class="p013-img" src="/static/Flat Rack.png" alt="Flat Rack Containers (FR)">
+        </td>
+        <td class="p013-imgcell">
+          <img class="p013-img" src="/static/ISO.png" alt="ISO Tank Containers">
+        </td>
+      </tr>
+
+      <tr>
+        <td class="p013-name">Flat Rack Containers (FR)</td>
+        <td class="p013-name">ISO Tank Containers</td>
+      </tr>
+
+      <tr>
+        <td class="p013-desc">Suitable for project / oversized cargo.</td>
+        <td class="p013-desc">Suitable for liquid products/</td>
+      </tr>
+
+      <tr>
+        <td class="p013-sizes">Sizes: 20ft / 40ft</td>
+        <td class="p013-sizes">Sizes: 21,000L / 24,000L / 25,000L / 26,000L</td>
+      </tr>
+    </table>
+
+    <!-- Right: image OUTSIDE the table (next to ISO section) -->
+    <div class="p013-sideimg-wrap">
+      <!-- Option A: real image -->
+      <img class="p013-sideimg"
+           src="/static/Common ISO.png"
+           alt="Extra image next to ISO">
+
+      <!-- Option B: placeholder (delete <img> above and uncomment below)
+      <div class="p013-placeholder">Add image here (outside table)</div>
+      -->
+    </div>
+  </div>
+</div>

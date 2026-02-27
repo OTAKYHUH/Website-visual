@@ -1,0 +1,249 @@
+<!-- 001.html — RP Booklet (Replanner) Cover Page
+     ✅ Autosave-ready: every editable field has a UNIQUE name=""
+-->
+<style>
+  /* ===== PAGE BASE ===== */
+  .ojt-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 18px 10px;
+  }
+
+  /* ===== OUTER DOUBLE BORDER ===== */
+  .cover-frame{
+    border: 4px solid #000;
+    padding: 6px;
+  }
+  .cover-inner{
+    border: 2px solid #000;
+    padding: 18px 18px 14px;
+  }
+
+  /* ===== TOP LOGO ===== */
+  .psa-top{
+    text-align:center;
+    margin-top: 6px;
+    margin-bottom: 8px;
+    font-weight: 800;
+    letter-spacing: 1px;
+  }
+  .psa-top img{
+    height: 30px;
+    width: auto;
+  }
+
+  /* ===== TITLE ===== */
+  .cover-title{
+    margin: 60px 0 30px;
+    font-size: 44px;
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: .5px;
+    text-align: center; /* ✅ centered */
+  }
+
+  /* ===== BOXES (JOB TITLE / MODULE) ===== */
+  .big-box{
+    border: 1px solid #000;
+    margin: 16px 0 14px;
+  }
+  .big-box .row{
+    display:flex;
+    border-top: 1px solid #000;
+    min-height: 72px;
+  }
+  .big-box .row:first-child{ border-top: none; }
+
+  .big-box .label{
+    width: 160px;
+    padding: 10px 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    border-right: 1px solid #000;
+  }
+  .big-box .value{
+    flex:1;
+    padding: 10px 12px;
+    text-transform: uppercase;
+    font-weight: 700;
+    display:flex;
+    align-items:center;
+  }
+
+  .course-meta{
+    display:flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    border-top: 1px solid #000;
+    font-size: 12px;
+  }
+
+  /* ===== NEW: APPROVAL TABLE (below box) ===== */
+  .approval-wrap{
+    margin: 10px 0 14px;
+  }
+  .approval-table{
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 12px;
+  }
+  .approval-table td{
+    border: 1px solid #000;
+    padding: 6px 8px;
+    vertical-align: middle;
+  }
+  .approval-table .tall td{
+    height: 26px;
+  }
+  .approval-table .head td{
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  /* ===== TRAINEE DETAILS (FIELDS) ===== */
+  .details{
+    margin-top: 14px;
+    font-size: 12px;
+  }
+  .details-row{
+    display:flex;
+    gap: 10px;
+    align-items:center;
+    margin: 6px 0;
+  }
+  .details-row .k{
+    width: 170px;
+    font-weight: 700;
+  }
+  .details-row .colon{ width: 10px; }
+  .details-row .v{ flex:1; }
+
+  .line-input{
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #000;
+    padding: 4px 2px;
+    font-size: 12px;
+    outline: none;
+    background: transparent;
+  }
+
+  /* ===== FOOTER COPYRIGHT (no forced huge whitespace) ===== */
+  .copyright{
+    margin-top: 18px;
+    font-size: 10px;
+    line-height: 1.25;
+  }
+
+  @media print{
+    .ojt-page{ max-width: none; padding: 0; }
+  }
+</style>
+
+<div class="ojt-page">
+  <div class="cover-frame">
+    <div class="cover-inner">
+
+      <!-- If you have a logo file, use:
+           <img src="{{ url_for('static', filename='psa_logo.png') }}" alt="PSA">
+      -->
+      <div class="cover-title">
+        REPLANNER<br>
+        GUIDELINE<br>
+        BLUEPRINT
+      </div>
+
+      <div class="big-box">
+        <div class="row">
+          <div class="label">JOB TITLE</div>
+          <div class="value">REPLANNER</div>
+        </div>
+        <div class="row">
+          <div class="label">MODULE</div>
+          <div class="value">REPLANNER COURSE</div>
+        </div>
+
+        <div class="course-meta">
+          <div>(Course Code: XXXXX)</div>
+          <div>Version: 1.0</div>
+          <div>Date: February 2026</div>
+        </div>
+      </div>
+      <!-- ===== Autosave fields ===== -->
+      <div class="details">
+        <div class="details-row">
+          <div class="k">Name of Trainee</div><div class="colon">:</div>
+          <div class="v"><input class="line-input" name="trainee_name" type="text" autocomplete="off"></div>
+        </div>
+
+        <div class="details-row">
+          <div class="k">NRIC/FIN No.</div><div class="colon">:</div>
+          <div class="v"><input class="line-input" name="trainee_nric_fin" type="text" autocomplete="off"></div>
+        </div>
+
+        <div class="details-row">
+          <div class="k">Company Name/Department</div><div class="colon">: </div>
+          <div class="v">Course</div>
+        </div>
+
+        <div class="details-row">
+          <div class="k">Course Start Date</div><div class="colon">:</div>
+          <div class="v"><input class="line-input" name="course_start_date" type="text" autocomplete="off"></div>
+        </div>
+
+        <div class="details-row">
+          <div class="k">Course End Date</div><div class="colon">:</div>
+          <div class="v"><input class="line-input" name="course_end_date" type="text" autocomplete="off"></div>
+        </div>
+      </div>
+
+      <div class="copyright">
+        © PSA Corporation Limited. Year 2015. Printed in Singapore. All rights reserved. Please note that information
+        contained in these training materials are strictly confidential and may not be revealed to any third parties,
+        reproduced, stored in a retrieval system nor transmitted in any form or by any means (electronic, mechanical,
+        photocopying, recording, or otherwise) without the prior written consent of PSA Corporation Limited.
+      </div>
+    
+    </div>
+    <!-- ✅ Added table below the box -->
+      <div class="approval-wrap">
+        <table class="approval-table">
+          <colgroup>
+            <col style="width: 38%">
+            <col style="width: 32%">
+            <col style="width: 30%">
+          </colgroup>
+          <tr class="head">
+            <td>REPLANNER</td>
+            <td></td>
+            <td>Handout Ref No.</td>
+          </tr>
+          <tr class="head">
+            <td>Action</td>
+            <td>Name</td>
+            <td>Date</td>
+          </tr>
+          <tr class="tall">
+            <td>Drafted by:</td>
+            <td><input class="line-input" name="drafted_by_name" type="text" autocomplete="off"></td>
+            <td><input class="line-input" name="drafted_by_date" type="text" autocomplete="off"></td>
+          </tr>
+          <tr class="tall">
+            <td>Vetted by:</td>
+            <td><input class="line-input" name="vetted_by_name" type="text" autocomplete="off"></td>
+            <td><input class="line-input" name="vetted_by_date" type="text" autocomplete="off"></td>
+          </tr>
+          <tr class="tall">
+            <td>Approved by:</td>
+            <td><input class="line-input" name="approved_by_name" type="text" autocomplete="off"></td>
+            <td><input class="line-input" name="approved_by_date" type="text" autocomplete="off"></td>
+          </tr>
+        </table>
+      </div>
+  </div>
+</div>

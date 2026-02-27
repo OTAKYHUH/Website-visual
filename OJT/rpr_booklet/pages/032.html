@@ -1,0 +1,114 @@
+<!-- 031.html — RP Booklet (Replanner) Page 31
+     Task 6: Monitor Yard Operations
+     ✅ Matches screenshot layout:
+        - Underlined title
+        - Intro paragraph (indented)
+        - Numbered points 1 & 2
+        - 2 centered screenshots with black border
+     ✅ Namespaced CSS (won't affect navbar)
+
+     NOTE: Update image filenames if needed:
+       /static/task6_1.png
+       /static/task6_2.png
+-->
+<style>
+  .p031-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+    line-height: 1.5;
+  }
+
+  .p031-title{
+    font-weight: 900;
+    font-size: 22px;
+    margin: 0 0 10px;
+    text-decoration: underline;
+  }
+
+  .p031-intro{
+    font-size: 18px;
+    margin: 0 0 18px 55px; /* indent like screenshot */
+    max-width: 1080px;
+  }
+
+  .p031-list{
+    font-size: 18px;
+    margin: 0 0 0 55px; /* align with intro */
+    padding-left: 24px;  /* number spacing */
+    max-width: 1080px;
+  }
+
+  .p031-list li{
+    margin: 14px 0 10px;
+  }
+
+  .p031-imgwrap{
+    max-width: 1080px;
+    margin: 10px auto 24px; /* center */
+    display: flex;
+    justify-content: center;
+  }
+
+  .p031-imgbox{
+    width: 820px;              /* close to screenshot proportions */
+    max-width: 95%;
+    border: 3px solid #000;
+    background:#fff;
+    overflow: hidden;
+  }
+
+  .p031-imgbox img{
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  @media (max-width: 900px){
+    .p031-intro, .p031-list{ margin-left: 0; }
+  }
+
+  @media print{
+    .p031-page{ max-width:none; padding:0; }
+    .p031-imgbox{ border-width:2px; }
+  }
+</style>
+
+<div class="p031-page">
+
+  <div class="p031-title">Task 6: Monitor Yard Operations</div>
+
+  <p class="p031-intro">
+    To optimize yard waiting time (the time where prime mover spends waiting in a yard during loading / discharging),
+    several parameters can be considered.
+  </p>
+
+  <ol class="p031-list">
+    <li>
+      By regularly monitoring no show report closely to identify high waiting PM (PC call checking on driver location)
+    </li>
+  </ol>
+
+  <div class="p031-imgwrap">
+    <div class="p031-imgbox">
+      <img src="/static/6.1.png" alt="Task 6 - No Show Report">
+    </div>
+  </div>
+
+  <ol class="p031-list" start="2">
+    <li>
+      By regularly monitoring the yard location panel and promptly assigning yard location,
+      offloading waiting time can be significantly reduced
+    </li>
+  </ol>
+
+  <div class="p031-imgwrap">
+    <div class="p031-imgbox">
+      <img src="/static/6.2.png" alt="Task 6 - Yard Location Panel">
+    </div>
+  </div>
+
+</div>

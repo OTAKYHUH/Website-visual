@@ -1,0 +1,94 @@
+<!-- 033.html — RP Booklet (Replanner) Page 33
+     Task 6: Monitor Yard Operations (continued)
+     ✅ Matches screenshot layout:
+        - Line 5 sentence at top
+        - Underlined subtitle: "TL01: Single Crane Operation: Reduce Activities"
+        - 4 images in a 2x2 grid, with black border
+     ✅ Namespaced CSS (won't affect navbar)
+
+     NOTE: Replace image filenames with your actual /static/ files:
+       /static/TL01_1.png  /static/TL01_2.png
+       /static/TL01_3.png  /static/TL01_4.png
+-->
+<style>
+  .p033-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+    line-height: 1.5;
+  }
+
+  .p033-topline{
+    max-width: 1080px;
+    margin: 0 auto 10px;
+    font-size: 20px;
+  }
+
+  .p033-subtitle{
+    max-width: 1080px;
+    margin: 0 auto 14px;
+    font-size: 22px;
+    font-weight: 900;
+    text-decoration: underline;
+  }
+
+  .p033-grid{
+    max-width: 1080px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  .p033-imgbox{
+    border: 3px solid #000;
+    background:#fff;
+    overflow:hidden;
+  }
+
+  .p033-imgbox img{
+    width: 100%;
+    height: auto;
+    display:block;
+  }
+
+  @media (max-width: 1100px){
+    .p033-grid{ grid-template-columns: 1fr; }
+  }
+
+  @media print{
+    .p033-page{ max-width:none; padding:0; }
+    .p033-imgbox{ border-width:2px; }
+  }
+</style>
+
+<div class="p033-page">
+
+  <div class="p033-topline">
+    5. Regular replanning through Yard QCC and replanning single crane operation at the start of the shift.
+  </div>
+
+  <div class="p033-subtitle">TL01: Single Crane Operation: Reduce Activities</div>
+
+  <div class="p033-grid">
+    <div class="p033-imgbox">
+      <img src="/static/6_5_1.png" alt="TL01 - Single Crane Operation Block">
+    </div>
+
+    <div class="p033-imgbox">
+      <img src="/static/6_5_2.png" alt="TL01 - Loading Activities">
+    </div>
+
+    <div class="p033-imgbox">
+      <img src="/static/6_5_3.png" alt="TL01 - Before Replan">
+    </div>
+
+    <div class="p033-imgbox">
+      <img src="/static/6_5_4.png" alt="TL01 - After Replan">
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,230 @@
+<!-- 044.html — RP Booklet (Replanner) Page 44
+     Task 9: Yard Exceptions
+     9.1 : Handle and Escalate Different Yard Exceptions
+     ✅ Matches screenshot layout:
+        - Underlined main title
+        - 9.1 heading
+        - Intro paragraph (indented)
+        - Underlined "Learning Objectives:" + bullet list
+        - Underlined "Common Yard Exceptions & Handling Procedures"
+        - 4-column table with multiple rows and bullets inside cells
+     ✅ Namespaced CSS (won't affect navbar)
+-->
+<style>
+  .p044-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+    line-height: 1.5;
+  }
+
+  .p044-title{
+    font-weight: 900;
+    font-size: 22px;
+    margin: 0 0 10px;
+    text-decoration: underline;
+  }
+
+  .p044-h2{
+    font-weight: 900;
+    font-size: 20px;
+    margin: 0 0 10px 55px; /* indent like screenshot */
+  }
+
+  .p044-intro{
+    font-size: 18px;
+    margin: 0 0 16px 95px; /* further indent */
+    max-width: 1080px;
+  }
+
+  .p044-under{
+    font-size: 18px;
+    font-weight: 900;
+    text-decoration: underline;
+    margin: 10px 0 8px 95px;
+  }
+
+  .p044-bullets{
+    font-size: 18px;
+    margin: 0 0 18px 120px;
+    padding-left: 18px;
+  }
+  .p044-bullets li{ margin: 6px 0; }
+
+  .p044-under2{
+    max-width: 1080px;
+    margin: 0 auto 10px 95px;
+    font-size: 18px;
+    font-weight: 900;
+    text-decoration: underline;
+  }
+
+  /* ===== Table ===== */
+  .p044-table{
+    width: 1080px;
+    max-width: 100%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 14px;
+  }
+  .p044-table th,
+  .p044-table td{
+    border: 1.5px solid #000;
+    padding: 10px 10px;
+    vertical-align: top;
+  }
+  .p044-table th{
+    font-weight: 900;
+    text-align: left;
+    font-size: 14px;
+  }
+
+  .p044-table ul{
+    margin: 6px 0 0 18px;
+    padding: 0;
+  }
+  .p044-table li{ margin: 4px 0; }
+
+  @media (max-width: 950px){
+    .p044-h2{ margin-left: 0; }
+    .p044-intro, .p044-under, .p044-bullets, .p044-under2{ margin-left: 0; }
+    .p044-table{ font-size: 13px; }
+  }
+
+  @media print{
+    .p044-page{ max-width:none; padding:0; }
+    .p044-table th, .p044-table td{ padding: 8px 8px; }
+  }
+</style>
+
+<div class="p044-page">
+
+  <div class="p044-title">Task 9: Yard Exceptions</div>
+
+  <div class="p044-h2">9.1: Handle and Escalate Different Yard Exceptions</div>
+
+  <div class="p044-intro">
+    This task helps you to identify, handle, and escalate various yard exceptions to maintain operational continuity and safety.
+    You will learn protocols for common exceptions like misplaced containers, equipment failures, and hazardous situations.
+  </div>
+
+  <div class="p044-under">Learning Objectives:</div>
+  <ul class="p044-bullets">
+    <li>Recognize different types of yard exceptions</li>
+    <li>Execute proper handling procedures</li>
+    <li>Apply escalation protocols</li>
+    <li>Document exceptions accurately</li>
+    <li>Coordinate with relevant teams</li>
+  </ul>
+
+  <div class="p044-under2">Common Yard Exceptions &amp; Handling Procedures</div>
+
+  <table class="p044-table">
+    <thead>
+      <tr>
+        <th style="width:18%;">Exception Type</th>
+        <th style="width:16%;">Escalation Protocols</th>
+        <th style="width:38%;">Action To Be Taken</th>
+        <th style="width:28%;">Others</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>Missing Container</td>
+        <td>aYDM</td>
+        <td>
+          <ul>
+            <li>YDM will engage the AOC’s to tally physical containers with PC location</li>
+            <li>aYDM to ENQC last known location</li>
+            <li>aYDM will escalate to respective terminals</li>
+          </ul>
+        </td>
+        <td>To update correct location once container has been found</td>
+      </tr>
+
+      <tr>
+        <td>PM Breakdown</td>
+        <td>
+          SRDO<br>
+          PMOC<br>
+          aYDM
+        </td>
+        <td>
+          <ul>
+            <li>PM driver requires to notify SRDO</li>
+            <li>YSS requires to check on status with SRDO after 15min of non-recovery</li>
+            <li>If PM is unable to recover, check with PMOC for alternative equipment for drivers to take over</li>
+            <li>Notify aYDM if driver is put on standby due to insufficient equipment</li>
+          </ul>
+        </td>
+        <td>To be updated in YSS report</td>
+      </tr>
+
+      <tr>
+        <td>PM reported container on chassis leaking</td>
+        <td>
+          aYDM<br>
+          YPDM
+        </td>
+        <td>
+          <ul>
+            <li>Inform shift aYDM of exception with container number, PM number and location</li>
+            <li>Inform YPDM of exception</li>
+          </ul>
+        </td>
+        <td>
+          Ensure container is updated<br>
+          Location to be given by YPDM and aYDM need to follow up with respective terminal
+        </td>
+      </tr>
+
+      <tr>
+        <td>PM not deployed following shift</td>
+        <td>Nil</td>
+        <td>
+          <ul>
+            <li>Ensure PM is released 30-35min before shift ends</li>
+            <li>Ensure PM is on empty chassis</li>
+          </ul>
+        </td>
+        <td>-</td>
+      </tr>
+
+      <tr>
+        <td>PM missing and uncontactable</td>
+        <td>
+          Shift aYDM<br>
+          PMOC
+        </td>
+        <td>
+          <ul>
+            <li>Inform shift aYDM &amp; PMOC, provide info such as PM number, time uncontactable, duration uncontactable, last seen GPS location</li>
+          </ul>
+        </td>
+        <td>
+          Close loop once driver has been found<br>
+          aYDM requires to follow up with PMRD if needed
+        </td>
+      </tr>
+
+      <tr>
+        <td>System/PC related issues</td>
+        <td>Shift aYDM</td>
+        <td>
+          <ul>
+            <li>Inform shift aYDM</li>
+            <li>Take screenshots of issue (if any)</li>
+            <li>Explain problem statement</li>
+          </ul>
+        </td>
+        <td>Close loop once problem has been resolved</td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

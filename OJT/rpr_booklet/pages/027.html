@@ -1,0 +1,231 @@
+<!-- 026.html — RP Booklet (Replanner) Page 26
+     Task 5: Gantry of RTGs and Yard Safety SOPs
+     5.1 : RTGs Block Channel
+     5.2 : Road CCTV Camera Numbers for Gantry
+     ✅ No images (tables only)
+     ✅ 5.2 table fixed rowspans to match screenshot
+     ✅ Namespaced CSS (won't affect navbar)
+-->
+<style>
+  .p026-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 18px 10px 28px;
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  .p026-h1{
+    font-weight: 900;
+    font-size: 22px;
+    text-decoration: underline;
+    margin: 0 0 18px;
+  }
+
+  .p026-h2{
+    font-weight: 900;
+    font-size: 20px;
+    margin: 0 0 18px 70px; /* indent like screenshot */
+  }
+
+  .p026-h3{
+    font-weight: 900;
+    font-size: 20px;
+    margin: 26px 0 14px 70px; /* spacing between sections */
+  }
+
+  /* ===== shared table styles ===== */
+  .p026-table{
+    border-collapse: collapse;
+    margin: 0 auto;
+    table-layout: fixed;
+    font-size: 14px;
+  }
+  .p026-table th,
+  .p026-table td{
+    border: 1px solid #000;
+    padding: 8px 10px;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  /* ===== 5.1 table (teal) ===== */
+  .p026-rtg{
+    width: 330px;
+  }
+  .p026-teal-1{ background:#BFE3EA; font-weight: 900; }
+  .p026-teal-2{ background:#CFEAF0; font-weight: 900; }
+  .p026-teal-band{ background:#53AFC3; height: 18px; padding: 0; }
+
+  /* ===== 5.2 table (orange) ===== */
+  .p026-cctv{
+    width: 980px;
+    max-width: 100%;
+  }
+  .p026-org-1{ background:#F6BF95; font-weight: 900; }  /* header band */
+  .p026-org-2{ background:#F8D2B2; font-weight: 900; }  /* terminal band */
+  .p026-org-3{ background:#FBE3CF; font-weight: 900; }  /* column headers */
+  .p026-divider{
+    width: 26px;
+    background:#F6A35A; /* vertical orange stripe */
+    padding: 0 !important;
+  }
+
+  @media (max-width: 1050px){
+    .p026-cctv{ width: 100%; }
+    .p026-h2, .p026-h3{ margin-left: 0; }
+  }
+
+  @media print{
+    .p026-page{ max-width:none; padding:0; }
+  }
+</style>
+
+<div class="p026-page">
+
+  <div class="p026-h1">Task 5: Gantry of RTGs and Yard Safety SOPs</div>
+
+  <div class="p026-h2">5.1: RTGs Block Channel</div>
+
+  <!-- ===== 5.1 RTG Block Channels ===== -->
+  <table class="p026-table p026-rtg">
+    <tr><th class="p026-teal-1" colspan="2">RTG Block Channels</th></tr>
+
+    <tr><th class="p026-teal-2" colspan="2">Terminal P4</th></tr>
+    <tr>
+      <th class="p026-teal-2">Folder</th>
+      <th class="p026-teal-2">Channel</th>
+    </tr>
+    <tr>
+      <td rowspan="2">PPYD OTHERS</td>
+      <td>TR / 4-5</td>
+    </tr>
+    <tr>
+      <td>TS / 4-5</td>
+    </tr>
+    <tr>
+      <td>PPYD TP-TU</td>
+      <td>TT / 4-5</td>
+    </tr>
+
+    <tr><td class="p026-teal-band" colspan="2"></td></tr>
+
+    <tr><th class="p026-teal-2" colspan="2">Terminal P5</th></tr>
+    <tr>
+      <td rowspan="2">PPYD OTHERS</td>
+      <td>TL / 6</td>
+    </tr>
+    <tr>
+      <td>TM-TN / 6-8</td>
+    </tr>
+
+    <tr><td class="p026-teal-band" colspan="2"></td></tr>
+
+    <tr><th class="p026-teal-2" colspan="2">Terminal P6</th></tr>
+    <tr>
+      <td>PPYD OTHERS</td>
+      <td>TH / 6-8</td>
+    </tr>
+  </table>
+
+  <div class="p026-h3">5.2: Road CCTV Camera Numbers for Gantry</div>
+
+  <!-- ===== 5.2 RTG Gantry CCTV Camera Numbers (FIXED) ===== -->
+  <table class="p026-table p026-cctv">
+    <colgroup>
+      <col style="width: 18%">
+      <col style="width: 16%">
+      <col style="width: 26px">
+      <col style="width: 18%">
+      <col style="width: 16%">
+      <col style="width: 26px">
+      <col style="width: 18%">
+      <col style="width: 16%">
+    </colgroup>
+
+    <tr>
+      <th class="p026-org-1" colspan="8">RTG Gantry CCTV Camera Numbers</th>
+    </tr>
+
+    <tr>
+      <th class="p026-org-2" colspan="2">Terminal P4</th>
+      <td class="p026-divider" rowspan="7"></td>
+      <th class="p026-org-2" colspan="2">Terminal P5</th>
+      <td class="p026-divider" rowspan="7"></td>
+      <th class="p026-org-2" colspan="2">Terminal P6</th>
+    </tr>
+
+    <tr>
+      <th class="p026-org-3">Junction</th>
+      <th class="p026-org-3">Camera Numbers</th>
+
+      <th class="p026-org-3">Junction</th>
+      <th class="p026-org-3">Camera Numbers</th>
+
+      <th class="p026-org-3">Junction</th>
+      <th class="p026-org-3">Camera Numbers</th>
+    </tr>
+
+    <!-- Row A -->
+    <tr>
+      <!-- P4 -->
+      <td rowspan="2">TR / TS</td>
+      <td>TR6-T15L</td>
+
+      <!-- P5 -->
+      <td rowspan="2">TL / TM</td>
+      <td>TL3-T33S</td>
+
+      <!-- P6 (only one populated row) -->
+      <td>TG / TH</td>
+      <td>TJ7-T46L<br>TJ7-T46S</td>
+    </tr>
+
+    <!-- Row B -->
+    <tr>
+      <!-- P4 -->
+      <td>TR2-T23S</td>
+
+      <!-- P5 -->
+      <td>TL7-T43L<br>TL7-T43S</td>
+
+      <!-- P6 big blank area starts here -->
+      <td rowspan="4"></td>
+      <td rowspan="4"></td>
+    </tr>
+
+    <!-- Row C -->
+    <tr>
+      <!-- P4 -->
+      <td rowspan="2">TS / TT</td>
+      <td>TS6-T14L</td>
+
+      <!-- P5 -->
+      <td rowspan="2">TM / TN<br><span style="font-weight:700">(Cannot Cross Gantry)</span></td>
+      <td>TM3-T32S</td>
+    </tr>
+
+    <!-- Row D -->
+    <tr>
+      <!-- P4 -->
+      <td>TS2-T22S</td>
+
+      <!-- P5 -->
+      <td>M8-T42L<br>TM8-T42S</td>
+    </tr>
+
+    <!-- Row E -->
+    <tr>
+      <!-- P4 blank last row -->
+      <td colspan="2"></td>
+
+      <!-- P5 -->
+      <td>TB / TN</td>
+      <td>TB3-T62S<br>TN8-T41L<br>TN8-T41S</td>
+    </tr>
+  </table>
+
+</div>

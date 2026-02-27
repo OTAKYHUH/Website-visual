@@ -1,0 +1,276 @@
+<!-- 027.html — RP Booklet (Replanner) Page 27
+     5.3 : Gantry RTG
+     5.3.1 : Linear Gantry
+     ✅ Top = 2 cards (each card is a 2x2 grid: title + 3 images)
+     ✅ Bottom = 2 big images
+     ✅ Namespaced CSS (won't affect navbar)
+-->
+<style>
+  .p027-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+  }
+
+  .p027-h2{
+    font-weight: 900;
+    font-size: 20px;
+    margin: 0 0 10px;
+  }
+
+  .p027-h3{
+    font-weight: 900;
+    font-size: 18px;
+    margin: 0 0 12px 55px;
+  }
+
+  .p027-warn{
+    color: #d40000;
+    font-size: 16px;
+    margin: 6px 0 14px 95px;
+  }
+
+  /* ===== Layout ===== */
+  .p027-grid-2{
+    max-width: 1080px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  .p027-card{
+    border: 2px solid #000;
+    background:#fff;
+  }
+
+  /* ===== NEW: Card top as 2x2 grid (matches screenshot) ===== */
+  .p027-card-top-grid4{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    min-height: 260px;
+    border-bottom: 2px solid #000;
+  }
+
+  .p027-topcell{
+    overflow: hidden;
+  }
+
+  /* borders inside the 2x2 */
+  .p027-topcell.tl{ border-right: 2px solid #000; border-bottom: 2px solid #000; }
+  .p027-topcell.tr{ border-bottom: 2px solid #000; }
+  .p027-topcell.bl{ border-right: 2px solid #000; }
+
+  .p027-card-title{
+    padding: 14px 14px;
+    font-weight: 900;
+    line-height: 1.25;
+    font-size: 16px;
+    text-decoration: underline;
+    background: #fff;
+  }
+
+  .p027-imgbox{
+    background:#000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .p027-img-fit{
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* no crop */
+    display:block;
+  }
+
+  /* bullets area */
+  .p027-bullets{
+    padding: 10px 14px 12px;
+    font-size: 14px;
+  }
+  .p027-bullets ul{
+    margin: 6px 0 0 18px;
+    padding: 0;
+  }
+  .p027-bullets li{ margin: 4px 0; }
+
+  /* ===== Bottom section ===== */
+  .p027-bottom{
+    max-width: 1080px;
+    margin: 14px auto 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  .p027-bottom-imgbox{
+    border: 2px solid #000;
+    overflow: hidden;
+    height: 255px;
+    background:#000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .p027-bottom-imgbox img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display:block;
+  }
+
+  .p027-bottom-textbox{
+    border: 2px solid #000;
+    padding: 10px 14px 12px;
+    font-size: 14px;
+    min-height: 90px;
+  }
+  .p027-bottom-textbox ul{
+    margin: 6px 0 0 18px;
+    padding: 0;
+  }
+
+  @media (max-width: 1100px){
+    .p027-grid-2, .p027-bottom{ grid-template-columns: 1fr; }
+    .p027-h3, .p027-warn{ margin-left: 0; }
+    .p027-card-top-grid4{ min-height: 320px; }
+  }
+
+  @media print{
+    .p027-page{ max-width:none; padding:0; }
+  }
+</style>
+
+<div class="p027-page">
+
+  <div class="p027-h2">5.3 : Gantry RTG</div>
+  <div class="p027-h3">5.3.1 : Linear Gantry</div>
+
+  <div class="p027-warn">
+    *&nbsp; Immediately call RTG operator to “STOP” gantry, if observe any safety infringement and escalate to ɣQDM
+  </div>
+
+  <!-- ===== TOP TWO CARDS (match screenshot: 2x2 grid each) ===== -->
+  <div class="p027-grid-2">
+
+    <!-- Left card -->
+    <div class="p027-card">
+      <div class="p027-card-top-grid4">
+        <!-- top-left title -->
+        <div class="p027-topcell tl">
+          <div class="p027-card-title">
+            Gantry Path CCTV Camera Views<br>
+            YOMC RTG Gantry Instruction
+          </div>
+        </div>
+
+        <!-- top-right image -->
+        <div class="p027-topcell tr">
+          <div class="p027-imgbox">
+            <img class="p027-img-fit" src="/static/LG1.png" alt="LG1">
+          </div>
+        </div>
+
+        <!-- bottom-left image -->
+        <div class="p027-topcell bl">
+          <div class="p027-imgbox">
+            <img class="p027-img-fit" src="/static/LG2.png" alt="LG2">
+          </div>
+        </div>
+
+        <!-- bottom-right image -->
+        <div class="p027-topcell br">
+          <div class="p027-imgbox">
+            <img class="p027-img-fit" src="/static/LG3.png" alt="LG3">
+          </div>
+        </div>
+      </div>
+
+      <div class="p027-bullets">
+        <ul>
+          <li>Tune to the gantry path CCTV camera views</li>
+          <li>Send RTG gantry instruction via YOMC</li>
+          <li>RTG operator check for obstruction on the gantry path, gantry to the last 40-footer slot (or 1st 40 footer slot) of the block and stop.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Right card -->
+    <div class="p027-card">
+      <div class="p027-card-top-grid4">
+        <!-- top-left title -->
+        <div class="p027-topcell tl">
+          <div class="p027-card-title">
+            RTG Block Channel<br>
+            RTG at RED/WHITE LINE
+          </div>
+        </div>
+
+        <!-- top-right image -->
+        <div class="p027-topcell tr">
+          <div class="p027-imgbox">
+            <img class="p027-img-fit" src="/static/LG4.png" alt="LG4">
+          </div>
+        </div>
+
+        <!-- bottom-left image -->
+        <div class="p027-topcell bl">
+          <div class="p027-imgbox">
+            <img class="p027-img-fit" src="/static/LG5.png" alt="LG5">
+          </div>
+        </div>
+
+        <!-- bottom-right image -->
+        <div class="p027-topcell br">
+          <div class="p027-imgbox">
+            <img class="p027-img-fit" src="/static/LG6.png" alt="LG6">
+          </div>
+        </div>
+      </div>
+
+      <div class="p027-bullets">
+        <ul>
+          <li>Switch UHF set to RTG block channel (wait for RTG operator to call RP).</li>
+          <li>RP Supervisor check for clearance, inform RTG operator to “Inch” out to the RED/WHITE line and STOP.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== BOTTOM TWO BIG IMAGES (unchanged) ===== -->
+  <div class="p027-bottom">
+
+    <div>
+      <div class="p027-bottom-imgbox">
+        <img src="/static/LG7.png" alt="LG7">
+      </div>
+      <div class="p027-bottom-textbox">
+        <ul>
+          <li>RP Supervisor check for clearance on the street to the intended block (ensure that vehicles awaiting RTG gantry had hazard lights on before instructing RTG to gantry out of the block).</li>
+          <li>Once cleared, inform RTG operator to activate the Siren and gantry on the street to the intended block.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div>
+      <div class="p027-bottom-imgbox">
+        <img src="/static/LG8.png" alt="LG8">
+      </div>
+      <div class="p027-bottom-textbox">
+        <ul>
+          <li>Once inside the intended block, key “arrived”, switch UHF to the block channel and continue with operations in the block.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+</div>

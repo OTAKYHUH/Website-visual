@@ -1,0 +1,48 @@
+<!-- 022.html — RP Booklet (Replanner) Page 22
+     4.2.3 : PM Monitor
+     ✅ Annotated screenshot is ONE image
+     ✅ Namespaced CSS (won't affect navbar)
+-->
+<style>
+  .p022-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+  }
+
+  .p022-title{
+    font-weight: 900;
+    font-size: 20px;
+    margin: 0 0 12px;
+  }
+
+  .p022-imgwrap{
+    max-width: 1050px;
+    margin: 0 auto;
+  }
+
+  .p022-img{
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  @media print{
+    .p022-page{ max-width:none; padding:0; }
+    .p022-imgwrap{ max-width:none; }
+  }
+</style>
+
+<div class="p022-page">
+  <div class="p022-title">4.2.3 : PM Monitor</div>
+
+  <!-- Boxed/annotated screenshot is an image -->
+  <div class="p022-imgwrap">
+    <img class="p022-img"
+         src="/static/PM Monitor.png"
+         alt="PM Monitor screen (annotated)">
+  </div>
+</div>

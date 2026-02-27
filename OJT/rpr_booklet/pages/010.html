@@ -1,0 +1,121 @@
+<!-- 011.html — RP Booklet (Replanner) Page 11
+     2.2 : Basic Equipment Specifications
+     ✅ Text is HTML
+     ✅ All pictures are images (APM/CST/DST + PPT4 RTG + PPT5/6 RTG)
+     ✅ Namespaced CSS so it won't affect navbar
+-->
+<style>
+  .p011-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 18px 10px;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .p011-h1{
+    font-weight: 900;
+    font-size: 14px;
+    margin: 0 0 10px;
+  }
+
+  .p011-h2{
+    font-weight: 900;
+    font-size: 13px;
+    margin: 14px 0 6px;
+  }
+
+  .p011-desc{
+    margin: 0 0 8px 34px; /* indent like screenshot */
+  }
+
+  /* Top 3 images row */
+  .p011-row3{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px;
+    margin: 6px 0 14px 34px; /* align with text indent */
+    max-width: 860px;
+  }
+
+  /* Bottom 2 images row */
+  .p011-row2{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 8px 0 0 34px;
+    max-width: 860px;
+  }
+
+  .p011-fig{
+    border: 1px solid #000;
+    background: #fff;
+  }
+  .p011-fig img{
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* Label tag in bottom-left */
+  .p011-label{
+    display: inline-block;
+    border-top: 1px solid #000;
+    border-right: 1px solid #000;
+    background: #e9e9e9;
+    font-weight: 900;
+    font-size: 11px;
+    padding: 3px 10px;
+    margin: 0;            /* sits tight */
+  }
+
+  @media (max-width: 900px){
+    .p011-row3{ grid-template-columns: 1fr; margin-left: 0; }
+    .p011-row2{ grid-template-columns: 1fr; margin-left: 0; }
+    .p011-desc{ margin-left: 0; }
+  }
+
+  @media print{
+    .p011-page{ max-width:none; padding:0; }
+  }
+</style>
+
+<div class="p011-page">
+  <div class="p011-h1">2.2 : Basic Equipment Specifications</div>
+
+  <div class="p011-h2">2.2.1 : Prime Mover (PM)</div>
+  <p class="p011-desc">
+    Which transport container from one location to another for ship operation and yard operation (IGH, ITH and IYS).
+  </p>
+
+  <div class="p011-row3">
+    <!-- Save images into: static/rp_booklet/images/ -->
+    <div class="p011-fig">
+      <img src="/static/APM.png" alt="APM">
+    </div>
+    <div class="p011-fig">
+      <img src="/static/CST.png" alt="CST">
+    </div>
+    <div class="p011-fig">
+      <img src="/static/DST.png" alt="DST">
+    </div>
+  </div>
+
+  <div class="p011-h2">2.2.2 : Rail Mounted Gantry (RTG)</div>
+  <p class="p011-desc">
+    Located at RTG yard, handling both laden and unladen containers. Handle by operator manually during mounting and offloading of containers.
+  </p>
+
+  <div class="p011-row2">
+    <div class="p011-fig">
+      <img src="/static/PPT4 RTG.png" alt="PPT4 RTG">
+    </div>
+
+    <div class="p011-fig">
+      <img src="/static/PPT5_6RTG.png" alt="PPT5/6 RTG">
+    </div>
+  </div>
+</div>

@@ -1,0 +1,156 @@
+<!-- 043.html — RP Booklet (Replanner) Page 43
+     8.5 : Dangerous Goods (DG) (continued)
+     ✅ Matches screenshot layout:
+        - Big DG location table (DG1C/2B/2C/2S GP/HC)
+        - Blue notes rows inside table
+        - Bottom "Important Stuffs to Take Notice:" box with red-highlight labels
+     ✅ Namespaced CSS (won't affect navbar)
+-->
+<style>
+  .p043-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+    line-height: 1.5;
+    font-size: 18px;
+  }
+
+  /* ===== Main table ===== */
+  .p043-table{
+    width: 1080px;
+    max-width: 100%;
+    margin: 0 auto 18px;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 18px;
+  }
+  .p043-table th,
+  .p043-table td{
+    border: 1.5px solid #000;
+    padding: 10px 12px;
+    vertical-align: middle;
+  }
+  .p043-table th{
+    font-weight: 900;
+    text-align: left;
+    font-size: 19px;
+  }
+
+  .p043-blue{
+    color:#0b57d0;
+    font-weight: 700;
+  }
+
+  /* split row at bottom (two columns) */
+  .p043-split-left{
+    width: 35%;
+    font-weight: 700;
+  }
+
+  .p043-split-right{
+    width: 65%;
+  }
+
+  /* ===== Important notice box ===== */
+  .p043-notice{
+    width: 1080px;
+    max-width: 100%;
+    margin: 0 auto;
+    border: 1.5px solid #000;
+  }
+
+  .p043-notice-title{
+    font-weight: 900;
+    font-size: 22px;
+    padding: 10px 12px;
+    border-bottom: 1.5px solid #000;
+  }
+
+  .p043-notice-row{
+    padding: 10px 12px;
+    border-bottom: 1.5px solid #000;
+    font-size: 18px;
+  }
+  .p043-notice-row:last-child{ border-bottom: 0; }
+
+  .p043-red{
+    color:#d40000;
+    font-weight: 900;
+  }
+
+  @media (max-width: 900px){
+    .p043-page{ font-size: 16px; }
+    .p043-notice-title{ font-size: 20px; }
+  }
+
+  @media print{
+    .p043-page{ max-width:none; padding:0; }
+    .p043-table th, .p043-table td{ padding: 8px 10px; }
+  }
+</style>
+
+<div class="p043-page">
+
+  <!-- ===== DG TABLE ===== -->
+  <table class="p043-table">
+    <tr>
+      <th colspan="2">DG1C / 2B / 2C / 2S GP / HC Container:</th>
+    </tr>
+    <tr>
+      <th style="width:40%;">IMO Class</th>
+      <th style="width:60%;">Locations:</th>
+    </tr>
+
+    <tr><td>IMO 2.1 / 2.2 / 2.3</td><td>TH08</td></tr>
+    <tr><td>IMO 3</td><td>TH06 / TH07</td></tr>
+    <tr><td>IMO 4.1 / 4.2 / 4.3</td><td>TH06 / TH07</td></tr>
+    <tr><td>IMO 5.1</td><td>TN07</td></tr>
+    <tr><td>IMO 5.2</td><td>TH07</td></tr>
+    <tr><td>IMO 6.1</td><td>TL06 / TH06 / TH07</td></tr>
+    <tr><td>IMO 7</td><td>TH07</td></tr>
+    <tr><td>IMO 8</td><td>TL06 / TH06 / TH07</td></tr>
+    <tr><td>IMO 9 <b>(DG2B)</b></td><td>TN07 / TM08</td></tr>
+    <tr><td>IMO 9 <b>(DG2C / 2S)</b></td><td>Any ARMG Blocks</td></tr>
+
+    <tr>
+      <td class="p043-blue" colspan="2">* TK containers – 2 High only and can be offload at row 2 to row 5 only</td>
+    </tr>
+    <tr>
+      <td class="p043-blue" colspan="2">* GP / HC containers – 3 High only</td>
+    </tr>
+
+    <tr>
+      <td class="p043-blue p043-split-left">* 20ft GP / HC containers</td>
+      <td class="p043-blue p043-split-right">
+        Required to offload following by the door facing direction:<br>
+        (Odd Number Slot – Door facing AFT)<br>
+        (Even Number Slot – Door facing FWD)
+      </td>
+    </tr>
+  </table>
+
+  <!-- ===== IMPORTANT NOTICE BOX ===== -->
+  <div class="p043-notice">
+    <div class="p043-notice-title">Important Stuffs to Take Notice:</div>
+
+    <div class="p043-notice-row">
+      <span class="p043-red">*DG Group 2 / 1D Class</span> – Need to check with yard planner before offloading into yard, need to check the UN number.
+    </div>
+
+    <div class="p043-notice-row">
+      <span class="p043-red">*IMO 1.3 / 1.4</span> – Unable to offload at CT3 yard, only able to offload at CT2 yard, required to inform SOC, if any.
+    </div>
+
+    <div class="p043-notice-row">
+      <span class="p043-red">*IMO 5.1 (DG 1N)</span> – Unable to offload at CT3 yard, only able to offload at CT2 yard, required to inform SOC, if any.
+    </div>
+
+    <div class="p043-notice-row">
+      <span class="p043-red">Overflow/ Ad-hoc DG location</span> – Required to check email sent out by yard planner before using the ad-hoc space.
+    </div>
+  </div>
+
+</div>

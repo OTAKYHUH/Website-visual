@@ -1,0 +1,58 @@
+<!-- 023.html — RP Booklet (Replanner) Page 23
+     4.2.4 : No Show Report
+     ✅ Text (title + sentence) + screenshot image
+     ✅ Namespaced CSS (won't affect navbar)
+-->
+<style>
+  .p023-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+  }
+
+  .p023-title{
+    font-weight: 900;
+    font-size: 20px;
+    margin: 0 0 10px;
+  }
+
+  .p023-text{
+    font-size: 18px;
+    margin: 0 0 14px 70px; /* slight indent like screenshot */
+    max-width: 980px;
+  }
+
+  .p023-imgwrap{
+    max-width: 1050px;
+    margin: 0 auto;
+  }
+
+  .p023-img{
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  @media print{
+    .p023-page{ max-width:none; padding:0; }
+    .p023-imgwrap{ max-width:none; }
+  }
+</style>
+
+<div class="p023-page">
+  <div class="p023-title">4.2.4 : No Show Report</div>
+
+  <div class="p023-text">
+    Monitor no show closely to identify high waiting PM. Below is the example page of a no-show report.
+  </div>
+
+  <!-- Screenshot is an image -->
+  <div class="p023-imgwrap">
+    <img class="p023-img"
+         src="/static/No show.png"
+         alt="No Show Report example screen">
+  </div>
+</div>

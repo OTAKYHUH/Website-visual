@@ -1,0 +1,305 @@
+<!-- 014.html — RP Booklet (Replanner) Page 14
+     Task 3: Use of UHF set and CCTV for Operations
+     3.1 : Communication
+     ✅ No images (all text + tables)
+     ✅ Middle table corrected (rowspans match screenshot)
+     ✅ Namespaced CSS (won't affect navbar)
+-->
+<style>
+  .p014-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .p014-h1{
+    font-weight: 900;
+    font-size: 22px;
+    text-decoration: underline;
+    margin: 0 0 14px;
+  }
+
+  .p014-h2{
+    font-weight: 900;
+    font-size: 20px;
+    margin: 0 0 8px 110px; /* indented like screenshot */
+  }
+
+  .p014-paragraph{
+    max-width: 980px;
+    margin: 0 0 14px 110px; /* indented */
+  }
+
+  /* ===== Top table (Radio Set Format) ===== */
+  .p014-top-table{
+    border-collapse: collapse;
+    margin: 6px auto 18px;
+    width: 520px;              /* similar size */
+    font-size: 14px;
+  }
+  .p014-top-table th,
+  .p014-top-table td{
+    border: 1px solid #000;
+    padding: 7px 10px;
+    text-align: center;
+    vertical-align: middle;
+  }
+  .p014-top-table th{
+    background: #F3C9A7;       /* light orange header */
+    font-weight: 900;
+  }
+  .p014-top-table td:first-child{
+    text-align: left;
+    padding-left: 12px;
+  }
+
+  .p014-note{
+    max-width: 980px;
+    margin: 0 0 18px 110px;
+  }
+
+  /* ===== Bottom 3 tables row ===== */
+  .p014-row{
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    gap: 26px;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .p014-box{
+    border-collapse: collapse;
+    width: 320px;
+    font-size: 14px;
+  }
+  .p014-box th,
+  .p014-box td{
+    border: 1px solid #000;
+    padding: 7px 10px;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  /* RTG Block Channels colors */
+  .p014-rtg-title{
+    background:#BFE3EA; /* light teal */
+    font-weight: 900;
+  }
+  .p014-rtg-sub{
+    background:#CFEAF0;
+    font-weight: 900;
+  }
+  .p014-rtg-band{
+    background:#53AFC3; /* darker teal band */
+    height: 18px;
+    padding: 0;
+  }
+
+  /* Useful channels colors */
+  .p014-useful-title{
+    background:#AFA0C8; /* purple */
+    font-weight: 900;
+  }
+  .p014-useful-sub{
+    background:#D7CFE4; /* light purple */
+    font-weight: 900;
+  }
+
+  @media (max-width: 1020px){
+    .p014-h2, .p014-paragraph, .p014-note{ margin-left: 0; }
+    .p014-row{ flex-direction: column; align-items: center; }
+    .p014-box{ width: 92%; max-width: 520px; }
+  }
+
+  @media print{
+    .p014-page{ max-width: none; padding: 0; }
+    .p014-row{ gap: 10px; }
+  }
+</style>
+
+<div class="p014-page">
+
+  <div class="p014-h1">Task 3: Use of UHF set and CCTV for Operations</div>
+
+  <div class="p014-h2">3.1 : Communication</div>
+
+  <div class="p014-paragraph">
+    Effective communication in the yard requires quick and clear identification of equipment.
+    Each radio set number is assigned using a standard format to indicate both the equipment type
+    and the individual unit. Radio set numbers are made up of a three-digit prefix that represents
+    the equipment type and follows the crane or prime mover number. Examples in table form as follows,
+  </div>
+
+  <!-- ===== Radio Set Prefix Table ===== -->
+  <table class="p014-top-table">
+    <tr>
+      <th>Equipment Type</th>
+      <th>Radio Set<br>Prefix</th>
+      <th>Example<br>(Crane/PM)</th>
+      <th>Radio Set<br>Number</th>
+    </tr>
+    <tr>
+      <td>Prime Mover (PPM)</td>
+      <td>460 / 4600</td>
+      <td>429</td>
+      <td>460429</td>
+    </tr>
+    <tr>
+      <td>Quay Crane</td>
+      <td>610</td>
+      <td>710</td>
+      <td>610710</td>
+    </tr>
+    <tr>
+      <td>RTG</td>
+      <td>620</td>
+      <td>701</td>
+      <td>620501</td>
+    </tr>
+    <tr>
+      <td>IGH (IPM)</td>
+      <td>960 / 9600</td>
+      <td>989</td>
+      <td>960989</td>
+    </tr>
+    <tr>
+      <td>FM / Hyster</td>
+      <td>650</td>
+      <td>831</td>
+      <td>650831</td>
+    </tr>
+    <tr>
+      <td>Reach Stacker</td>
+      <td>651</td>
+      <td>802</td>
+      <td>651802</td>
+    </tr>
+  </table>
+
+  <div class="p014-note">
+    Besides using private call equipment through radio sets, alternative ways to communicate was to
+    communicate inside the equipment block channel.
+  </div>
+
+  <!-- ===== Bottom 3 tables ===== -->
+  <div class="p014-row">
+
+    <!-- RTG Block Channels -->
+    <table class="p014-box">
+      <tr><th class="p014-rtg-title" colspan="2">RTG Block Channels</th></tr>
+
+      <tr><th class="p014-rtg-sub" colspan="2">Terminal P4</th></tr>
+      <tr>
+        <th class="p014-rtg-sub">Folder</th>
+        <th class="p014-rtg-sub">Channel</th>
+      </tr>
+      <tr><td rowspan="2">PPYD OTHERS</td><td>TR / 4-5</td></tr>
+      <tr><td>TS / 4-5</td></tr>
+      <tr><td>PPYD TP-TU</td><td>TT / 4-5</td></tr>
+
+      <tr><td class="p014-rtg-band" colspan="2"></td></tr>
+
+      <tr><th class="p014-rtg-sub" colspan="2">Terminal P5</th></tr>
+      <tr><td>PPYD OTHERS</td><td>TL / 6</td></tr>
+      <tr><td>PPYD OTHERS</td><td>TM-TN / 6-8</td></tr>
+
+      <tr><td class="p014-rtg-band" colspan="2"></td></tr>
+
+      <tr><th class="p014-rtg-sub" colspan="2">Terminal P6</th></tr>
+      <tr><td>PPYD OTHERS</td><td>TH / 6-8</td></tr>
+    </table>
+
+    <!-- Useful Radio Set Channels (FIXED to match screenshot) -->
+    <table class="p014-box">
+      <tr><th class="p014-useful-title" colspan="3">Useful Radio Set Channels</th></tr>
+
+      <!-- Vessel Control -->
+      <tr><th class="p014-useful-sub" colspan="3">Vessel Control</th></tr>
+      <tr>
+        <th class="p014-useful-sub">Description</th>
+        <th class="p014-useful-sub">Folder</th>
+        <th class="p014-useful-sub">Channel</th>
+      </tr>
+      <tr>
+        <td>PQC701 – PQC713</td>
+        <td>PPT4 Control</td>
+        <td>PPT4 SOC 1</td>
+      </tr>
+      <tr>
+        <td>PQC800 – PQC819</td>
+        <td>PPT5 Control</td>
+        <td>PPT5 SOC 1</td>
+      </tr>
+      <tr>
+        <td>PQC881 – PQC888</td>
+        <td rowspan="2">PPT6 Control</td>
+        <td rowspan="2">PPT6 SOC 1</td>
+      </tr>
+      <tr>
+        <td>PQC901 – PQC924</td>
+      </tr>
+
+      <!-- ARMG Blocks -->
+      <tr><th class="p014-useful-sub" colspan="3">ARMG Blocks</th></tr>
+      <tr>
+        <td>PPT4 ARMG Blocks</td>
+        <td rowspan="2">PPT5 Control</td>
+        <td rowspan="2">PPT5 AOC 1</td>
+      </tr>
+      <tr>
+        <td>PPT5 ARMG Blocks</td>
+      </tr>
+      <tr>
+        <td>PPT6 ARMG Blocks</td>
+        <td>PPT6 Control</td>
+        <td>PPT6 AOC 1</td>
+      </tr>
+
+      <!-- APM Control -->
+      <tr><th class="p014-useful-sub" colspan="3">APM Control</th></tr>
+      <tr>
+        <td rowspan="2">APM Deploy IYS<br>APM Deploy Ship Ops</td>
+        <td>PPT6 Control</td>
+        <td>PPT6 AOC 2</td>
+      </tr>
+      <tr>
+        <td>PPT5 Control</td>
+        <td>PPT5 AOC 2</td>
+      </tr>
+    </table>
+
+    <!-- Useful Radio Set Channels (Others) — FIXED -->
+    <table class="p014-box">
+    <tr><th class="p014-useful-title" colspan="3">Useful Radio Set Channels</th></tr>
+    <tr><th class="p014-useful-sub" colspan="3">Others</th></tr>
+
+    <tr>
+        <th class="p014-useful-sub">Description</th>
+        <th class="p014-useful-sub">Folder</th>
+        <th class="p014-useful-sub">Channel</th>
+    </tr>
+
+    <tr>
+        <td>Replanner / IYS</td>
+        <td rowspan="2">PPT5 / PPT6<br>Control</td>
+        <td>CT3 YARD OPS</td>
+    </tr>
+    <tr>
+        <td>Reefer Control</td>
+        <td>CT3 RF</td>
+    </tr>
+
+    <tr>
+        <td>Hyster Block</td>
+        <td>PPYD OTHERS</td>
+        <td>CT3 Hyster</td>
+    </tr>
+    </table>
+  </div>
+</div>

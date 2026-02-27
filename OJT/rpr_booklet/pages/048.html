@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RP Booklet — Scenario Based Questions (Page __)</title>
+
+  <style>
+    /* ================= PAGE BASE ================= */
+    .ojt-page{
+      font-family: Arial, sans-serif;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 10px;
+      font-size: 14px;
+      color:#000;
+      background:#fff;
+    }
+
+    /* ================= "SCALE TO FIT" WRAPPER ================= */
+    .layout-viewport{ width:100%; overflow:hidden; }
+    .layout-scale{
+      width:1100px;
+      position:relative;
+      transform-origin: top left;
+    }
+
+    /* ================= SECTION TITLE ================= */
+    .sq-section-title{
+      font-weight:700;
+      font-size:20px;
+      margin: 0 0 12px 0;
+    }
+
+    /* ================= IMAGE BOX ================= */
+    .sq-imgbox{
+      border:3px solid #000;
+      padding:6px;
+      width:100%;
+      box-sizing:border-box;
+      background:#fff;
+      margin-bottom: 14px;
+    }
+    .sq-imgbox img{
+      display:block;
+      width:100%;
+      height:auto;
+    }
+
+    /* ================= QUESTION TEXT ================= */
+    .sq-q{
+      font-size: 16px;
+      font-weight: 600;
+      margin: 10px 0 14px 0;
+    }
+
+    /* ================= ANSWER LINES (TEXTAREA) ================= */
+    .sq-answer{
+      width: 100%;
+      min-height: 190px;
+      resize: vertical;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      line-height: 1.85;
+      padding: 6px 2px;
+      box-sizing: border-box;
+
+      /* "lines" look */
+      background-image: linear-gradient(#000 1px, transparent 1px);
+      background-size: 100% 34px;
+      background-position: 0 32px;
+    }
+
+    /* ================= SUBMIT BAR ================= */
+    .submit-bar{
+      margin-top: 18px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .submit-btn{
+      padding:10px 16px;
+      border-radius:10px;
+      border:1px solid #444;
+      background:#E1C233;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    /* ================= FOOTER ================= */
+    .page-footer{
+      margin-top: 16px;
+      font-size: 11px;
+      color:#666;
+      text-align:right;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="ojt-page">
+    <div class="layout-viewport" id="layoutViewport">
+      <div class="layout-scale" id="layoutScale">
+
+        <!-- ========== 5 ========== -->
+        <div class="sq-section-title">5: Reefer Mounting Job, Not Unplug</div>
+
+        <div class="sq-imgbox">
+          <!-- replace with your actual image -->
+          <img src="/static/scenario_5.png" alt="Scenario 5 - Reefer Mounting Job Not Unplug">
+        </div>
+
+        <div class="sq-q">
+          Referring to block TJ06 above, PPM8092 was assigned for reefer mounting, but the container remains plugged in.
+          Please advise on the necessary action to enable PPM8018 to proceed with offloading.
+        </div>
+
+        <!-- IMPORTANT for autosave: keep name="scenario_q5_answer" -->
+        <textarea class="sq-answer" name="scenario_q5_answer" placeholder="Type your answer here..."></textarea>
+
+        <!-- ================= SUBMIT BUTTON (same style as your sample) ================= -->
+        <div class="submit-bar">
+          <form method="POST" action="/training/submit"
+                onsubmit="return confirm('Submit and lock your booklet? You cannot edit after this.');">
+            <button type="submit" class="submit-btn">Submit &amp; Lock</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Scale the entire 1100px design down to fit the screen (same approach as your reference).
+    (function(){
+      const DESIGN_W = 1100;
+      const viewport = document.getElementById("layoutViewport");
+      const scaleEl = document.getElementById("layoutScale");
+
+      function applyScale(){
+        const availableW = viewport.clientWidth;
+        const scale = Math.min(1, availableW / DESIGN_W);
+        scaleEl.style.transform = `scale(${scale})`;
+
+        // Reserve correct height after scaling
+        const rect = scaleEl.getBoundingClientRect();
+        viewport.style.height = rect.height + "px";
+      }
+
+      window.addEventListener("resize", applyScale);
+      window.addEventListener("load", applyScale);
+      applyScale();
+    })();
+  </script>
+</body>
+</html>

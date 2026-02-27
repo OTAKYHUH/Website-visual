@@ -1,0 +1,122 @@
+<!-- 012.html — RP Booklet (Replanner) Page 12
+     2.2.3 : Automated Rail Mounted Gantry (ARMG)
+     2.2.4 : Hyster / FM / Reach Stacker
+     ✅ Text is HTML
+     ✅ Pictures are images (ARMG + FM + Reach Stacker)
+     ✅ Namespaced CSS so it won't affect navbar
+-->
+<style>
+  .p012-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 18px 10px;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .p012-h2{
+    font-weight: 900;
+    font-size: 13px;
+    margin: 0 0 6px;
+  }
+
+  .p012-desc{
+    margin: 0 0 10px 34px; /* indent like screenshot */
+  }
+
+  /* figure with border + bottom-left label strip */
+  .p012-fig{
+    border: 1px solid #000;
+    background:#fff;
+    display: inline-block;
+  }
+  .p012-fig img{
+    display:block;
+    width: 100%;
+    height:auto;
+  }
+  .p012-label{
+    display:inline-block;
+    border-top: 1px solid #000;
+    border-right: 1px solid #000;
+    background:#e9e9e9;
+    font-weight: 900;
+    font-size: 11px;
+    padding: 3px 10px;
+    margin: 0;
+  }
+
+  /* ARMG block (left aligned, not full width) */
+  .p012-armg{
+    margin: 8px 0 18px 34px;
+    width: 300px;  /* similar size to screenshot */
+  }
+
+  /* bottom row 2 images */
+  .p012-row2{
+    margin: 8px 0 0 34px;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 26px;
+    align-items: start;
+    max-width: 860px;
+  }
+  .p012-fm{ width: 260px; }
+  .p012-reach{ width: 420px; }
+
+  @media (max-width: 900px){
+    .p012-desc{ margin-left: 0; }
+    .p012-armg{ margin-left: 0; width: 100%; max-width: 360px; }
+    .p012-row2{ margin-left: 0; grid-template-columns: 1fr; }
+    .p012-fm, .p012-reach{ width: 100%; max-width: 520px; }
+  }
+
+  @media print{
+    .p012-page{ max-width:none; padding:0; }
+  }
+</style>
+
+<div class="p012-page">
+
+  <div class="p012-h2">2.2.3 : Automated Rail Mounted Gantry (ARMG)</div>
+  <p class="p012-desc">
+    Located at ARMG yard, handling both laden and unladen containers. Fully automated during mounting and offloading of containers.
+  </p>
+
+  <!-- ARMG image -->
+  <div class="p012-armg">
+    <!-- Save as: static/rp_booklet/images/page012_armg.png -->
+    <div class="p012-fig">
+      <img src="/static/ARMG.png" alt="ARMG">
+    </div>
+  </div>
+
+  <div class="p012-h2">2.2.4 : Hyster / FM / Reach Stacker</div>
+  <p class="p012-desc">
+    Located at hyster yard, FM handling empty containers only and reach stacker handling both laden and empty containers.
+    Each equipment is handled by operator manually during mounting and offloading of containers. Door turning operation will be done
+    by reach stacker using CST prime mover only.
+  </p>
+
+  <div class="p012-row2">
+    <!-- FM -->
+    <div class="p012-fm">
+      <!-- Save as: static/rp_booklet/images/page012_fm.png -->
+      <div class="p012-fig">
+        <img src="/static/FM.png" alt="FM">
+      </div>
+    </div>
+
+    <!-- Reach Stacker -->
+    <div class="p012-reach">
+      <!-- Save as: static/rp_booklet/images/page012_reach_stacker.png -->
+      <div class="p012-fig">
+        <img src="/static/Reach Stacker.png" alt="Reach Stacker">
+      </div>
+    </div>
+  </div>
+
+</div>

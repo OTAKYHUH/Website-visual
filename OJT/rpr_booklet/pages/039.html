@@ -1,0 +1,180 @@
+<!-- 038.html — RP Booklet (Replanner) Page 38
+     Task 8: Diversion Basic Knowledge
+     8.1 : PSCW
+     ✅ Matches screenshot layout:
+        - Underlined title
+        - "8.1: PSCW"
+        - Arrow bullets sections: Port Mark / Size / Category / Weight
+        - Weight paragraph + simple 2-column weight class box with arrow
+     ✅ Namespaced CSS (won't affect navbar)
+-->
+<style>
+  .p038-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+    line-height: 1.55;
+  }
+
+  .p038-title{
+    font-weight: 900;
+    font-size: 22px;
+    margin: 0 0 12px;
+    text-decoration: underline;
+  }
+
+  .p038-h2{
+    font-weight: 900;
+    font-size: 20px;
+    margin: 0 0 12px 55px; /* indent like screenshot */
+  }
+
+  /* arrow bullet header lines */
+  .p038-item-title{
+    max-width: 1080px;
+    margin: 10px auto 4px;
+    font-size: 20px;
+    font-weight: 900;
+  }
+  .p038-item-title::before{
+    content: "➤ ";
+    font-weight: 900;
+    margin-right: 6px;
+  }
+
+  .p038-text{
+    max-width: 1080px;
+    margin: 0 auto 12px;
+    font-size: 18px;
+    padding-left: 38px; /* to align under arrow bullet */
+  }
+
+  /* weight diagram box */
+  .p038-weight-wrap{
+    max-width: 1080px;
+    margin: 8px auto 0;
+    padding-left: 38px; /* align under the Weight text */
+  }
+
+  .p038-weight-box{
+    width: 430px;
+    max-width: 95%;
+    border: 2px solid #000;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 190px;
+    background:#fff;
+  }
+
+  .p038-weight-left{
+    padding: 14px 16px;
+    font-size: 20px;
+    display:flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .p038-weight-left b{
+    display:inline-block;
+    width: 22px;
+  }
+
+  .p038-weight-right{
+    border-left: 3px solid #0b2a7a; /* dark blue like screenshot */
+    position: relative;
+    padding: 14px 16px;
+    font-size: 22px;
+    font-weight: 900;
+    display:flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .p038-arrow{
+    position: absolute;
+    left: 50%;
+    top: 44px;
+    transform: translateX(-50%);
+    width: 0;
+    height: 90px;
+    border-left: 3px solid #0b2a7a;
+  }
+  .p038-arrow::after{
+    content:"";
+    position:absolute;
+    left:-7px;
+    bottom:-10px;
+    border-left:7px solid transparent;
+    border-right:7px solid transparent;
+    border-top:12px solid #0b2a7a;
+  }
+
+  @media (max-width: 900px){
+    .p038-h2{ margin-left: 0; }
+    .p038-text, .p038-weight-wrap{ padding-left: 0; }
+  }
+
+  @media print{
+    .p038-page{ max-width:none; padding:0; }
+  }
+</style>
+
+<div class="p038-page">
+
+  <div class="p038-title">Task 8: Diversion Basic Knowledge</div>
+
+  <div class="p038-h2">8.1: PSCW</div>
+
+  <div class="p038-item-title">Port Mark</div>
+  <div class="p038-text">
+    Port Mark refers to designated discharging port of the vessel. Containers should not be stack if they are from
+    different port mark within the same vessel.
+  </div>
+
+  <div class="p038-item-title">Size</div>
+  <div class="p038-text">
+    Size refers to the length of the container.<br>
+    Do not mix 20ft, 40ft and 45ft.
+  </div>
+
+  <div class="p038-item-title">Category</div>
+  <div class="p038-text">
+    Category refers to the type of container.<br>
+    Do not mix different types of container type.<br>
+    GP, HC, FE, FR, TK, OH/OW/HW and DG.
+  </div>
+
+  <div class="p038-item-title">Weight</div>
+  <div class="p038-text">
+    The lighter container should not be stacked on top of the heavier container. The weight indication for sea is in
+    tonnage. Light (3-9.9), Medium (10-14.9), Heavy (15-19.9), Xtra (20-24.9) and <b>Ultra Heavy</b> (&ge;25)
+    Below table shows the weight class of the container weighing from the heaviest to the lightest.
+  </div>
+
+  <div class="p038-weight-wrap">
+    <div class="p038-weight-box">
+
+      <!-- left list -->
+      <div class="p038-weight-left">
+        <div><b>U</b> (Ultra Heavy)</div>
+        <div><b>X</b> (Extra Heavy)</div>
+        <div><b>H</b> (Heavy)</div>
+        <div><b>M</b> (Medium)</div>
+        <div><b>L</b> (Light)</div>
+      </div>
+
+      <!-- right side -->
+      <div class="p038-weight-right">
+        <div>Heaviest</div>
+        <div class="p038-arrow"></div>
+        <div>Lightest</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

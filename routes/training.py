@@ -65,30 +65,7 @@ def require_admin_or_mentor():
     if not (is_admin() or is_mentor()):
         abort(403)
 
-# ===================== EDIT / LOCK RULES =====================
-# Page codes like "029", "031"
-
-# ✅ Mentors can EDIT only these pages
-MENTOR_EDIT_PAGES = {
-    "YAS": {"001", "029", "030", "031", "032"},  # mentor can edit these YAS pages
-    "YSS": {"001", "019", "020", "021", "022"},  # mentor can edit these YSS pages
-}
-
-# ✅ Trainees are read-only on these pages (even before submit)
-TRAINEE_LOCK_PAGES = {
-    "YAS": {"029", "030", "031", "032"},
-    "YSS": {"019", "020", "021", "022"},
-}
-
-def mentor_can_edit(trainee_role: str, page_code: str) -> bool:
-    trainee_role = (trainee_role or "").upper()
-    return page_code in MENTOR_EDIT_PAGES.get(trainee_role, set())
-
-def trainee_page_locked(trainee_role: str, page_code: str) -> bool:
-    trainee_role = (trainee_role or "").upper()
-    return page_code in TRAINEE_LOCK_PAGES.get(trainee_role, set())
-
-# ===================== BOOKLET CONFIG =====================
+# ===================== BOOKLET CONFIG (TRAINEE ROLES ONLY) =====================
 
 def _get_booklet_config(role: str):
     role = (role or "").upper()
@@ -99,16 +76,136 @@ def _get_booklet_config(role: str):
 
     if role == "YSS":
         from routes.yss_booklet import PAGES_DIR as YSS_PAGES_DIR
-        # template reused
         return (YSS_PAGES_DIR, "yss_booklet.yss_page", "yas_booklet/page.html", "YSS Booklet")
+
+    if role == "RPR":
+        from routes.rpr_booklet import PAGES_DIR as RPR_PAGES_DIR
+        return (RPR_PAGES_DIR, "rpr_booklet.rpr_page", "yas_booklet/page.html", "RPR Booklet")
 
     abort(400, "Unknown booklet role")
 
 def _max_page_from_dir(pages_dir: Path) -> int:
-    if not pages_dir.exists():
+    if not pages_dir or not pages_dir.exists():
         return 0
     pages = sorted(pages_dir.glob("*.html"))
     return len(pages)
+
+# ===================== RPR + RPM APPENDIX (MENTOR/ADMIN ONLY) =====================
+
+def _try_import_pages_dir(module_path: str, attr: str = "PAGES_DIR") -> Path | None:
+    """
+    Safely import PAGES_DIR from a routes module.
+    Returns None if module doesn't exist or missing attr.
+    """
+    try:
+        mod = __import__(module_path, fromlist=[attr])
+        return getattr(mod, attr, None)
+    except Exception:
+        return None
+
+def _resolve_page_for_view(*, trainee_role: str, page: int, include_rpm: bool):
+    """
+    Returns (max_page, page_code, page_file_path, booklet_title)
+    - trainee_role != RPR => normal booklet
+    - trainee_role == RPR:
+        - include_rpm False => only RPR pages
+        - include_rpm True  => RPR pages then RPM pages appended after
+    """
+    trainee_role = (trainee_role or "").upper()
+    page_code = f"{page:03d}"
+
+    # Non-RPR roles use normal config
+    if trainee_role != "RPR":
+        pages_dir, _, _, booklet_title = _get_booklet_config(trainee_role)
+        max_page = _max_page_from_dir(pages_dir)
+        page_file = pages_dir / f"{page_code}.html"
+        return max_page, page_code, page_file, booklet_title
+
+    # RPR: base dir
+    rpr_dir, _, _, _ = _get_booklet_config("RPR")
+    rpr_max = _max_page_from_dir(rpr_dir)
+
+    if not include_rpm:
+        max_page = rpr_max
+        page_file = rpr_dir / f"{page_code}.html"
+        return max_page, page_code, page_file, "RPR Booklet"
+
+    # Mentor/Admin: append RPM after RPR
+    rpm_dir = _try_import_pages_dir("routes.rpm_booklet")  # routes/rpm_booklet.py must exist
+    rpm_max = _max_page_from_dir(rpm_dir) if rpm_dir else 0
+
+    max_page = rpr_max + rpm_max
+
+    # If no RPM exists, it's effectively just RPR
+    if page <= rpr_max or rpm_max == 0:
+        page_file = rpr_dir / f"{page_code}.html"
+        return max_page, page_code, page_file, "RPR Booklet"
+
+    # RPM pages start from 001.html internally
+    rpm_index = page - rpr_max
+    rpm_file = rpm_dir / f"{rpm_index:03d}.html"
+    return max_page, page_code, rpm_file, "RPR + RPM Booklet"
+
+def _rpr_rpm_page_ranges() -> tuple[int, int]:
+    """
+    Returns (rpr_max, rpm_max).
+    Used to decide which page_codes belong to RPM in mentor/admin combined view.
+    """
+    rpr_dir, _, _, _ = _get_booklet_config("RPR")
+    rpr_max = _max_page_from_dir(rpr_dir)
+
+    rpm_dir = _try_import_pages_dir("routes.rpm_booklet")
+    rpm_max = _max_page_from_dir(rpm_dir) if rpm_dir else 0
+    return rpr_max, rpm_max
+
+# ===================== EDIT / LOCK RULES =====================
+
+# ✅ Mentors can EDIT only these pages (except RPM which will be allowed fully)
+MENTOR_EDIT_PAGES = {
+    "YAS": {"001", "029", "030", "031", "032"},
+    "YSS": {"001", "019", "020", "021", "022"},
+    # RPR: keep whatever you want mentors to edit inside RPR proper
+    "RPR": {"001"},
+}
+
+# ✅ Trainees are read-only on these pages (even before submit)
+TRAINEE_LOCK_PAGES = {
+    "YAS": {"029", "030", "031", "032"},
+    "YSS": {"019", "020", "021", "022"},
+    "RPR": set(),
+}
+
+def mentor_can_edit(trainee_role: str, page_code: str) -> bool:
+    """
+    ✅ Requirement:
+    - Admin: already can edit everything.
+    - Mentor: can edit all RPM pages (appendix) + whatever is listed in MENTOR_EDIT_PAGES.
+    """
+    trainee_role = (trainee_role or "").upper()
+
+    # Allow mentors to edit ALL RPM appendix pages (when trainee is RPR)
+    if trainee_role == "RPR":
+        try:
+            n = int(page_code)
+        except Exception:
+            n = -1
+
+        rpr_max, rpm_max = _rpr_rpm_page_ranges()
+        rpm_start = rpr_max + 1
+        rpm_end = rpr_max + rpm_max
+
+        # If page_code is within appended RPM range, allow edit
+        if rpm_max > 0 and rpm_start <= n <= rpm_end:
+            return True
+
+    # Otherwise, follow configured allowlist
+    return page_code in MENTOR_EDIT_PAGES.get(trainee_role, set())
+
+def trainee_page_locked(trainee_role: str, page_code: str) -> bool:
+    trainee_role = (trainee_role or "").upper()
+    return page_code in TRAINEE_LOCK_PAGES.get(trainee_role, set())
+
+# ===================== NAV CONTEXT =====================
 
 def _build_nav_context(
     *,
@@ -163,7 +260,7 @@ def training_login():
     if not name:
         abort(400, "Name is required")
 
-    if role not in ("YAS", "YSS", "ADMIN", "MENTOR"):
+    if role not in ("YAS", "YSS", "RPR", "ADMIN", "MENTOR"):
         abort(400, "Invalid role")
 
     # ✅ ADMIN path
@@ -204,7 +301,7 @@ def training_login():
 
         return redirect(url_for("training.mentor_dashboard"))
 
-    # ===== Trainee flow (YAS/YSS) =====
+    # ===== Trainee flow (YAS/YSS/RPR) =====
     db = get_db()
     cur = db.cursor()
 
@@ -239,9 +336,10 @@ def training_login():
 
     if role == "YAS":
         return redirect(url_for("yas_booklet.yas_page", page=1))
-
     if role == "YSS":
         return redirect(url_for("yss_booklet.yss_page", page=1))
+    if role == "RPR":
+        return redirect(url_for("rpr_booklet.rpr_page", page=1))
 
     abort(400, "Unhandled role")
 
@@ -284,6 +382,8 @@ def confirmation():
             return redirect(url_for("yas_booklet.yas_page", page=1))
         if role == "YSS":
             return redirect(url_for("yss_booklet.yss_page", page=1))
+        if role == "RPR":
+            return redirect(url_for("rpr_booklet.rpr_page", page=1))
         return redirect(url_for("home.role_selection"))
 
     return render_template("training/confirmation.html")
@@ -327,10 +427,10 @@ def training_autosave():
 
     # ---- Enforce locks ----
     if is_admin():
-        # ✅ ADMIN can edit ANY page (including YSS page 22), even after submit
+        # ✅ ADMIN can edit ANY page (including after submit)
         pass
     elif is_mentor():
-        # mentor only allowed on configured pages
+        # ✅ Mentor can edit: allowlist pages + ALL RPM pages for RPR trainees
         if not mentor_can_edit(trainee_role, page_code):
             db.close()
             return {"status": "locked", "error": "mentor not allowed on this page"}, 403
@@ -524,6 +624,8 @@ def admin_view_page(employee_id, page):
     if not is_admin():
         abort(403)
 
+    ensure_schema()
+
     db = get_db()
     cur = db.cursor()
 
@@ -533,18 +635,19 @@ def admin_view_page(employee_id, page):
         db.close()
         abort(404)
 
-    pages_dir, trainee_endpoint, template, booklet_title = _get_booklet_config(trainee["role"])
-    max_page = _max_page_from_dir(pages_dir)
+    # ✅ Admin sees RPM appended after RPR only for RPR trainees
+    max_page, page_code, page_file, booklet_title = _resolve_page_for_view(
+        trainee_role=trainee["role"],
+        page=page,
+        include_rpm=True,
+    )
+
     if max_page == 0:
         db.close()
         abort(404, "No booklet pages found.")
-
     if page < 1 or page > max_page:
         db.close()
         abort(404)
-
-    page_code = f"{page:03d}"
-    page_file = pages_dir / f"{page_code}.html"
     if not page_file.exists():
         db.close()
         abort(404)
@@ -559,6 +662,8 @@ def admin_view_page(employee_id, page):
     saved_data = dict(cur.fetchall())
 
     db.close()
+
+    _, trainee_endpoint, template, _ = _get_booklet_config(trainee["role"])
 
     nav_ctx = _build_nav_context(
         admin_view=True,
@@ -580,8 +685,8 @@ def admin_view_page(employee_id, page):
         admin_view=True,
         mentor_view=False,
         mentor_editable=False,
-        admin_editable=True,
-        target_employee_id=trainee["id"],  # ✅ IMPORTANT for admin autosave
+        admin_editable=True,   # ✅ admin editable all (including RPM)
+        target_employee_id=trainee["id"],
         trainee_name=trainee["name"],
         trainee_role=trainee["role"],
         trainee_id=trainee["id"],
@@ -596,17 +701,8 @@ def admin_delete_employee(employee_id):
     db = get_db()
     cur = db.cursor()
 
-    # 1️⃣ Delete all autosaved answers
-    cur.execute(
-        "DELETE FROM training_progress WHERE employee_id = ?",
-        (employee_id,)
-    )
-
-    # 2️⃣ Delete trainee record
-    cur.execute(
-        "DELETE FROM employees WHERE id = ?",
-        (employee_id,)
-    )
+    cur.execute("DELETE FROM training_progress WHERE employee_id = ?", (employee_id,))
+    cur.execute("DELETE FROM employees WHERE id = ?", (employee_id,))
 
     db.commit()
     db.close()
@@ -618,6 +714,8 @@ def admin_print(employee_id):
     if not is_admin():
         abort(403)
 
+    ensure_schema()
+
     db = get_db()
     cur = db.cursor()
 
@@ -627,8 +725,11 @@ def admin_print(employee_id):
         db.close()
         abort(404)
 
-    pages_dir, trainee_endpoint, template, booklet_title = _get_booklet_config(trainee["role"])
-    max_page = _max_page_from_dir(pages_dir)
+    max_page, _, _, _ = _resolve_page_for_view(
+        trainee_role=trainee["role"],
+        page=1,
+        include_rpm=True,
+    )
     if max_page == 0:
         db.close()
         abort(404, "No booklet pages found.")
@@ -637,10 +738,15 @@ def admin_print(employee_id):
 
     saved_data = load_autosave_data(employee_id)
 
+    _, trainee_endpoint, template, _ = _get_booklet_config(trainee["role"])
+
     pages_html = []
     for page in range(1, max_page + 1):
-        page_code = f"{page:03d}"
-        page_file = pages_dir / f"{page_code}.html"
+        _, page_code, page_file, booklet_title2 = _resolve_page_for_view(
+            trainee_role=trainee["role"],
+            page=page,
+            include_rpm=True,
+        )
         if not page_file.exists():
             continue
 
@@ -661,13 +767,13 @@ def admin_print(employee_id):
             page=page,
             max_page=max_page,
             saved_data=saved_data.get(page_code, {}),
-            booklet_title=booklet_title,
+            booklet_title=booklet_title2,
             booklet_endpoint=trainee_endpoint,
             admin_view=True,
             mentor_view=False,
             mentor_editable=False,
             admin_editable=True,
-            target_employee_id=trainee["id"],  # ✅ IMPORTANT for admin autosave
+            target_employee_id=trainee["id"],
             trainee_name=trainee["name"],
             trainee_role=trainee["role"],
             trainee_id=trainee["id"],
@@ -689,7 +795,7 @@ def mentor_dashboard():
     ensure_schema()
 
     role_filter = (request.args.get("role") or "").strip().upper()
-    if role_filter not in ("", "YAS", "YSS"):
+    if role_filter not in ("", "YAS", "YSS", "RPR"):
         role_filter = ""
 
     q = (request.args.get("q") or "").strip()
@@ -700,10 +806,9 @@ def mentor_dashboard():
     where = []
     params = []
 
-    # mentors view only trainees (YAS/YSS)
-    where.append("e.role IN ('YAS','YSS')")
+    where.append("e.role IN ('YAS','YSS','RPR')")
 
-    if role_filter in ("YAS", "YSS"):
+    if role_filter in ("YAS", "YSS", "RPR"):
         where.append("e.role = ?")
         params.append(role_filter)
 
@@ -749,18 +854,19 @@ def mentor_view_page(employee_id, page):
         db.close()
         abort(404)
 
-    pages_dir, trainee_endpoint, template, booklet_title = _get_booklet_config(trainee["role"])
-    max_page = _max_page_from_dir(pages_dir)
+    # ✅ Mentor sees RPM appended after RPR only for RPR trainees
+    max_page, page_code, page_file, booklet_title = _resolve_page_for_view(
+        trainee_role=trainee["role"],
+        page=page,
+        include_rpm=True,
+    )
+
     if max_page == 0:
         db.close()
         abort(404, "No booklet pages found.")
-
     if page < 1 or page > max_page:
         db.close()
         abort(404)
-
-    page_code = f"{page:03d}"
-    page_file = pages_dir / f"{page_code}.html"
     if not page_file.exists():
         db.close()
         abort(404)
@@ -776,7 +882,10 @@ def mentor_view_page(employee_id, page):
 
     db.close()
 
+    # ✅ Mentors can now edit ALL RPM pages + allowlist pages
     editable = mentor_can_edit(trainee["role"], page_code)
+
+    _, trainee_endpoint, template, _ = _get_booklet_config(trainee["role"])
 
     nav_ctx = _build_nav_context(
         admin_view=False,
@@ -797,7 +906,7 @@ def mentor_view_page(employee_id, page):
         booklet_endpoint=trainee_endpoint,
         admin_view=False,
         mentor_view=True,
-        mentor_editable=editable,
+        mentor_editable=editable,   # ✅ editable for RPM pages too
         admin_editable=False,
         target_employee_id=trainee["id"],
         trainee_name=trainee["name"],
@@ -806,3 +915,91 @@ def mentor_view_page(employee_id, page):
         trainee_submitted=int(trainee["submitted"] or 0),
         **nav_ctx,
     )
+
+@training_bp.route("/training/mentor/print/<int:employee_id>")
+def mentor_print(employee_id):
+    if not is_mentor():
+        abort(403)
+
+    ensure_schema()
+
+    db = get_db()
+    cur = db.cursor()
+
+    cur.execute("SELECT id, name, role, submitted FROM employees WHERE id = ?", (employee_id,))
+    trainee = cur.fetchone()
+    if not trainee:
+        db.close()
+        abort(404)
+
+    max_page, _, _, _ = _resolve_page_for_view(
+        trainee_role=trainee["role"],
+        page=1,
+        include_rpm=True,
+    )
+    if max_page == 0:
+        db.close()
+        abort(404, "No booklet pages found.")
+
+    db.close()
+
+    saved_data = load_autosave_data(employee_id)
+
+    _, trainee_endpoint, template, _ = _get_booklet_config(trainee["role"])
+
+    pages_html = []
+    for page in range(1, max_page + 1):
+        _, page_code, page_file, booklet_title2 = _resolve_page_for_view(
+            trainee_role=trainee["role"],
+            page=page,
+            include_rpm=True,
+        )
+        if not page_file.exists():
+            continue
+
+        content_html = page_file.read_text(encoding="utf-8")
+
+        editable = mentor_can_edit(trainee["role"], page_code)
+
+        nav_ctx = _build_nav_context(
+            admin_view=False,
+            mentor_view=True,
+            page=page,
+            max_page=max_page,
+            trainee_role=trainee["role"],
+            employee_id=employee_id,
+        )
+
+        page_html = render_template(
+            template,
+            content_html=content_html,
+            page=page,
+            max_page=max_page,
+            saved_data=saved_data.get(page_code, {}),
+            booklet_title=booklet_title2,
+            booklet_endpoint=trainee_endpoint,
+            admin_view=False,
+            mentor_view=True,
+            mentor_editable=editable,
+            admin_editable=False,
+            target_employee_id=trainee["id"],
+            trainee_name=trainee["name"],
+            trainee_role=trainee["role"],
+            trainee_id=trainee["id"],
+            trainee_submitted=int(trainee["submitted"] or 0),
+            **nav_ctx,
+        )
+        pages_html.append(page_html)
+
+    return render_template("yas_booklet/print_all.html", pages_html=pages_html)
+
+# ===================== LOGOUT =====================
+
+@training_bp.route("/training/logout")
+def training_logout():
+    session.pop("training_employee_id", None)
+    session.pop("training_employee_name", None)
+    session.pop("training_employee_role", None)
+    session.pop("is_admin", None)
+    session.pop("is_mentor", None)
+    return redirect(url_for("home.role_selection"))

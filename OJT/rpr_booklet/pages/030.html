@@ -1,0 +1,127 @@
+<!-- 029.html — RP Booklet (Replanner) Page 29
+     5.3 : Gantry RTG (Continuation)
+     ✅ 2x2 grid of big image + bullets (matches screenshot)
+     ✅ Namespaced CSS (won't affect navbar)
+
+     NOTE: Replace /static/CG9..CG12.png with your actual filenames.
+-->
+<style>
+  .p029-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+  }
+
+  /* main grid: 2 columns, 2 rows */
+  .p029-grid{
+    max-width: 1080px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  .p029-cell{
+    border: 2px solid #000;
+    background:#fff;
+  }
+
+  .p029-imgbox{
+    height: 260px;
+    border-bottom: 2px solid #000;
+    background:#000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+
+  .p029-imgbox img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* no crop */
+    display:block;
+  }
+
+  .p029-text{
+    padding: 10px 14px 12px;
+    font-size: 14px;
+    min-height: 78px;
+  }
+
+  .p029-text ul{
+    margin: 6px 0 0 18px;
+    padding: 0;
+  }
+
+  .p029-text li{ margin: 4px 0; }
+
+  @media (max-width: 1100px){
+    .p029-grid{ grid-template-columns: 1fr; }
+    .p029-imgbox{ height: 280px; }
+  }
+
+  @media print{
+    .p029-page{ max-width:none; padding:0; }
+  }
+</style>
+
+<div class="p029-page">
+
+  <div class="p029-grid">
+
+    <!-- Top-left -->
+    <div class="p029-cell">
+      <div class="p029-imgbox">
+        <img src="/static/CG9.png" alt="CG9">
+      </div>
+      <div class="p029-text">
+        <ul>
+          <li>Once cleared, inform RTG operator to activate the Siren and gantry toward the cross-gantry path outside the intended block.</li>
+          <li>When RTG operator stops at the designated spots outside the intended block and inform RTG operator to proceed to do wheel turn.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Top-right -->
+    <div class="p029-cell">
+      <div class="p029-imgbox">
+        <img src="/static/CG10.png" alt="CG10">
+      </div>
+      <div class="p029-text">
+        <ul>
+          <li>Once wheel turns completed, RP Supervisor checks for clearance to gantry into the intended block.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom-left -->
+    <div class="p029-cell">
+      <div class="p029-imgbox">
+        <img src="/static/CG11.png" alt="CG11">
+      </div>
+      <div class="p029-text">
+        <ul>
+          <li>Once cleared, inform RTG operator to activate the Siren and gantry into the intended block.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom-right -->
+    <div class="p029-cell">
+      <div class="p029-imgbox">
+        <img src="/static/CG12.png" alt="CG12">
+      </div>
+      <div class="p029-text">
+        <ul>
+          <li>Once inside the intended block, key “arrived”, switch UHF to the block channel and continue with operations in the block.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+</div>

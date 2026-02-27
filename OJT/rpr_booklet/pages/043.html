@@ -1,0 +1,177 @@
+<!-- 042.html — RP Booklet (Replanner) Page 42
+     8.5 : Dangerous Goods (DG)
+     ✅ Fixed table to match your screenshot exactly (TK blue note spans 2 rows on TK half only)
+     ✅ Namespaced CSS (won't affect navbar)
+-->
+<style>
+  .p042-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+    line-height: 1.55;
+    font-size: 18px;
+  }
+
+  .p042-h2{
+    max-width: 1080px;
+    margin: 0 auto 10px;
+    font-weight: 900;
+    font-size: 22px;
+  }
+
+  .p042-par{
+    max-width: 1080px;
+    margin: 0 auto 14px;
+  }
+
+  .p042-under{
+    max-width: 1080px;
+    margin: 14px auto 8px;
+    font-weight: 900;
+    font-size: 20px;
+    text-decoration: underline;
+  }
+
+  .p042-sub{
+    max-width: 1080px;
+    margin: 8px auto 2px;
+    font-weight: 900;
+    font-size: 20px;
+  }
+
+  .p042-list{
+    max-width: 1080px;
+    margin: 6px auto 14px;
+    padding-left: 26px;
+  }
+  .p042-list li{ margin: 6px 0; }
+
+  /* ===== DG location table ===== */
+  .p042-table{
+    width: 1080px;
+    max-width: 100%;
+    margin: 12px auto 0;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 18px;
+  }
+  .p042-table th,
+  .p042-table td{
+    border: 1.5px solid #000;
+    padding: 10px 12px;
+    vertical-align: middle;
+  }
+  .p042-table th{
+    font-weight: 900;
+    text-align: left;
+    font-size: 19px;
+  }
+
+  .p042-note{
+    color:#0b57d0;            /* blue like screenshot */
+    font-weight:700;
+    vertical-align: middle;  /* center in tall cell */
+  }
+
+  @media (max-width: 900px){
+    .p042-page{ font-size: 16px; }
+    .p042-h2{ font-size: 20px; }
+    .p042-under, .p042-sub{ font-size: 18px; }
+  }
+
+  @media print{
+    .p042-page{ max-width:none; padding:0; }
+    .p042-table th, .p042-table td{ padding: 8px 10px; }
+  }
+</style>
+
+<div class="p042-page">
+
+  <div class="p042-h2">8.5: Dangerous Goods (DG)</div>
+
+  <div class="p042-par">
+    Dangerous goods are solids, liquids, or gases that can harm people, other living organisms, property, or the environment.
+    They require specialized methods of handling, transporting, storing, and disposing. They are often subject to both local and
+    international regulations. Dangerous goods include materials that are radioactive, flammable, explosive, corrosive, oxidizing,
+    asphyxiating, biohazardous, toxic, pathogenic, or allergenic.
+  </div>
+
+  <div class="p042-under">Classification of DG:</div>
+
+  <div class="p042-sub">PSA group:</div>
+  <div class="p042-par">
+    A classification by PSA Chemcare to further assess the extent of hazard within each DG so as to determine the appropriate
+    handling and storage rules within PSA.
+  </div>
+
+  <div class="p042-par" style="margin-bottom:6px;">
+    DG are identified, handled and stored according to the following classification criteria:
+  </div>
+
+  <ol class="p042-list">
+    <li>IMO Class: A number (1-9), designated by IMO to identify the hazard type of each DG.</li>
+    <li>UN Number: A 4-digit ID used to identify major chemicals as well as generic chemical groups.</li>
+  </ol>
+
+  <div class="p042-under">Location of DG:</div>
+
+  <!-- ✅ Corrected table (matches your screenshot) -->
+  <table class="p042-table">
+    <!-- Group headers -->
+    <tr>
+      <th colspan="2">DG3 GP / HC Container:</th>
+      <th colspan="2">DG3 TK Container:</th>
+    </tr>
+
+    <!-- Column headers -->
+    <tr>
+      <th style="width:18%;">IMO Class</th>
+      <th style="width:32%;">ARMG Blocks</th>
+      <th style="width:18%;">IMO Class:</th>
+      <th style="width:32%;">RTG Blocks:</th>
+    </tr>
+
+    <!-- Row 1 -->
+    <tr>
+      <td>IMO 3</td>
+      <td>TL01 – TL05</td>
+      <td>IMO 3</td>
+      <td>TR04</td>
+    </tr>
+
+    <!-- Row 2 -->
+    <tr>
+      <td>IMO 4.2</td>
+      <td>TR01 – TR03</td>
+      <td>IMO 8</td>
+      <td>TS04 / TS05</td>
+    </tr>
+
+    <!-- Row 3 -->
+    <tr>
+      <td>IMO 5.1</td>
+      <td>TD01 – TD07</td>
+      <td>IMO 2.2 / IMO6.1 / IMO 9</td>
+      <td>Any RTG Blocks</td>
+    </tr>
+
+    <!-- Row 4: Left continues, Right becomes blue note spanning 2 rows -->
+    <tr>
+      <td>IMO 8</td>
+      <td>TS01 – TS03</td>
+      <td class="p042-note" colspan="2" rowspan="2">
+        * TK containers – 2 High only and can be offload at row 2 to row 5 only
+      </td>
+    </tr>
+
+    <!-- Row 5: Left final row; Right is still covered by rowspan -->
+    <tr>
+      <td>IMO 2.2 / IMO 6.1 / IMO 9</td>
+      <td>Any ARMG Blocks</td>
+    </tr>
+  </table>
+
+</div>

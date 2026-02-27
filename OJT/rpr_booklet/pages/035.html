@@ -1,0 +1,107 @@
+<!-- 034.html — RP Booklet (Replanner) Page 34
+     Task 6: Monitor Yard Operations (continued)
+     ✅ Matches screenshot layout:
+        - Underlined title: "TR03: Heavy Loading Activities: Reduce Activities"
+        - 4 images in 2x2 grid (with black border)
+        - Line 6 sentence
+        - Underlined subtitle: "TC02: Lane Management"
+        - 2 images side-by-side (with black border)
+     ✅ Namespaced CSS (won't affect navbar)
+
+     NOTE: Replace image filenames with your actual /static/ files:
+       /static/TR03_1.png /static/TR03_2.png /static/TR03_3.png /static/TR03_4.png
+       /static/TC02_1.png /static/TC02_2.png
+-->
+<style>
+  .p034-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+    line-height: 1.5;
+  }
+
+  .p034-title{
+    max-width: 1080px;
+    margin: 0 auto 12px;
+    font-size: 22px;
+    font-weight: 900;
+    text-decoration: underline;
+  }
+
+  .p034-grid4{
+    max-width: 1080px;
+    margin: 0 auto 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+
+  .p034-row2{
+    max-width: 1080px;
+    margin: 0 auto 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+
+  .p034-imgbox{
+    border: 3px solid #000;
+    background:#fff;
+    overflow:hidden;
+  }
+  .p034-imgbox img{
+    width: 100%;
+    height: auto;
+    display:block;
+  }
+
+  .p034-line{
+    max-width: 1080px;
+    margin: 8px auto 10px;
+    font-size: 20px;
+  }
+
+  @media (max-width: 1100px){
+    .p034-grid4, .p034-row2{ grid-template-columns: 1fr; }
+  }
+
+  @media print{
+    .p034-page{ max-width:none; padding:0; }
+    .p034-imgbox{ border-width:2px; }
+  }
+</style>
+
+<div class="p034-page">
+
+  <div class="p034-title">TR03: Heavy Loading Activities: Reduce Activities</div>
+
+  <div class="p034-grid4">
+    <div class="p034-imgbox">
+      <img src="/static/TR03_1.png" alt="TR03 - Image 1">
+    </div>
+    <div class="p034-imgbox">
+      <img src="/static/TR03_2.png" alt="TR03 - Image 2">
+    </div>
+  </div>
+
+  <div class="p034-line">
+    6. Fully utilize both Lane 0 and Lane 11 at the ARMG block to prevent congestion.
+  </div>
+
+  <div class="p034-title">TC02: Lane Management</div>
+
+  <div class="p034-row2">
+    <div class="p034-imgbox">
+      <img src="/static/TC02_1.png" alt="TC02 - Before">
+    </div>
+    <div class="p034-imgbox">
+      <img src="/static/TC02_2.png" alt="TC02 - After">
+    </div>
+  </div>
+
+</div>

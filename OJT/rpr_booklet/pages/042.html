@@ -1,0 +1,112 @@
+<!-- 041.html — RP Booklet (Replanner) Page 41
+     8.4 : Shuffling Tools
+     8.4.1 : Shift by Range
+     8.4.2 : Shuffling Panel
+     ✅ Matches screenshot layout:
+        - Headings
+        - 1 image for Shift by Range
+        - Clickable link (anchor) for shuffling panel
+        - 1 image for Shuffling Panel
+     ✅ Namespaced CSS (won't affect navbar)
+
+     NOTE: Replace image filenames with your actual /static/ files:
+       /static/shift_by_range.png
+       /static/shuffling_panel.png
+-->
+<style>
+  .p041-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+    line-height: 1.55;
+  }
+
+  .p041-h2{
+    max-width: 1080px;
+    margin: 0 auto 10px;
+    font-weight: 900;
+    font-size: 22px;
+  }
+
+  .p041-h3{
+    max-width: 1080px;
+    margin: 10px auto 10px 55px; /* indent like screenshot */
+    font-weight: 900;
+    font-size: 20px;
+  }
+
+  .p041-imgwrap{
+    max-width: 1080px;
+    margin: 8px auto 18px;
+    display:flex;
+    justify-content:center;
+  }
+
+  .p041-imgbox{
+    width: 920px;
+    max-width: 95%;
+    border: 2px solid #000;
+    background:#fff;
+    overflow:hidden;
+  }
+
+  .p041-imgbox img{
+    width: 100%;
+    height: auto;
+    display:block;
+  }
+
+  .p041-linkline{
+    max-width: 1080px;
+    margin: 6px auto 10px 95px; /* further indent like screenshot */
+    font-size: 20px;
+  }
+
+  .p041-linkline a{
+    color: #0b57d0;          /* hyperlink blue */
+    text-decoration: underline;
+    word-break: break-word;
+  }
+
+  @media (max-width: 900px){
+    .p041-h3{ margin-left: 0; }
+    .p041-linkline{ margin-left: 0; }
+  }
+
+  @media print{
+    .p041-page{ max-width:none; padding:0; }
+    .p041-imgbox{ border-width: 1.5px; }
+  }
+</style>
+
+<div class="p041-page">
+
+  <div class="p041-h2">8.4 : Shuffling Tools</div>
+
+  <div class="p041-h3">8.4.1 : Shift by Range</div>
+
+  <div class="p041-imgwrap">
+    <div class="p041-imgbox">
+      <img src="/static/Shift_Range.png" alt="Shift by Range">
+    </div>
+  </div>
+
+  <div class="p041-h3">8.4.2 : Shuffling Panel</div>
+
+  <div class="p041-linkline">
+    Link to the shuffling panel:
+    <a href="https://web.ops.planning.psa/yard/profile-management/" target="_blank" rel="noopener">
+      https://web.ops.planning.psa/yard/profile-management/
+    </a>
+  </div>
+
+  <div class="p041-imgwrap">
+    <div class="p041-imgbox">
+      <img src="/static/Shuffling_Panel.png" alt="Shuffling Panel">
+    </div>
+  </div>
+
+</div>

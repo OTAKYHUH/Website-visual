@@ -1,0 +1,89 @@
+<!-- 036.html — RP Booklet (Replanner) Page 36
+     Task 7: Forecast RTG Yard Activities and Equipment Positioning
+     7.1 : Forecast RTG Yard Activities
+     ✅ Matches screenshot layout:
+        - Underlined main title
+        - Indented subheading "7.1: Forecast RTG Yard Activities"
+        - Underlined "Email by aYDM:" then 1 big screenshot (no border)
+        - Underlined "Enhance Activities:" then 1 big screenshot (no border)
+     ✅ Namespaced CSS (won't affect navbar)
+
+     NOTE: Replace image filenames with your actual /static/ files:
+       /static/task7_email.png
+       /static/task7_enhance.png
+-->
+<style>
+  .p036-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+    line-height: 1.5;
+  }
+
+  .p036-title{
+    font-weight: 900;
+    font-size: 22px;
+    margin: 0 0 12px;
+    text-decoration: underline;
+  }
+
+  .p036-h2{
+    font-weight: 900;
+    font-size: 20px;
+    margin: 0 0 10px 55px; /* indent like screenshot */
+  }
+
+  .p036-section{
+    font-weight: 900;
+    font-size: 20px;
+    margin: 10px 0 8px 95px; /* further indent */
+    text-decoration: underline;
+  }
+
+  .p036-imgwrap{
+    max-width: 1080px;
+    margin: 8px auto 18px;
+    display:flex;
+    justify-content:center;
+  }
+
+  .p036-imgwrap img{
+    width: 920px;
+    max-width: 95%;
+    height: auto;
+    display:block;
+  }
+
+  @media (max-width: 900px){
+    .p036-h2{ margin-left: 0; }
+    .p036-section{ margin-left: 0; }
+  }
+
+  @media print{
+    .p036-page{ max-width:none; padding:0; }
+    .p036-imgwrap img{ max-width: 100%; }
+  }
+</style>
+
+<div class="p036-page">
+
+  <div class="p036-title">Task 7: Forecast RTG Yard Activities and Equipment Positioning</div>
+
+  <div class="p036-h2">7.1: Forecast RTG Yard Activities</div>
+
+  <div class="p036-section">Email by aYDM:</div>
+
+  <div class="p036-imgwrap">
+    <img src="/static/AYDM Email.png" alt="Email by aYDM - RTG activities">
+  </div>
+
+  <div class="p036-section">Enhance Activities:</div>
+
+  <div class="p036-imgwrap">
+    <img src="/static/EA.png" alt="Enhance Activities">
+  </div>
+
+</div>

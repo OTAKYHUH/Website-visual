@@ -1,0 +1,57 @@
+<!-- 015.html — RP Booklet (Replanner) Page 15
+     3.2 : Yard CCTV
+     ✅ Boxed diagram is ONE image
+     ✅ Added missing underlined subtitle: "Milestone Layout (Camera Grouping)"
+     ✅ Namespaced CSS (won't affect navbar)
+-->
+<style>
+  .p015-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+  }
+
+  .p015-title{
+    font-weight: 900;
+    font-size: 18px;
+    margin: 0 0 10px;
+  }
+
+  .p015-subtitle{
+    font-weight: 900;
+    font-size: 18px;
+    text-decoration: underline;
+    margin: 0 0 14px 55px; /* slight indent like screenshot */
+  }
+
+  .p015-imgwrap{
+    max-width: 1050px;
+    margin: 0 auto;
+  }
+
+  .p015-img{
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  @media print{
+    .p015-page{ max-width:none; padding:0; }
+    .p015-imgwrap{ max-width:none; }
+  }
+</style>
+
+<div class="p015-page">
+  <div class="p015-title">3.2 : Yard CCTV</div>
+  <div class="p015-subtitle">Milestone Layout (Camera Grouping)</div>
+
+  <!-- Boxed diagram is an image -->
+  <div class="p015-imgwrap">
+    <img class="p015-img"
+         src="/static/Camera.png"
+         alt="Milestone Layout (Camera Grouping) - Yard CCTV">
+  </div>
+</div>

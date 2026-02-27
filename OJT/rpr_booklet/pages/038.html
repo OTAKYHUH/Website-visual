@@ -1,0 +1,96 @@
+<!-- 037.html — RP Booklet (Replanner) Page 37
+     Task 7: Forecast RTG Yard Activities and Equipment Positioning
+     7.2 : RTG Positioning
+     ✅ Matches screenshot layout:
+        - "7.2: RTG Positioning" header line
+        - "Reason for positioning RTG beforehand:" + 1-3 numbered list
+        - Underlined "RTG Servicing Detail:"
+        - 1 big email screenshot inside a thin border box
+     ✅ Namespaced CSS (won't affect navbar)
+
+     NOTE: Replace image filename with your actual /static/ file:
+       /static/rtg_servicing_detail.png
+-->
+<style>
+  .p037-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+    line-height: 1.55;
+  }
+
+  .p037-h2{
+    font-weight: 900;
+    font-size: 22px;
+    margin: 0 0 14px;
+  }
+
+  .p037-block{
+    max-width: 1080px;
+    margin: 0 auto 10px;
+    font-size: 20px;
+  }
+
+  .p037-list{
+    max-width: 1080px;
+    margin: 0 auto 14px;
+    font-size: 20px;
+    padding-left: 28px;
+  }
+  .p037-list li{ margin: 6px 0; }
+
+  .p037-under{
+    max-width: 1080px;
+    margin: 16px auto 10px;
+    font-size: 20px;
+    font-weight: 900;
+    text-decoration: underline;
+  }
+
+  .p037-imgwrap{
+    max-width: 1080px;
+    margin: 8px auto 0;
+    border: 1.5px solid #000; /* thin border like screenshot */
+    padding: 10px;
+    background:#fff;
+  }
+
+  .p037-imgwrap img{
+    width: 100%;
+    height: auto;
+    display:block;
+  }
+
+  @media (max-width: 900px){
+    .p037-block, .p037-list, .p037-under{ font-size: 18px; }
+    .p037-h2{ font-size: 20px; }
+  }
+
+  @media print{
+    .p037-page{ max-width:none; padding:0; }
+    .p037-imgwrap{ border-width: 1px; padding: 6px; }
+  }
+</style>
+
+<div class="p037-page">
+
+  <div class="p037-h2">7.2: RTG Positioning</div>
+
+  <div class="p037-block">Reason for positioning RTG beforehand:</div>
+
+  <ol class="p037-list">
+    <li>Based on the RTG activities forecast through enhance activities or email sent out aYDM</li>
+    <li>Based on operator skillset (experience operator for chain ops, DG, OH)</li>
+    <li>Parking of RTG for servicing on the next day</li>
+  </ol>
+
+  <div class="p037-under">RTG Servicing Detail:</div>
+
+  <div class="p037-imgwrap">
+    <img src="/static/Serving Email.png" alt="RTG Servicing Detail Email">
+  </div>
+
+</div>

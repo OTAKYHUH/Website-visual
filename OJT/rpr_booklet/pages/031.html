@@ -1,0 +1,119 @@
+<!-- 030.html — RP Booklet (Replanner) Page 30
+     5.3.3 : Safety Concern
+     ✅ Layout matches your screenshot:
+        - Header: "5.3.3 : Safety Concern"
+        - Row 1: 2 image cards (each has image + caption bar)
+        - Row 2: 1 image card on the left (image + caption bar), right side empty
+     ✅ Namespaced CSS (won't affect navbar)
+-->
+<style>
+  .p030-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+  }
+
+  .p030-h2{
+    font-weight: 900;
+    font-size: 22px;
+    margin: 0 0 14px;
+  }
+
+  /* grid: 2 columns */
+  .p030-grid{
+    max-width: 1080px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+
+  .p030-card{
+    border: 2px solid #000;
+    background:#fff;
+  }
+
+  .p030-imgbox{
+    height: 260px;
+    background:#000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+
+  .p030-imgbox img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* no crop */
+    display:block;
+  }
+
+  .p030-caption{
+    border-top: 2px solid #000;
+    padding: 14px 10px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 500;
+    background:#fff;
+  }
+
+  /* bottom left larger image like screenshot */
+  .p030-card.large .p030-imgbox{ height: 340px; }
+
+  /* keep bottom-right empty space (like screenshot) */
+  .p030-empty{
+    height: 1px;
+  }
+
+  @media (max-width: 1100px){
+    .p030-grid{ grid-template-columns: 1fr; }
+    .p030-card.large .p030-imgbox{ height: 300px; }
+    .p030-empty{ display:none; }
+  }
+
+  @media print{
+    .p030-page{ max-width:none; padding:0; }
+  }
+</style>
+
+<div class="p030-page">
+
+  <div class="p030-h2">5.3.3 : Safety Concern</div>
+
+  <div class="p030-grid">
+
+    <!-- Top-left -->
+    <div class="p030-card">
+      <div class="p030-imgbox">
+        <img src="/static/TL06.png" alt="TL06 Designated Cross Gantry Path">
+      </div>
+      <div class="p030-caption">TL06 Designated Cross Gantry Path</div>
+    </div>
+
+    <!-- Top-right -->
+    <div class="p030-card">
+      <div class="p030-imgbox">
+        <img src="/static/TM08.png" alt="TM08 Kerb Located Near Cross Gantry Path">
+      </div>
+      <div class="p030-caption">TM08 Kerb Located Near Cross Gantry Path</div>
+    </div>
+
+    <!-- Bottom-left -->
+    <div class="p030-card large">
+      <div class="p030-imgbox">
+        <img src="/static/TN.png" alt="TN / TM Cannot Cross Gantry">
+      </div>
+      <div class="p030-caption">TN / TM Cannot Cross Gantry</div>
+    </div>
+
+    <!-- Bottom-right empty (matches screenshot whitespace) -->
+    <div class="p030-empty"></div>
+
+  </div>
+
+</div>

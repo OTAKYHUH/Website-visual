@@ -1,0 +1,75 @@
+<!-- 018.html — RP Booklet (Replanner) Page 18
+     4.1 : CITOS
+     4.1.1 : Yard Planning System (YPS)
+     Logical Yard:
+     ✅ Main annotated screenshot is ONE image
+     ✅ Namespaced CSS (won't affect navbar)
+-->
+<style>
+  .p018-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 18px 10px 26px;
+  }
+
+  .p018-h2{
+    font-weight: 900;
+    font-size: 18px;
+    margin: 0 0 18px 40px;  /* slight indent like screenshot */
+  }
+
+  .p018-h3{
+    font-weight: 900;
+    font-size: 18px;
+    margin: 0 0 18px 85px;  /* deeper indent */
+  }
+
+  .p018-sub{
+    font-weight: 900;
+    font-size: 18px;
+    text-decoration: underline;
+    margin: 0 0 12px 130px;
+  }
+
+  .p018-imgwrap{
+    max-width: 1050px;
+    margin: 0 auto;
+  }
+
+  .p018-img{
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  @media print{
+    .p018-page{ max-width:none; padding:0; }
+    .p018-imgwrap{ max-width:none; }
+  }
+</style>
+
+<div class="p018-page">
+  <div class="p018-h2">4.1 : CITOS</div>
+  <div class="p018-h3">4.1.1 : Yard Planning System (YPS)</div>
+  <div class="p018-sub">Logical Yard:</div>
+
+  <!-- Boxed/annotated screenshot is an image -->
+  <div class="p018-imgwrap">
+    <img class="p018-img"
+         src="/static/Logical_yard.png"
+         alt="CITOS - Yard Planning System (YPS) - Logical Yard view">
+  </div>
+  <br>
+  <br>
+  <div class="p018-sub">Enhance Activity:</div>
+
+  <!-- Boxed/annotated screenshot is an image -->
+  <div class="p018-imgwrap">
+    <img class="p018-img"
+         src="/static/Enhanced.png"
+         alt="CITOS - Yard Planning System (YPS) - Logical Yard view">
+  </div>
+</div>

@@ -1,0 +1,199 @@
+<!-- 010.html — RP Booklet (Replanner) Page 10
+     ✅ Left side = HTML tables (FM Blocks + Others)
+     ✅ Right side = images only
+     ✅ FM Blocks table matches your booklet (thin vertical green bar + horizontal green separator, Section 2 shown)
+     ✅ Namespaced CSS so it won't affect navbar
+-->
+<style>
+  .p010-page{
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 18px 10px;
+    font-size: 13px;
+  }
+
+  /* ===== Layout ===== */
+  .p010-layout{
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 18px 22px;
+    align-items: start;
+  }
+
+  /* ===== Tables ===== */
+  .p010-left{
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .p010-mini{
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 10px;
+  }
+  .p010-mini th, .p010-mini td{
+    border: 1px solid #000;
+    padding: 3px 5px;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .p010-cap{
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+  .p010-subcap{
+    font-weight: 800;
+  }
+  .p010-hdr{
+    background:#f5f5f5;
+    font-weight: 800;
+  }
+
+  .p010-cap-green{ background:#c4d79b; }
+  .p010-cap-pink{ background:#d99694; }
+
+  /* FM table: thin vertical green bar */
+  .p010-fm .p010-mid{
+    background:#9bbb59;
+    width: 14px;
+    padding: 0 !important;
+  }
+
+  /* Horizontal green bar (right side separator) */
+  .p010-fm .p010-sep{
+    background:#9bbb59;
+    padding: 0 !important;
+    height: 14px;
+  }
+
+  /* ===== Right images ===== */
+  .p010-right{
+    display: grid;
+    grid-template-columns: 260px 260px;
+    grid-auto-rows: min-content;
+    gap: 18px 20px;
+    justify-content: start;
+    padding-top: 2px;
+  }
+  .p010-img{ width: 100%; height: auto; display: block; }
+
+  .p010-i1{ grid-column: 1; grid-row: 1; }
+  .p010-i2{ grid-column: 1; grid-row: 2; }
+  .p010-i3{ grid-column: 2; grid-row: 2; }
+  .p010-i4{ grid-column: 1; grid-row: 3; }
+  .p010-i5{ grid-column: 2; grid-row: 3; }
+
+  .p010-wrap{ word-break: break-word; }
+
+  @media (max-width: 980px){
+    .p010-layout{ grid-template-columns: 1fr; }
+    .p010-right{ grid-template-columns: 1fr; }
+    .p010-i1,.p010-i2,.p010-i3,.p010-i4,.p010-i5{ grid-column: 1; }
+  }
+
+  @media print{
+    .p010-page{ max-width:none; padding:0; }
+  }
+</style>
+
+<div class="p010-page">
+  <div class="p010-layout">
+
+    <!-- LEFT: TABLES -->
+    <div class="p010-left">
+
+      <!-- LOCATIONS OF FM BLOCKS (matches your 2nd screenshot) -->
+      <table class="p010-mini p010-fm">
+        <colgroup>
+          <col style="width:20%">
+          <col style="width:20%">
+          <col style="width:14px">   <!-- thin green bar -->
+          <col style="width:20%">
+          <col style="width:calc(40% - 14px)">
+        </colgroup>
+
+        <tr>
+          <th class="p010-cap p010-cap-green" colspan="5">LOCATIONS OF FM BLOCKS</th>
+        </tr>
+
+        <tr>
+          <th class="p010-subcap p010-cap-green" colspan="2">Terminal P4</th>
+          <th class="p010-mid p010-cap-green"></th>
+          <th class="p010-subcap p010-cap-green" colspan="2">Terminal P56SE</th>
+        </tr>
+
+        <tr class="p010-hdr">
+          <th>Section</th>
+          <th>Block</th>
+          <th class="p010-mid"></th>
+          <th>Section</th>
+          <th>Block</th>
+        </tr>
+
+        <!-- Data rows (P4 has 8 items) -->
+        <tr>
+          <td rowspan="8">Section 1</td>
+          <td>TA01</td>
+          <td class="p010-mid" rowspan="9"></td> <!-- thin bar spans data + separator row -->
+          <td rowspan="3">Section 1</td>
+          <td>TC06</td>
+        </tr>
+        <tr><td>TA02</td><td>TC07</td></tr>
+        <tr><td>TA03</td><td>TL07</td></tr>
+
+        <!-- ✅ horizontal green separator on RIGHT side only -->
+        <tr>
+          <td>TA04</td>
+          <td class="p010-sep" colspan="2"></td>
+        </tr>
+
+        <!-- Section 2 on right -->
+        <tr>
+          <td>TR06</td>
+          <td rowspan="4">Section 2</td>
+          <td>TE06</td>
+        </tr>
+        <tr><td>TS06</td><td>TE07</td></tr>
+        <tr><td>TT06</td><td>TF06</td></tr>
+        <tr><td>TU06</td><td>TF07</td></tr>
+      </table>
+
+      <!-- OTHERS -->
+      <table class="p010-mini">
+        <tr><th class="p010-cap p010-cap-pink" colspan="2">OTHERS:</th></tr>
+        <tr><th class="p010-subcap p010-cap-pink" colspan="2">Terminal P4 - P56SE</th></tr>
+        <tr class="p010-hdr"><th>Yard Description</th><th>Block</th></tr>
+
+        <tr><td>Damaged Yard Area</td><td>TR04 Slot 26 to Slot 37</td></tr>
+        <tr><td>Door Turning Area</td><td>TT07 (Reach Stacker)</td></tr>
+        <tr><td>Jammed Cone Area</td><td>TL99 (TP01 Lane 0)</td></tr>
+        <tr><td>Bund Area</td><td>TL06 Slot 13 to Slot 14</td></tr>
+        <tr><td>DG Reworking Area</td><td>TH06 Slot 35-36</td></tr>
+        <tr>
+          <td>Haulier OOGs Chassis Parking Area</td>
+          <td class="p010-wrap">
+            TL02, TM02 &amp; TK02 (Lane 11)<br>
+            TL03, TM03 &amp; TK03 (Lane 0)
+          </td>
+        </tr>
+      </table>
+
+    </div>
+
+    <!-- RIGHT: IMAGES -->
+    <div class="p010-right">
+      <img class="p010-img p010-i1" src="/static/hyster.png" alt="Hyster Block">
+      <img class="p010-img p010-i2" src="/static/Damaged Yard.png" alt="Damaged Yard">
+      <img class="p010-img p010-i3" src="/static/Door turning.png" alt="Door Turning">
+      <img class="p010-img p010-i4" src="/static/DG Reworking.png" alt="DG Reworking">
+      <img class="p010-img p010-i5" src="/static/Bund Area.png" alt="Bund Area">
+    </div>
+
+  </div>
+</div>
