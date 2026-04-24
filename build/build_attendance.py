@@ -144,7 +144,7 @@ def _find_files(explicit: Optional[str]) -> List[Path]:
             if not d.exists():
                 continue
             hits = glob.glob(str(d / "**" / "*.xlsx"), recursive=True) + \
-                   glob.glob(str(d / "**" / "*.xlsm"), recursive=True)
+                    glob.glob(str(d / "**" / "*.xlsm"), recursive=True)
             files.extend(Path(h) for h in hits)
 
     seen, uniq = set(), []

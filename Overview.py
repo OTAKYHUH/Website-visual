@@ -6,7 +6,6 @@ import webbrowser
 import plotly.express as px
 import openpyxl
 from datetime import date  # at top
-from routes.dashboard import dashboard
 from routes.home import home
 from routes.NonShift import nonshift
 from routes.main import main
@@ -20,8 +19,6 @@ from routes.rpr_booklet import rpr_booklet_bp
 
 app = Flask(__name__)
 app.secret_key = "vanguardoverdress"  # ← Required for flash and sessions
-
-app.register_blueprint(dashboard)
 app.register_blueprint(home)
 app.register_blueprint(nonshift)
 app.register_blueprint(main)
