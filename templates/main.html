@@ -355,7 +355,7 @@
                 {% for m in months %}
                   <label>
                     <input type="checkbox" name="month" value="{{ m }}"
-                           {% if selected_months and m in selected_months %}checked{% endif %}>
+                          {% if selected_months and m in selected_months %}checked{% endif %}>
                     {{ m }}
                   </label>
                 {% endfor %}
@@ -452,19 +452,19 @@
           {% set _exc = p.excellence|default(0) %}
           {% set _excpts = p.excellence_points|default(0) %}
           <article class="row"
-                   data-name="{{ p.name|lower }}"
-                   data-role="{{ (p.designation or '')|lower }}"
-                   data-safetypts="{{ p.safety_points }}"
-                   data-si="{{ p.si_done }}"
-                   data-shifts="{{ p.shift_count }}"
-                   data-pcpts="{{ p.pc_points|default(0) }}"
-                   data-pccount="{{ p.pc_count|default(0) }}"
-                   data-ywt="{{ (p.ywt if p.ywt != '-' else '') }}"
-                   data-hsl="{{ (p.hsl[:-1] if p.hsl and '%' in p.hsl else p.hsl) }}"
-                   data-rel="{{ _rel }}"
-                   data-relpts="{{ _relpts }}"
-                   data-exc="{{ _exc }}"
-                   data-excpts="{{ _excpts }}">
+                    data-name="{{ p.name|lower }}"
+                    data-role="{{ (p.designation or '')|lower }}"
+                    data-safetypts="{{ p.safety_points }}"
+                    data-si="{{ p.si_done }}"
+                    data-shifts="{{ p.shift_count }}"
+                    data-pcpts="{{ p.pc_points|default(0) }}"
+                    data-pccount="{{ p.pc_count|default(0) }}"
+                    data-ywt="{{ (p.ywt if p.ywt != '-' else '') }}"
+                    data-hsl="{{ (p.hsl[:-1] if p.hsl and '%' in p.hsl else p.hsl) }}"
+                    data-rel="{{ _rel }}"
+                    data-relpts="{{ _relpts }}"
+                    data-exc="{{ _exc }}"
+                    data-excpts="{{ _excpts }}">
             <div class="person">
               <div class="avatar">
                 {% if p.photo %}<img src="{{ p.photo }}" alt="">{% else %}<span>🧑‍💼</span>{% endif %}

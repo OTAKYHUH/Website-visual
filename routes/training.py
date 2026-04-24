@@ -82,6 +82,7 @@ def _get_booklet_config(role: str):
         from routes.rpr_booklet import PAGES_DIR as RPR_PAGES_DIR
         return (RPR_PAGES_DIR, "rpr_booklet.rpr_page", "yas_booklet/page.html", "RPR Booklet")
 
+
     abort(400, "Unknown booklet role")
 
 def _max_page_from_dir(pages_dir: Path) -> int:
@@ -260,7 +261,7 @@ def training_login():
     if not name:
         abort(400, "Name is required")
 
-    if role not in ("YAS", "YSS", "RPR", "ADMIN", "MENTOR"):
+    if role not in ("YAS", "YSS", "RPR", "NEW", "ADMIN", "MENTOR"):
         abort(400, "Invalid role")
 
     # ✅ ADMIN path
@@ -340,6 +341,7 @@ def training_login():
         return redirect(url_for("yss_booklet.yss_page", page=1))
     if role == "RPR":
         return redirect(url_for("rpr_booklet.rpr_page", page=1))
+
 
     abort(400, "Unhandled role")
 
