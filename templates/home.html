@@ -314,7 +314,7 @@
         });
 
       
-  // ===== PPT Weekly (password protected) =====
+// ===== PPT Weekly (password protected) =====
   document.getElementById("pptWeeklyBtn")
     ?.addEventListener("click", () => {
       openPwModal({
@@ -335,6 +335,8 @@
         requireUsername: false
       });
     });
+
+
       // ===== Training modal =====
       const trainingBtn = document.getElementById("trainingBtn");
       const trainingModal = document.getElementById("trainingModal");
@@ -407,6 +409,13 @@
             window.open(JO_PBI_URL, "_blank");
           }
         });
+
+      {% comment %} document.getElementById('pptWeeklyBtn')
+        ?.addEventListener('click', () => window.open(PPT_WEEKLY_PBI_URL, "_blank"));
+
+      document.getElementById('shiokBtn')
+        ?.addEventListener('click', () => window.open(SHIOK_PBI_URL, "_blank")); {% endcomment %}
+
     })();
   </script>
 
