@@ -308,12 +308,12 @@
         </div>
 
         <a class="cta" id="deepDiveBtn"
-           href="{{ '#' if not selected_date_str else url_for('daily.index',
-                           date=selected_date_str,
-                           shift=selected_shift,
-                           cluster=(tab_hint or 'P123'),
-                           name=person.name) }}"
-           aria-disabled="{{ 'true' if not selected_date_str else 'false' }}">
+            href="{{ '#' if not selected_date_str else url_for('daily.index',
+                            date=selected_date_str,
+                            shift=selected_shift,
+                            cluster=(tab_hint or 'P123'),
+                            name=person.name) }}"
+            aria-disabled="{{ 'true' if not selected_date_str else 'false' }}">
           Deep Dive
         </a>
       </section>

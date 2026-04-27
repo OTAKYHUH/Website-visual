@@ -152,7 +152,7 @@
           Training
         </button>
 
-        <button type="button" id="playbookBtn" data-url="https://miro.com/app/dashboard/">
+        <button type="button" id="playbookBtn">
           Playbook
         </button>
 
@@ -161,7 +161,7 @@
           SO Individual Performance
         </button>
 
-        <button type="submit" name="role" value="JO">
+        <button type="button" id="joPerformanceBtn">
           JO Individual Performance
         </button>
 
@@ -302,6 +302,17 @@
           });
         });
 
+      //Playbook
+      document.getElementById("playbookBtn")
+        ?.addEventListener("click", () => {
+          openPwModal({
+            role: "playbook",
+            title: "Playbook",
+            actionUrl: "{{ url_for('home.playbook_login') }}",
+            requireUsername: false
+          });
+        });
+
       // ✅ SO Individual Performance (server-side protected)
       document.getElementById("soPerformanceBtn")
         ?.addEventListener("click", () => {
@@ -313,30 +324,40 @@
           });
         });
 
-      
-// ===== PPT Weekly (password protected) =====
-  document.getElementById("pptWeeklyBtn")
-    ?.addEventListener("click", () => {
-      openPwModal({
-        role: "ppt_weekly",
-        title: "PPT Weekly",
-        actionUrl: "{{ url_for('home.ppt_weekly_login') }}",
-        requireUsername: false
-      });
-    });
+      //JO Performance
+      document.getElementById("joPerformanceBtn")
+        ?.addEventListener("click", () => {
+          openPwModal({
+            role: "jo_performance",
+            title: "JO Individual Performance",
+            actionUrl: "{{ url_for('home.jo_performance_login') }}",
+            requireUsername: false
+          });
+        });
 
-  // ===== SHIOK (password protected) =====
-  document.getElementById("shiokBtn")
-    ?.addEventListener("click", () => {
-      openPwModal({
-        role: "shiok",
-        title: "SHIOK",
-        actionUrl: "{{ url_for('home.shiok_login') }}",
-        requireUsername: false
-      });
-    });
+      //PPT WEEKLY
+      document.getElementById("pptWeeklyBtn")
+        ?.addEventListener("click", () => {
+          openPwModal({
+            role: "ppt_weekly",
+            title: "PPT Weekly",
+            actionUrl: "{{ url_for('home.ppt_weekly_login') }}",
+            requireUsername: false
+          });
+        });
 
+        //SHIOK 
+        document.getElementById("shiokBtn")
+        ?.addEventListener("click", () => {
+          openPwModal({
+            role: "shiok",
+            title: "SHIOK",
+            actionUrl: "{{ url_for('home.shiok_login') }}",
+            requireUsername: false
+          });
+        });
 
+        
       // ===== Training modal =====
       const trainingBtn = document.getElementById("trainingBtn");
       const trainingModal = document.getElementById("trainingModal");
@@ -385,12 +406,6 @@
       // ===== Power BI Button Logic (non-protected ones remain direct) =====
       const SHIFT_PBI_URL =
         "https://app.powerbi.com/reportEmbed?reportId=b3af80f5-56b8-4b19-8e28-547613d2c6f8&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
-      const PPT_WEEKLY_PBI_URL =
-        "https://app.powerbi.com/reportEmbed?reportId=08e074d4-3c03-46b9-b533-812c20defe3e&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
-      const SHIOK_PBI_URL =
-        "https://app.powerbi.com/reportEmbed?reportId=c250baad-0d3f-4420-b764-ff3dd9cd1510&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
-      const JO_PBI_URL =
-        "https://app.powerbi.com/reportEmbed?reportId=6ff2fa09-409f-42d9-936d-2a959f217b97&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
 
       document.getElementById('roleForm')
         ?.addEventListener('submit', function (e) {
@@ -401,21 +416,7 @@
             e.preventDefault();
             window.open(SHIFT_PBI_URL, "_blank");
           }
-
-          // ✅ daily_analysis removed from submit handler (now modal)
-
-          if (btn.value === 'JO') {
-            e.preventDefault();
-            window.open(JO_PBI_URL, "_blank");
-          }
         });
-
-      {% comment %} document.getElementById('pptWeeklyBtn')
-        ?.addEventListener('click', () => window.open(PPT_WEEKLY_PBI_URL, "_blank"));
-
-      document.getElementById('shiokBtn')
-        ?.addEventListener('click', () => window.open(SHIOK_PBI_URL, "_blank")); {% endcomment %}
-
     })();
   </script>
 

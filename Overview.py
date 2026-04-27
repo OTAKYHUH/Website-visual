@@ -16,7 +16,6 @@ from routes.training import training_bp
 from routes.yss_booklet import yss_booklet_bp
 from routes.rpm_booklet import rpm_booklet_bp
 from routes.rpr_booklet import rpr_booklet_bp
-from routes.new_booklet import new_booklet_bp
 
 app = Flask(__name__)
 app.secret_key = "vanguardoverdress"  # ← Required for flash and sessions
@@ -30,7 +29,6 @@ app.register_blueprint(training_bp)
 app.register_blueprint(yss_booklet_bp)
 app.register_blueprint(rpm_booklet_bp)
 app.register_blueprint(rpr_booklet_bp)
-app.register_blueprint(new_booklet_bp)
 
 def open_browser():
     webbrowser.open_new("http://127.0.0.1:5000/")

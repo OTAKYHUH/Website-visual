@@ -9,6 +9,10 @@ home = Blueprint("home", __name__)
 STAFF_PROFILE_PASSWORD = os.environ.get("STAFF_PROFILE_PASSWORD", "cess")
 DAILY_ANALYSIS_PASSWORD = os.environ.get("DAILY_ANALYSIS_PASSWORD", "cess")
 SO_PERFORMANCE_PASSWORD = os.environ.get("SO_PERFORMANCE_PASSWORD", "cess")
+PPT_WEEKLY_PASSWORD = os.environ.get("PPT_WEEKLY_PASSWORD", "cess")
+SHIOK_PASSWORD = os.environ.get("SHIOK_PASSWORD", "cess")
+JO_PERFORMANCE_PASSWORD = os.environ.get("JO_PERFORMANCE_PASSWORD", "cess")
+PLAYBOOK_PASSWORD = os.environ.get("PLAYBOOK.PASSWORD", "cess")
 
 # ===================== URLS (SERVER-SIDE) =====================
 
@@ -23,6 +27,27 @@ DAILY_ANALYSIS_URL = (
     "https://app.powerbi.com/reportEmbed?reportId=8f105737-0465-44ee-822a-0791181fc5ca"
     "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
 )
+
+PLAYBOOK_URL = (
+    "https://miro.com/app/dashboard/"
+)
+
+JO_PERFORMANCE_URL = (
+    "https://app.powerbi.com/reportEmbed?reportId=6ff2fa09-409f-42d9-936d-2a959f217b97"
+    "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
+)
+
+PPT_WEEKLY_URL = (
+    "https://app.powerbi.com/reportEmbed?reportId=08e074d4-3c03-46b9-b533-812c20defe3e" 
+    "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
+)
+
+SHIOK_URL = (
+    "https://app.powerbi.com/reportEmbed?reportId=c250baad-0d3f-4420-b764-ff3dd9cd1510"
+    "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
+)
+
+
 
 # ===================== HOME PAGE =====================
 
@@ -85,7 +110,28 @@ def daily_analysis():
 
     return redirect(DAILY_ANALYSIS_URL)
 
+# ===================== PLAYBOOK (PASSWORD PROTECTED) =====================
 
+@home.route("/playbook/login", methods=["POST"])
+def playbook_login():
+    pw = (request.form.get("password") or "").strip()
+
+    if pw != PLAYBOOK_PASSWORD:
+        flash("❌ Invalid password for Playbook.")
+        return redirect(url_for("home.role_selection"))
+
+    session["playbook_ok"] = True
+    return redirect(url_for("home.playbook"))
+
+
+@home.route("/playbook", methods=["GET"])
+def playbook():
+    
+    if not session.get("playbook_ok"):
+        flash("❌ Please enter Playbook password first.")
+        return redirect(url_for("home.role_selection"))
+
+    return redirect(PLAYBOOK_URL)
 # ===================== SO PERFORMANCE (PASSWORD PROTECTED) =====================
 
 @home.route("/so-performance/login", methods=["POST"])
@@ -102,16 +148,79 @@ def so_performance_login():
 
 @home.route("/so-performance", methods=["GET"])
 def so_performance():
-    """
-    Redirect to your existing SO Performance page.
-    Previously: redirect(url_for("main.index"))
-    """
+    
     if not session.get("so_performance_ok"):
         flash("❌ Please enter SO Performance password first.")
         return redirect(url_for("home.role_selection"))
 
     return redirect(url_for("main.index"))
 
+# ===================== JO PERFORMANCE (PASSWORD PROTECTED) =====================
+@home.route("/jo-performance/login", methods=["POST"])
+def jo_performance_login():
+    pw = (request.form.get("password") or "").strip()
+
+    if pw != JO_PERFORMANCE_PASSWORD:
+        flash("❌ Invalid password for JO Performance.")
+        return redirect(url_for("home.role_selection"))
+
+    session["jo_performance_ok"] = True
+    return redirect(url_for("home.jo_performance"))
+
+
+@home.route("/jo_performance", methods=["GET"])
+def jo_performance():
+    
+    if not session.get("performance_ok"):
+        flash("❌ Please enter JO Performance password first.")
+        return redirect(url_for("home.role_selection"))
+
+    return redirect(JO_PERFORMANCE_URL)
+
+# ===================== PPT WEEKLY (PASSWORD PROTECTED) =====================
+
+@home.route("/ppt-weekly/login", methods=["POST"])
+def ppt_weekly_login():
+    pw = (request.form.get("password") or "").strip()
+
+    if pw != PPT_WEEKLY_PASSWORD:
+        flash("❌ Invalid password for PPT Weekly.")
+        return redirect(url_for("home.role_selection"))
+
+    session["ppt_weekly_ok"] = True
+    return redirect(url_for("home.ppt_weekly"))
+
+
+@home.route("/ppt_weekly", methods=["GET"])
+def ppt_weekly():
+    
+    if not session.get("ppt_weekly_ok"):
+        flash("❌ Please enter PPT Weekly password first.")
+        return redirect(url_for("home.role_selection"))
+
+    return redirect(PPT_WEEKLY_URL)
+
+# ===================== SHIOK (PASSWORD PROTECTED) =====================
+@home.route("/shiok/login", methods=["POST"])
+def shiok_login():
+    pw = (request.form.get("password") or "").strip()
+
+    if pw != SHIOK_PASSWORD:
+        flash("❌ Invalid password for SHIOK.")
+        return redirect(url_for("home.role_selection"))
+
+    session["shiok_ok"] = True
+    return redirect(url_for("home.shiok"))
+
+
+@home.route("/shiok", methods=["GET"])
+def shiok():
+    
+    if not session.get("shiok_ok"):
+        flash("❌ Please enter SHIOK password first.")
+        return redirect(url_for("home.role_selection"))
+
+    return redirect(SHIOK_URL)
 
 # ===================== TRAINING PAGE (PUBLIC) =====================
 
