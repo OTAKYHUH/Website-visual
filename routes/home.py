@@ -11,7 +11,6 @@ DAILY_ANALYSIS_PASSWORD = os.environ.get("DAILY_ANALYSIS_PASSWORD", "cess")
 SO_PERFORMANCE_PASSWORD = os.environ.get("SO_PERFORMANCE_PASSWORD", "cess")
 PPT_WEEKLY_PASSWORD = os.environ.get("PPT_WEEKLY_PASSWORD", "cess")
 SHIOK_PASSWORD = os.environ.get("SHIOK_PASSWORD", "cess")
-JO_PERFORMANCE_PASSWORD = os.environ.get("JO_PERFORMANCE_PASSWORD", "cess")
 PLAYBOOK_PASSWORD = os.environ.get("PLAYBOOK.PASSWORD", "cess")
 
 # ===================== URLS (SERVER-SIDE) =====================
@@ -30,11 +29,6 @@ DAILY_ANALYSIS_URL = (
 
 PLAYBOOK_URL = (
     "https://miro.com/app/dashboard/"
-)
-
-JO_PERFORMANCE_URL = (
-    "https://app.powerbi.com/reportEmbed?reportId=6ff2fa09-409f-42d9-936d-2a959f217b97"
-    "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
 )
 
 PPT_WEEKLY_URL = (
@@ -154,28 +148,6 @@ def so_performance():
         return redirect(url_for("home.role_selection"))
 
     return redirect(url_for("main.index"))
-
-# ===================== JO PERFORMANCE (PASSWORD PROTECTED) =====================
-@home.route("/jo-performance/login", methods=["POST"])
-def jo_performance_login():
-    pw = (request.form.get("password") or "").strip()
-
-    if pw != JO_PERFORMANCE_PASSWORD:
-        flash("❌ Invalid password for JO Performance.")
-        return redirect(url_for("home.role_selection"))
-
-    session["jo_performance_ok"] = True
-    return redirect(url_for("home.jo_performance"))
-
-
-@home.route("/jo_performance", methods=["GET"])
-def jo_performance():
-    
-    if not session.get("performance_ok"):
-        flash("❌ Please enter JO Performance password first.")
-        return redirect(url_for("home.role_selection"))
-
-    return redirect(JO_PERFORMANCE_URL)
 
 # ===================== PPT WEEKLY (PASSWORD PROTECTED) =====================
 
