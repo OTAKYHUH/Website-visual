@@ -139,7 +139,7 @@
     <form method="POST" id="roleForm">
       <div class="button-group">
 
-        <button type="submit" name="role" value="shift">
+        <button type="submit" name="role" value="ywt">
           YWT Champion<br>(Team Performance Drive)
         </button>
 
@@ -389,9 +389,8 @@
       //Feature for redirecting to a new tab for Playbook removed - changed to modal
 
       // ===== Power BI Button Logic (non-protected ones remain direct) =====
-      const SHIFT_PBI_URL =
-        "https://app.powerbi.com/reportEmbed?reportId=b3af80f5-56b8-4b19-8e28-547613d2c6f8&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
-
+      const YWT_PBI_URL =
+      "https://app.powerbi.com/reportEmbed?reportId=b3af80f5-56b8-4b19-8e28-547613d2c6f8&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
       const JO_PBI_URL = 
       "https://app.powerbi.com/reportEmbed?reportId=6ff2fa09-409f-42d9-936d-2a959f217b97&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
 
@@ -400,9 +399,9 @@
           const btn = e.submitter;
           if (!btn) return;
 
-          if (btn.value === 'shift') {
+          if (btn.value === 'ywt') {
             e.preventDefault();
-            window.open(SHIFT_PBI_URL, "_blank");
+            window.open(YWT_PBI_URL, "_blank");
           }
         });
         document.getElementById('joPerformanceBtn')
