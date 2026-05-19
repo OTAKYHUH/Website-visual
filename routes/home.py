@@ -41,6 +41,11 @@ SHIOK_URL = (
     "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
 )
 
+SO_PERFORMANCE_URL = (
+    "https://app.powerbi.com/reportEmbed?reportId=8f71e479-3e20-4ff2-84f8-5e3717ef9057"
+    "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
+)
+
 
 
 # ===================== HOME PAGE =====================
@@ -147,7 +152,7 @@ def so_performance():
         flash("❌ Please enter SO Performance password first.")
         return redirect(url_for("home.role_selection"))
 
-    return redirect(url_for("main.index"))
+    return redirect(SO_PERFORMANCE_URL)
 
 # ===================== PPT WEEKLY (PASSWORD PROTECTED) =====================
 
