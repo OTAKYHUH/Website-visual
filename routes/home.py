@@ -42,7 +42,7 @@ SHIOK_URL = (
 )
 
 SO_PERFORMANCE_URL = (
-    "https://app.powerbi.com/reportEmbed?reportId=8f71e479-3e20-4ff2-84f8-5e3717ef9057"
+    "https://app.powerbi.com/reportEmbed?reportId=6089e1a7-b291-4e3e-996c-ba9e3da9b503"
     "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
 )
 
