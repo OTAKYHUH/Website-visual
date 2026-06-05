@@ -6,12 +6,12 @@ home = Blueprint("home", __name__)
 
 # ===================== PASSWORDS (SERVER-SIDE) =====================
 # Set these in your server env vars (PythonAnywhere recommended).
-STAFF_PROFILE_PASSWORD = os.environ.get("STAFF_PROFILE_PASSWORD", "cess")
-DAILY_ANALYSIS_PASSWORD = os.environ.get("DAILY_ANALYSIS_PASSWORD", "cess")
-SO_PERFORMANCE_PASSWORD = os.environ.get("SO_PERFORMANCE_PASSWORD", "cess")
-PPT_WEEKLY_PASSWORD = os.environ.get("PPT_WEEKLY_PASSWORD", "cess")
-SHIOK_PASSWORD = os.environ.get("SHIOK_PASSWORD", "cess")
-PLAYBOOK_PASSWORD = os.environ.get("PLAYBOOK.PASSWORD", "cess")
+STAFF_PROFILE_PASSWORD = os.environ.get("STAFF_PROFILE_PASSWORD", "cess20")
+DAILY_ANALYSIS_PASSWORD = os.environ.get("DAILY_ANALYSIS_PASSWORD", "cess20")
+SO_PERFORMANCE_PASSWORD = os.environ.get("SO_PERFORMANCE_PASSWORD", "cess20")
+PPT_WEEKLY_PASSWORD = os.environ.get("PPT_WEEKLY_PASSWORD", "cess20")
+PPT_WEEKLY_SHIOK_PASSWORD = os.environ.get("SHIOK_PASSWORD", "cess20")
+PLAYBOOK_PASSWORD = os.environ.get("PLAYBOOK.PASSWORD", "cess20")
 
 # ===================== URLS (SERVER-SIDE) =====================
 
@@ -36,7 +36,7 @@ PPT_WEEKLY_URL = (
     "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
 )
 
-SHIOK_URL = (
+PPT_WEEKLY_SHIOK_URL = (
     "https://app.powerbi.com/reportEmbed?reportId=c250baad-0d3f-4420-b764-ff3dd9cd1510"
     "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
 )
@@ -177,27 +177,27 @@ def ppt_weekly():
 
     return redirect(PPT_WEEKLY_URL)
 
-# ===================== SHIOK (PASSWORD PROTECTED) =====================
-@home.route("/shiok/login", methods=["POST"])
-def shiok_login():
+# ===================== PPT WEEKLY (SHIOK) (PASSWORD PROTECTED) =====================
+@home.route("/ppt_weekly_shiok/login", methods=["POST"])
+def ppt_weekly_shiok_login():
     pw = (request.form.get("password") or "").strip()
 
-    if pw != SHIOK_PASSWORD:
-        flash("❌ Invalid password for SHIOK.")
+    if pw != PPT_WEEKLY_SHIOK_PASSWORD:
+        flash("❌ Invalid password for PPT WEEKLY (SHIOK).")
         return redirect(url_for("home.role_selection"))
 
-    session["shiok_ok"] = True
-    return redirect(url_for("home.shiok"))
+    session["ppt_weekly_shiok_ok"] = True
+    return redirect(url_for("home.ppt_weekly_shiok"))
 
 
-@home.route("/shiok", methods=["GET"])
-def shiok():
+@home.route("/ppt_weekly_shiok", methods=["GET"])
+def ppt_weekly_shiok():
     
-    if not session.get("shiok_ok"):
-        flash("❌ Please enter SHIOK password first.")
+    if not session.get("ppt_weekly_shiok_ok"):
+        flash("❌ Please enter PPT WEEKLY (SHIOK) password first.")
         return redirect(url_for("home.role_selection"))
 
-    return redirect(SHIOK_URL)
+    return redirect(PPT_WEEKLY_SHIOK_URL)
 
 # ===================== TRAINING PAGE (PUBLIC) =====================
 
