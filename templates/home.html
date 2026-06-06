@@ -388,6 +388,17 @@
           });
         });
 
+        // JO Individual Performance (server-side protected)
+      document.getElementById("joPerformanceBtn")
+        ?.addEventListener("click", () => {
+          openPwModal({
+            role: "jo_performance",
+            title: "JO Individual Performance",
+            actionUrl: "{{ url_for('home.jo_performance_login') }}",
+            requireUsername: false
+          });
+        });
+
       //PPT WEEKLY
       document.getElementById("pptWeeklyBtn")
         ?.addEventListener("click", () => {
@@ -455,8 +466,6 @@
       // ===== Power BI Button Logic (non-protected ones remain direct) =====
       const YWT_PBI_URL =
       "https://app.powerbi.com/reportEmbed?reportId=4932995f-e9e0-45ee-8696-25301d95970e&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
-      const JO_PBI_URL = 
-      "https://app.powerbi.com/reportEmbed?reportId=f2de832e-d53a-4786-9a6a-24493ce5e91a&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
       const SHIOK_URL =
       "https://app.powerbi.com/groups/me/reports/5b1088de-e6e3-4391-87bb-1af4756165b2/ReportSection0b72e683b08137da9f00?experience=power-bi&bookmarkGuid=Bookmarkdd9bb3a90dba0c15bd6a"
       const DIVERSION_URL =
@@ -473,8 +482,6 @@
             window.open(YWT_PBI_URL, "_blank");
           }
         });
-        document.getElementById('joPerformanceBtn')
-            ?.addEventListener('click', () => window.open(JO_PBI_URL, "_blank"));
 
         document.getElementById('shiok')
             ?.addEventListener('click', () => window.open(SHIOK_URL, "_blank"));

@@ -9,6 +9,7 @@ home = Blueprint("home", __name__)
 STAFF_PROFILE_PASSWORD = os.environ.get("STAFF_PROFILE_PASSWORD", "cess20")
 DAILY_ANALYSIS_PASSWORD = os.environ.get("DAILY_ANALYSIS_PASSWORD", "cess20")
 SO_PERFORMANCE_PASSWORD = os.environ.get("SO_PERFORMANCE_PASSWORD", "cess20")
+JO_PERFORMANCE_PASSWORD = os.environ.get("JO_PERFORMANCE_PASSWORD", "cess20")
 PPT_WEEKLY_PASSWORD = os.environ.get("PPT_WEEKLY_PASSWORD", "cess20")
 PPT_WEEKLY_SHIOK_PASSWORD = os.environ.get("SHIOK_PASSWORD", "cess20")
 PLAYBOOK_PASSWORD = os.environ.get("PLAYBOOK.PASSWORD", "cess20")
@@ -44,6 +45,12 @@ PPT_WEEKLY_SHIOK_URL = (
 SO_PERFORMANCE_URL = (
     "https://app.powerbi.com/reportEmbed?reportId=6089e1a7-b291-4e3e-996c-ba9e3da9b503"
     "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
+)
+
+JO_PERFORMANCE_URL = (
+    "https://app.powerbi.com/reportEmbed?reportId=f2de832e-d53a-4786-9a6a-24493ce5e91a"
+    "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
+
 )
 
 
@@ -153,6 +160,29 @@ def so_performance():
         return redirect(url_for("home.role_selection"))
 
     return redirect(SO_PERFORMANCE_URL)
+
+# ===================== SO PERFORMANCE (PASSWORD PROTECTED) =====================
+
+@home.route("/jo-performance/login", methods=["POST"])
+def jo_performance_login():
+    pw = (request.form.get("password") or "").strip()
+
+    if pw != JO_PERFORMANCE_PASSWORD:
+        flash("❌ Invalid password for JO Individual Performance.")
+        return redirect(url_for("home.role_selection"))
+
+    session["jo_performance_ok"] = True
+    return redirect(url_for("home.jo_performance"))
+
+
+@home.route("/jo-performance", methods=["GET"])
+def jo_performance():
+    
+    if not session.get("jo_performance_ok"):
+        flash("❌ Please enter JO Performance password first.")
+        return redirect(url_for("home.role_selection"))
+
+    return redirect(JO_PERFORMANCE_URL)
 
 # ===================== PPT WEEKLY (PASSWORD PROTECTED) =====================
 
