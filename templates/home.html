@@ -183,8 +183,12 @@
           YWT Champion<br>(Team Performance Drive)
         </button>
 
-        <button type="button" style="background-color: #00f2ff" id="soPerformanceBtn">
-          SO Individual Performance
+        <button type="button" style="background-color: #00f2ff" id="soPerformance1sthHalfBtn">
+          SO Individual Performance<br> (January - June)
+        </button>
+
+        <button type="button" style="background-color: #00f2ff" id="soPerformance2ndHalfBtn">
+          SO Individual Performance<br> (July - December)
         </button>
 
         <button type="button" style="background-color: #00f2ff" id="joPerformanceBtn">
@@ -377,13 +381,24 @@
           });
         });
 
-      // ✅ SO Individual Performance (server-side protected)
-      document.getElementById("soPerformanceBtn")
+      // ✅ SO Individual Performance (Jan to Jun) (server-side protected)
+      document.getElementById("soPerformance1stHalfBtn")
         ?.addEventListener("click", () => {
           openPwModal({
-            role: "so_performance",
-            title: "SO Individual Performance",
-            actionUrl: "{{ url_for('home.so_performance_login') }}",
+            role: "so_performance_1sthalf",
+            title: "SO Individual Performance (January to June)",
+            actionUrl: "{{ url_for('home.so_performance_1sthalf_login') }}",
+            requireUsername: false
+          });
+        });
+
+        // ✅ SO Individual Performance (Jul to Dec) (server-side protected)
+      document.getElementById("soPerformance2ndHalfBtn")
+        ?.addEventListener("click", () => {
+          openPwModal({
+            role: "so_performance_2ndhalf",
+            title: "SO Individual Performance (July to December)",
+            actionUrl: "{{ url_for('home.so_performance_2ndhalf_login') }}",
             requireUsername: false
           });
         });

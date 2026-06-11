@@ -8,7 +8,8 @@ home = Blueprint("home", __name__)
 # Set these in your server env vars (PythonAnywhere recommended).
 STAFF_PROFILE_PASSWORD = os.environ.get("STAFF_PROFILE_PASSWORD", "cess20")
 DAILY_ANALYSIS_PASSWORD = os.environ.get("DAILY_ANALYSIS_PASSWORD", "cess20")
-SO_PERFORMANCE_PASSWORD = os.environ.get("SO_PERFORMANCE_PASSWORD", "cess20")
+SO_PERFORMANCE_1STHALF_PASSWORD = os.environ.get("SO_PERFORMANCE_1STHALF_PASSWORD", "cess20")
+SO_PERFORMANCE_2NDHALF_PASSWORD = os.environ.get("SO_PERFORMANCE_2NDHALF_PASSWORD", "cess20")
 JO_PERFORMANCE_PASSWORD = os.environ.get("JO_PERFORMANCE_PASSWORD", "cess20")
 PPT_WEEKLY_PASSWORD = os.environ.get("PPT_WEEKLY_PASSWORD", "cess20")
 PPT_WEEKLY_SHIOK_PASSWORD = os.environ.get("SHIOK_PASSWORD", "cess20")
@@ -42,15 +43,19 @@ PPT_WEEKLY_SHIOK_URL = (
     "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
 )
 
-SO_PERFORMANCE_URL = (
+SO_PERFORMANCE_1STHALF_URL = (
     "https://app.powerbi.com/reportEmbed?reportId=6089e1a7-b291-4e3e-996c-ba9e3da9b503"
+    "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
+)
+
+SO_PERFORMANCE_2NDHALF_URL = (
+    "https://app.powerbi.com/reportEmbed?reportId=5e35ecda-ca26-4ac8-ad92-50be568d2064"
     "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
 )
 
 JO_PERFORMANCE_URL = (
     "https://app.powerbi.com/reportEmbed?reportId=f2de832e-d53a-4786-9a6a-24493ce5e91a"
     "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
-
 )
 
 
@@ -138,28 +143,52 @@ def playbook():
         return redirect(url_for("home.role_selection"))
 
     return redirect(PLAYBOOK_URL)
-# ===================== SO PERFORMANCE (PASSWORD PROTECTED) =====================
+# ===================== SO PERFORMANCE (Jan-Jun) (PASSWORD PROTECTED) =====================
 
-@home.route("/so-performance/login", methods=["POST"])
-def so_performance_login():
+@home.route("/so-performance-1sthalf/login", methods=["POST"])
+def so_performance_1sthalf_login():
     pw = (request.form.get("password") or "").strip()
 
-    if pw != SO_PERFORMANCE_PASSWORD:
-        flash("❌ Invalid password for SO Individual Performance.")
+    if pw != SO_PERFORMANCE_1STHALF_PASSWORD:
+        flash("❌ Invalid password for SO Individual Performance (January - June).")
         return redirect(url_for("home.role_selection"))
 
-    session["so_performance_ok"] = True
-    return redirect(url_for("home.so_performance"))
+    session["so_performance_1sthalf_ok"] = True
+    return redirect(url_for("home.so_performance_1sthalf"))
 
 
-@home.route("/so-performance", methods=["GET"])
+@home.route("/so-performance-1sthalf", methods=["GET"])
 def so_performance():
     
-    if not session.get("so_performance_ok"):
-        flash("❌ Please enter SO Performance password first.")
+    if not session.get("so_performance_1sthalf_ok"):
+        flash("❌ Please enter SO Performance (January - June) password first.")
         return redirect(url_for("home.role_selection"))
 
-    return redirect(SO_PERFORMANCE_URL)
+    return redirect(SO_PERFORMANCE_1STHALF_URL)
+
+# ===================== SO PERFORMANCE (Jul-Dec) (PASSWORD PROTECTED) =====================
+
+@home.route("/so-performance-2ndhalf/login", methods=["POST"])
+def so_performance_2ndhalf_login():
+    pw = (request.form.get("password") or "").strip()
+
+    if pw != SO_PERFORMANCE_2NDHALF_PASSWORD:
+        flash("❌ Invalid password for SO Individual Performance (July - December).")
+        return redirect(url_for("home.role_selection"))
+
+    session["so_performance_2nd_ok"] = True
+    return redirect(url_for("home.so_performance_2ndhalf"))
+
+
+@home.route("/so-performance-2ndhalf", methods=["GET"])
+def so_performance_2ndhalf():
+    
+    if not session.get("so_performance_2ndhalf_ok"):
+        flash("❌ Please enter SO Performance (July to December) password first.")
+        return redirect(url_for("home.role_selection"))
+
+    return redirect(SO_PERFORMANCE_2NDHALF_URL)
+
 
 # ===================== SO PERFORMANCE (PASSWORD PROTECTED) =====================
 
