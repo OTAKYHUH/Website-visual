@@ -158,7 +158,7 @@ def so_performance_1sthalf_login():
 
 
 @home.route("/so-performance-1sthalf", methods=["GET"])
-def so_performance():
+def so_performance_1sthalf():
     
     if not session.get("so_performance_1sthalf_ok"):
         flash("❌ Please enter SO Performance (January - June) password first.")
@@ -176,7 +176,7 @@ def so_performance_2ndhalf_login():
         flash("❌ Invalid password for SO Individual Performance (July - December).")
         return redirect(url_for("home.role_selection"))
 
-    session["so_performance_2nd_ok"] = True
+    session["so_performance_2ndhalf_ok"] = True
     return redirect(url_for("home.so_performance_2ndhalf"))
 
 
