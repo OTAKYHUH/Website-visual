@@ -24,7 +24,6 @@ def get_db():
     return conn
 
 # ===================== SCHEMA (SUBMIT / LOCK) =====================
-
 def ensure_schema():
     """
     Adds 'submitted' and 'submitted_at' columns to employees table if missing.

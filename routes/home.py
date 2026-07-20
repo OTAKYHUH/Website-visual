@@ -190,7 +190,7 @@ def so_performance_2ndhalf():
     return redirect(SO_PERFORMANCE_2NDHALF_URL)
 
 
-# ===================== SO PERFORMANCE (PASSWORD PROTECTED) =====================
+# ===================== JO PERFORMANCE (PASSWORD PROTECTED) =====================
 
 @home.route("/jo-performance/login", methods=["POST"])
 def jo_performance_login():
