@@ -26,12 +26,37 @@ def get_db():
 # ===================== SCHEMA (SUBMIT / LOCK) =====================
 def ensure_schema():
     """
-    Adds 'submitted' and 'submitted_at' columns to employees table if missing.
+    Creates employees and training_progress tables if missing.
+    Adds 'submitted' and 'submitted_at' columns to employees if missing.
     Safe to call multiple times.
     """
     db = get_db()
     cur = db.cursor()
 
+    # 1. Create employees table if it doesn't exist
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS employees (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            role TEXT NOT NULL
+        )
+    """)
+
+    # 2. Create training_progress table if it doesn't exist
+    # Note: The composite PRIMARY KEY handles the conflict resolution during autosave
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS training_progress (
+            employee_id INTEGER NOT NULL,
+            page_code TEXT NOT NULL,
+            field_name TEXT NOT NULL,
+            field_value TEXT,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (employee_id, page_code, field_name),
+            FOREIGN KEY (employee_id) REFERENCES employees (id)
+        )
+    """)
+
+    # 3. Handle older migrations safely for the employees table
     cur.execute("PRAGMA table_info(employees)")
     cols = {r["name"] for r in cur.fetchall()}
 
