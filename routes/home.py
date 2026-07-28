@@ -6,14 +6,14 @@ home = Blueprint("home", __name__)
 
 # ===================== PASSWORDS (SERVER-SIDE) =====================
 # Set these in your server env vars (PythonAnywhere recommended).
-STAFF_PROFILE_PASSWORD = os.environ.get("STAFF_PROFILE_PASSWORD", "cess20")
-DAILY_ANALYSIS_PASSWORD = os.environ.get("DAILY_ANALYSIS_PASSWORD", "cess20")
 SO_PERFORMANCE_1STHALF_PASSWORD = os.environ.get("SO_PERFORMANCE_1STHALF_PASSWORD", "cess20")
 SO_PERFORMANCE_2NDHALF_PASSWORD = os.environ.get("SO_PERFORMANCE_2NDHALF_PASSWORD", "cess20")
 JO_PERFORMANCE_PASSWORD = os.environ.get("JO_PERFORMANCE_PASSWORD", "cess20")
-PPT_WEEKLY_PASSWORD = os.environ.get("PPT_WEEKLY_PASSWORD", "cess20")
-PPT_WEEKLY_SHIOK_PASSWORD = os.environ.get("SHIOK_PASSWORD", "cess20")
-PLAYBOOK_PASSWORD = os.environ.get("PLAYBOOK.PASSWORD", "cess20")
+STAFF_PROFILE_PASSWORD = os.environ.get("STAFF_PROFILE_PASSWORD", "cess27")
+PLAYBOOK_PASSWORD = os.environ.get("PLAYBOOK.PASSWORD", "cess27")
+DAILY_ANALYSIS_PASSWORD = os.environ.get("DAILY_ANALYSIS_PASSWORD", "cess27")
+PPT_WEEKLY_PASSWORD = os.environ.get("PPT_WEEKLY_PASSWORD", "cess27")
+PPT_WEEKLY_SHIOK_PASSWORD = os.environ.get("SHIOK_PASSWORD", "cess27")
 
 # ===================== URLS (SERVER-SIDE) =====================
 
