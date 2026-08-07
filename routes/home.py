@@ -87,74 +87,6 @@ def role_selection():
 
     return render_template("home.html")
 
-
-# ===================== STAFF PROFILE (PASSWORD PROTECTED) =====================
-
-@home.route("/staff-profile/login", methods=["POST"])
-def staff_profile_login():
-    pw = (request.form.get("password") or "").strip()
-
-    if pw != STAFF_PROFILE_PASSWORD:
-        flash("❌ Invalid password for Staff Profile.")
-        return redirect(url_for("home.role_selection"))
-
-    session["staff_profile_ok"] = True
-    return redirect(url_for("home.staff_profile"))
-
-
-@home.route("/staff-profile", methods=["GET"])
-def staff_profile():
-    if not session.get("staff_profile_ok"):
-        flash("❌ Please enter Staff Profile password first.")
-        return redirect(url_for("home.role_selection"))
-
-    return redirect(STAFF_PROFILE_URL)
-
-
-# ===================== DAILY ANALYSIS (PASSWORD PROTECTED) =====================
-
-@home.route("/daily-analysis/login", methods=["POST"])
-def daily_analysis_login():
-    pw = (request.form.get("password") or "").strip()
-
-    if pw != DAILY_ANALYSIS_PASSWORD:
-        flash("❌ Invalid password for Daily Analysis.")
-        return redirect(url_for("home.role_selection"))
-
-    session["daily_analysis_ok"] = True
-    return redirect(url_for("home.daily_analysis"))
-
-
-@home.route("/daily-analysis", methods=["GET"])
-def daily_analysis():
-    if not session.get("daily_analysis_ok"):
-        flash("❌ Please enter Daily Analysis password first.")
-        return redirect(url_for("home.role_selection"))
-
-    return redirect(DAILY_ANALYSIS_URL)
-
-# ===================== PLAYBOOK (PASSWORD PROTECTED) =====================
-
-@home.route("/playbook/login", methods=["POST"])
-def playbook_login():
-    pw = (request.form.get("password") or "").strip()
-
-    if pw != PLAYBOOK_PASSWORD:
-        flash("❌ Invalid password for Playbook.")
-        return redirect(url_for("home.role_selection"))
-
-    session["playbook_ok"] = True
-    return redirect(url_for("home.playbook"))
-
-
-@home.route("/playbook", methods=["GET"])
-def playbook():
-    
-    if not session.get("playbook_ok"):
-        flash("❌ Please enter Playbook password first.")
-        return redirect(url_for("home.role_selection"))
-
-    return redirect(PLAYBOOK_URL)
 # ===================== SO PERFORMANCE (Jan-Jun) (PASSWORD PROTECTED) =====================
 
 @home.route("/so-performance-1sthalf/login", methods=["POST"])
@@ -224,6 +156,73 @@ def jo_performance():
         return redirect(url_for("home.role_selection"))
 
     return redirect(JO_PERFORMANCE_URL)
+
+# ===================== STAFF PROFILE (PASSWORD PROTECTED) =====================
+
+@home.route("/staff-profile/login", methods=["POST"])
+def staff_profile_login():
+    pw = (request.form.get("password") or "").strip()
+
+    if pw != STAFF_PROFILE_PASSWORD:
+        flash("❌ Invalid password for Staff Profile.")
+        return redirect(url_for("home.role_selection"))
+
+    session["staff_profile_ok"] = True
+    return redirect(url_for("home.staff_profile"))
+
+
+@home.route("/staff-profile", methods=["GET"])
+def staff_profile():
+    if not session.get("staff_profile_ok"):
+        flash("❌ Please enter Staff Profile password first.")
+        return redirect(url_for("home.role_selection"))
+
+    return redirect(STAFF_PROFILE_URL)
+
+# ===================== PLAYBOOK (PASSWORD PROTECTED) =====================
+
+@home.route("/playbook/login", methods=["POST"])
+def playbook_login():
+    pw = (request.form.get("password") or "").strip()
+
+    if pw != PLAYBOOK_PASSWORD:
+        flash("❌ Invalid password for Playbook.")
+        return redirect(url_for("home.role_selection"))
+
+    session["playbook_ok"] = True
+    return redirect(url_for("home.playbook"))
+
+
+@home.route("/playbook", methods=["GET"])
+def playbook():
+    
+    if not session.get("playbook_ok"):
+        flash("❌ Please enter Playbook password first.")
+        return redirect(url_for("home.role_selection"))
+
+    return redirect(PLAYBOOK_URL)
+
+# ===================== DAILY ANALYSIS (PASSWORD PROTECTED) =====================
+
+@home.route("/daily-analysis/login", methods=["POST"])
+def daily_analysis_login():
+    pw = (request.form.get("password") or "").strip()
+
+    if pw != DAILY_ANALYSIS_PASSWORD:
+        flash("❌ Invalid password for Daily Analysis.")
+        return redirect(url_for("home.role_selection"))
+
+    session["daily_analysis_ok"] = True
+    return redirect(url_for("home.daily_analysis"))
+
+
+@home.route("/daily-analysis", methods=["GET"])
+def daily_analysis():
+    if not session.get("daily_analysis_ok"):
+        flash("❌ Please enter Daily Analysis password first.")
+        return redirect(url_for("home.role_selection"))
+
+    return redirect(DAILY_ANALYSIS_URL)
 
 # ===================== PPT WEEKLY (PASSWORD PROTECTED) =====================
 
