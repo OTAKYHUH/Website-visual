@@ -24,15 +24,39 @@ def get_db():
     return conn
 
 # ===================== SCHEMA (SUBMIT / LOCK) =====================
-
 def ensure_schema():
     """
-    Adds 'submitted' and 'submitted_at' columns to employees table if missing.
+    Creates employees and training_progress tables if missing.
+    Adds 'submitted' and 'submitted_at' columns to employees if missing.
     Safe to call multiple times.
     """
     db = get_db()
     cur = db.cursor()
 
+    # 1. Create employees table if it doesn't exist
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS employees (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            role TEXT NOT NULL
+        )
+    """)
+
+    # 2. Create training_progress table if it doesn't exist
+    # Note: The composite PRIMARY KEY handles the conflict resolution during autosave
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS training_progress (
+            employee_id INTEGER NOT NULL,
+            page_code TEXT NOT NULL,
+            field_name TEXT NOT NULL,
+            field_value TEXT,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (employee_id, page_code, field_name),
+            FOREIGN KEY (employee_id) REFERENCES employees (id)
+        )
+    """)
+
+    # 3. Handle older migrations safely for the employees table
     cur.execute("PRAGMA table_info(employees)")
     cols = {r["name"] for r in cur.fetchall()}
 
@@ -81,6 +105,7 @@ def _get_booklet_config(role: str):
     if role == "RPR":
         from routes.rpr_booklet import PAGES_DIR as RPR_PAGES_DIR
         return (RPR_PAGES_DIR, "rpr_booklet.rpr_page", "yas_booklet/page.html", "RPR Booklet")
+
 
     abort(400, "Unknown booklet role")
 
@@ -260,7 +285,7 @@ def training_login():
     if not name:
         abort(400, "Name is required")
 
-    if role not in ("YAS", "YSS", "RPR", "ADMIN", "MENTOR"):
+    if role not in ("YAS", "YSS", "RPR", "NEW", "ADMIN", "MENTOR"):
         abort(400, "Invalid role")
 
     # ✅ ADMIN path
@@ -340,6 +365,7 @@ def training_login():
         return redirect(url_for("yss_booklet.yss_page", page=1))
     if role == "RPR":
         return redirect(url_for("rpr_booklet.rpr_page", page=1))
+
 
     abort(400, "Unhandled role")
 

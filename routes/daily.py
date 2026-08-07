@@ -73,11 +73,11 @@ def _split_shift_date_token(sd: str | None) -> Tuple[Optional[datetime], str]:
 def _norm_df_shift_date_tuple(df: pd.DataFrame) -> pd.DataFrame:
     """
     Produce helper columns:
-      _sd_date  (datetime.date)
-      _sd_shift 'D' or 'N'
+        _sd_date  (datetime.date)
+        _sd_shift 'D' or 'N'
     Source preference:
-      1) 'Shift Date' like '02 Sep 25 D'
-      2) else 'Dates' / 'Date' / 'START_DT' (+ optional 'Shift')
+        1) 'Shift Date' like '02 Sep 25 D'
+        2) else 'Dates' / 'Date' / 'START_DT' (+ optional 'Shift')
     """
     g = df.copy()
 
@@ -209,7 +209,7 @@ def _build_ywt_payload(shift_date_str: str) -> Dict[str, Any]:
 def _pick_hsl_log_frame(tables: Dict[str, pd.DataFrame]) -> Optional[pd.DataFrame]:
     """Prefer Log sheet for donut counts."""
     items = [(k, v, str(k).strip().lower()) for k, v in tables.items()
-             if isinstance(v, pd.DataFrame) and not v.empty]
+            if isinstance(v, pd.DataFrame) and not v.empty]
     for rx in (r"^log$", r"hsl\s*log", r"log_agg", r"hsl"):
         for _k, df, low in items:
             if re.search(rx, low, flags=re.I):
@@ -220,7 +220,7 @@ def _pick_hsl_log_frame(tables: Dict[str, pd.DataFrame]) -> Optional[pd.DataFram
 def _pick_hsl_details_frame(tables: Dict[str, pd.DataFrame]) -> Optional[pd.DataFrame]:
     """Prefer Details sheet for per-event rows."""
     items = [(k, v, str(k).strip().lower()) for k, v in tables.items()
-             if isinstance(v, pd.DataFrame) and not v.empty]
+            if isinstance(v, pd.DataFrame) and not v.empty]
     for rx in (r"^details$", r"hsl\s*details", r"details_raw", r"detail"):
         for _k, df, low in items:
             if re.search(rx, low, flags=re.I):
@@ -435,12 +435,12 @@ def _build_hsl_payload(shift_date_str: str, cluster: str | None) -> Dict[str, An
 def daily_index():
     """
     Accepts either:
-      /daily?sd=02%20Sep%2025%20D
+        /daily?sd=02%20Sep%2025%20D
     or
-      /daily?date=02%20Sep%2025&shift=D
+        /daily?date=02%20Sep%2025&shift=D
     Optional:
-      &name=<employee>
-      &cluster=P123|P456  (limits HSL to PPT1/2/3 vs PPT4/P56SE)
+        &name=<employee>
+        &cluster=P123|P456  (limits HSL to PPT1/2/3 vs PPT4/P56SE)
     """
     sd_arg = (request.args.get("sd") or "").strip()
     date_arg = (request.args.get("date") or "").strip()
