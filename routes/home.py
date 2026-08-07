@@ -13,7 +13,10 @@ STAFF_PROFILE_PASSWORD = os.environ.get("STAFF_PROFILE_PASSWORD", "cess27")
 PLAYBOOK_PASSWORD = os.environ.get("PLAYBOOK.PASSWORD", "cess27")
 DAILY_ANALYSIS_PASSWORD = os.environ.get("DAILY_ANALYSIS_PASSWORD", "cess27")
 PPT_WEEKLY_PASSWORD = os.environ.get("PPT_WEEKLY_PASSWORD", "cess27")
-PPT_WEEKLY_SHIOK_PASSWORD = os.environ.get("SHIOK_PASSWORD", "cess27")
+PPT_WEEKLY_SHIOK_PASSWORD = os.environ.get("PPT_WEEKLY_SHIOK_PASSWORD", "cess27")
+SHIOK_PASSWORD = os.environ.get("SHIOK_PASSWORD", "cess27")
+DIVERSION_PASSWORD = os.environ.get("DIVERSION_PASSWORD", "cess27")
+ARMG_YC_PASSWORD = os.environ.get("ARMG_YC_PASSWORD", "cess27")
 
 # ===================== URLS (SERVER-SIDE) =====================
 
@@ -58,6 +61,14 @@ JO_PERFORMANCE_URL = (
     "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
 )
 
+SHIOK_URL = (
+    "https://app.powerbi.com/groups/me/reports/5b1088de-e6e3-4391-87bb-1af4756165b2/ReportSection0b72e683b08137da9f00?experience=power-bi&bookmarkGuid=Bookmarkdd9bb3a90dba0c15bd6a")
+
+DIVERSION_URL = (
+    "https://app.powerbi.com/groups/me/apps/6418f333-7812-43d1-9e08-8def7120daed/reports/493c1ec9-1f54-41bf-a57b-79815922a571/ReportSection?ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3&experience=power-bi")
+
+ARMG_YC_URL = (
+    "https://app.powerbi.com/groups/me/reports/56b1a68c-0fbf-4c30-a1e1-a3f7c0f68635/ReportSection6f2ee9464148704944ec?experience=power-bi")
 
 
 # ===================== HOME PAGE =====================
@@ -258,6 +269,71 @@ def ppt_weekly_shiok():
 
     return redirect(PPT_WEEKLY_SHIOK_URL)
 
+# ===================== SHIOK 1.1 (PASSWORD PROTECTED) =====================
+@home.route("/shiok/login", methods=["POST"])
+def shiok_login():
+    pw = (request.form.get("password") or "").strip()
+
+    if pw != SHIOK_PASSWORD:
+        flash("❌ Invalid password for SHIOK 1.1.")
+        return redirect(url_for("home.role_selection"))
+
+    session["shiok_ok"] = True
+    return redirect(url_for("home.shiok"))
+
+
+@home.route("/shiok", methods=["GET"])
+def shiok():
+    
+    if not session.get("shiok_ok"):
+        flash("❌ Please enter SHIOK 1.1 password first.")
+        return redirect(url_for("home.role_selection"))
+
+    return redirect(SHIOK_URL)
+
+# ===================== DIVERSION (PASSWORD PROTECTED) =====================
+@home.route("/diversion/login", methods=["POST"])
+def diversion_login():
+    pw = (request.form.get("password") or "").strip()
+
+    if pw != DIVERSION_PASSWORD:
+        flash("❌ Invalid password for Diversion.")
+        return redirect(url_for("home.role_selection"))
+
+    session["diversion_ok"] = True
+    return redirect(url_for("home.diversion"))
+
+
+@home.route("/diversion", methods=["GET"])
+def diversion():
+    
+    if not session.get("diversion_ok"):
+        flash("❌ Please enter Diversion password first.")
+        return redirect(url_for("home.role_selection"))
+
+    return redirect(DIVERSION_URL)
+
+# ===================== ARMG/YC (PASSWORD PROTECTED) =====================
+@home.route("/armg_yc/login", methods=["POST"])
+def armg_yc_login():
+    pw = (request.form.get("password") or "").strip()
+
+    if pw != ARMG_YC_PASSWORD:
+        flash("❌ Invalid password for ARMG/YC.")
+        return redirect(url_for("home.role_selection"))
+
+    session["armg_yc_ok"] = True
+    return redirect(url_for("home.armg_yc"))
+
+
+@home.route("/armg_yc", methods=["GET"])
+def armg_yc():
+    
+    if not session.get("armg_yc_ok"):
+        flash("❌ Please enter ARMG/YC password first.")
+        return redirect(url_for("home.role_selection"))
+
+    return redirect(ARMG_YC_URL)
 # ===================== TRAINING PAGE (PUBLIC) =====================
 
 @home.route("/training", methods=["GET"])

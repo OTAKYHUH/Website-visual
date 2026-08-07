@@ -233,15 +233,15 @@
           PPT Weekly (SHIOK)
         </button>
 
-        <button type="button" style="background-color: #ffa200" id="shiok">
+        <button type="button" style="background-color: #ffa200" id="shiokBtn">
           SHIOK 1.1
         </button>
 
-        <button type="button" style="background-color: #ffa200" id="diversion">
+        <button type="button" style="background-color: #ffa200" id="diversionBtn">
           Diversion
         </button>
 
-        <button type="button" style="background-color: #ffa200" id="armgYC">
+        <button type="button" style="background-color: #ffa200" id="armgYCBtn">
           ARMG/YC
         </button>
       </div>
@@ -349,24 +349,47 @@
       document.getElementById('pwCancel')
         ?.addEventListener('click', () => modal.classList.remove('is-open'));
 
-      // ✅ Staff Profile (server-side protected)
+
+      // ✅ SO Individual Performance (Jan to Jun) (server-side protected)
+      document.getElementById("soPerformance1stHalfBtn")
+        ?.addEventListener("click", () => {
+          openPwModal({
+            role: "so_performance_1sthalf",
+            title: "SO Individual Performance (January to June)",
+            actionUrl: "{{ url_for('home.so_performance_1sthalf_login') }}",
+            requireUsername: false
+          });
+        });
+
+      // ✅ SO Individual Performance (Jul to Dec) (server-side protected)
+      document.getElementById("soPerformance2ndHalfBtn")
+        ?.addEventListener("click", () => {
+          openPwModal({
+            role: "so_performance_2ndhalf",
+            title: "SO Individual Performance (July to December)",
+            actionUrl: "{{ url_for('home.so_performance_2ndhalf_login') }}",
+            requireUsername: false
+          });
+        });
+
+      // JO Individual Performance (server-side protected)
+      document.getElementById("joPerformanceBtn")
+        ?.addEventListener("click", () => {
+          openPwModal({
+            role: "jo_performance",
+            title: "JO Individual Performance",
+            actionUrl: "{{ url_for('home.jo_performance_login') }}",
+            requireUsername: false
+          });
+        });
+      
+      // Staff Profile (server-side protected)
       document.getElementById("staffProfileBtn")
         ?.addEventListener("click", () => {
           openPwModal({
             role: "staff_profile",
             title: "Staff Profile",
             actionUrl: "{{ url_for('home.staff_profile_login') }}",
-            requireUsername: false
-          });
-        });
-
-      // ✅ Daily Analysis (server-side protected)
-      document.getElementById("dailyAnalysisBtn")
-        ?.addEventListener("click", () => {
-          openPwModal({
-            role: "daily_analysis",
-            title: "Daily Analysis",
-            actionUrl: "{{ url_for('home.daily_analysis_login') }}",
             requireUsername: false
           });
         });
@@ -382,35 +405,13 @@
           });
         });
 
-      // ✅ SO Individual Performance (Jan to Jun) (server-side protected)
-      document.getElementById("soPerformance1stHalfBtn")
+      // Daily Analysis (server-side protected)
+      document.getElementById("dailyAnalysisBtn")
         ?.addEventListener("click", () => {
           openPwModal({
-            role: "so_performance_1sthalf",
-            title: "SO Individual Performance (January to June)",
-            actionUrl: "{{ url_for('home.so_performance_1sthalf_login') }}",
-            requireUsername: false
-          });
-        });
-
-        // ✅ SO Individual Performance (Jul to Dec) (server-side protected)
-      document.getElementById("soPerformance2ndHalfBtn")
-        ?.addEventListener("click", () => {
-          openPwModal({
-            role: "so_performance_2ndhalf",
-            title: "SO Individual Performance (July to December)",
-            actionUrl: "{{ url_for('home.so_performance_2ndhalf_login') }}",
-            requireUsername: false
-          });
-        });
-
-        // JO Individual Performance (server-side protected)
-      document.getElementById("joPerformanceBtn")
-        ?.addEventListener("click", () => {
-          openPwModal({
-            role: "jo_performance",
-            title: "JO Individual Performance",
-            actionUrl: "{{ url_for('home.jo_performance_login') }}",
+            role: "daily_analysis",
+            title: "Daily Analysis",
+            actionUrl: "{{ url_for('home.daily_analysis_login') }}",
             requireUsername: false
           });
         });
@@ -426,7 +427,7 @@
           });
         });
 
-      //SHIOK 
+      //PPT WEEKLY (SHIOK) 
       document.getElementById("pptWeeklyShiokBtn")
         ?.addEventListener("click", () => {
           openPwModal({
@@ -437,7 +438,38 @@
           });
         });
 
-        
+      //SHIOK 1.1
+      document.getElementById("shiokBtn")
+        ?.addEventListener("click", () => {
+          openPwModal({
+            role: "shiok",
+            title: "SHIOK 1.1",
+            actionUrl: "{{ url_for('home.shiok_login') }}",
+            requireUsername: false
+          });
+        });
+
+      //DIVERSION
+      document.getElementById("diversionBtn")
+        ?.addEventListener("click", () => {
+          openPwModal({
+            role: "diversion",
+            title: "Diversion",
+            actionUrl: "{{ url_for('home.diversion_login') }}",
+            requireUsername: false
+          });
+        });
+
+      //ARMG/YC
+      document.getElementById("armgYCBtn")
+        ?.addEventListener("click", () => {
+          openPwModal({
+            role: "armg_yc",
+            title: "ARMG/YC",
+            actionUrl: "{{ url_for('home.armg_yc_login') }}",
+            requireUsername: false
+          });
+        });
 
         
       // ===== Training modal =====
@@ -484,13 +516,6 @@
       // ===== Power BI Button Logic (non-protected ones remain direct) =====
       const YWT_PBI_URL =
       "https://app.powerbi.com/reportEmbed?reportId=4932995f-e9e0-45ee-8696-25301d95970e&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
-      const SHIOK_URL =
-      "https://app.powerbi.com/groups/me/reports/5b1088de-e6e3-4391-87bb-1af4756165b2/ReportSection0b72e683b08137da9f00?experience=power-bi&bookmarkGuid=Bookmarkdd9bb3a90dba0c15bd6a"
-      const DIVERSION_URL =
-      "https://app.powerbi.com/groups/me/apps/6418f333-7812-43d1-9e08-8def7120daed/reports/493c1ec9-1f54-41bf-a57b-79815922a571/ReportSection?ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3&experience=power-bi"
-      const ARMG_YC_URL =
-      "https://app.powerbi.com/groups/me/reports/56b1a68c-0fbf-4c30-a1e1-a3f7c0f68635/ReportSection6f2ee9464148704944ec?experience=power-bi"
-      document.getElementById('roleForm')
         ?.addEventListener('submit', function (e) {
           const btn = e.submitter;
           if (!btn) return;
@@ -499,24 +524,7 @@
             e.preventDefault();
             window.open(YWT_PBI_URL, "_blank");
           }
-          if (btn.value === 'shiok') {
-            e.preventDefault();
-            window.open(SHIOK_URL, "_blank");
-          }
-          if (btn.value === 'diversion') {
-            e.preventDefault();
-            window.open(DIVERSION_URL, "_blank");
-          }
         });
-
-        document.getElementById('shiok')
-            ?.addEventListener('click', () => window.open(SHIOK_URL, "_blank"));
-
-        document.getElementById('diversion')
-            ?.addEventListener('click', () => window.open(DIVERSION_URL, "_blank"));
-
-        document.getElementById('armgYC')
-            ?.addEventListener('click', () => window.open(ARMG_YC_URL, "_blank"));
     })();
   </script>
 
