@@ -62,13 +62,16 @@ JO_PERFORMANCE_URL = (
 )
 
 SHIOK_URL = (
-    "https://app.powerbi.com/groups/me/reports/5b1088de-e6e3-4391-87bb-1af4756165b2/ReportSection0b72e683b08137da9f00?experience=power-bi&bookmarkGuid=Bookmarkdd9bb3a90dba0c15bd6a")
+    "https://app.powerbi.com/groups/me/reports/5b1088de-e6e3-4391-87bb-1af4756165b2/ReportSection0b72e683b08137da9f00?experience=power-bi&bookmarkGuid=Bookmarkdd9bb3a90dba0c15bd6a"
+    )
 
 DIVERSION_URL = (
-    "https://app.powerbi.com/groups/me/apps/6418f333-7812-43d1-9e08-8def7120daed/reports/493c1ec9-1f54-41bf-a57b-79815922a571/ReportSection?ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3&experience=power-bi")
+    "https://app.powerbi.com/groups/me/apps/6418f333-7812-43d1-9e08-8def7120daed/reports/493c1ec9-1f54-41bf-a57b-79815922a571/ReportSection?ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3&experience=power-bi"
+    )
 
 ARMG_YC_URL = (
-    "https://app.powerbi.com/groups/me/reports/56b1a68c-0fbf-4c30-a1e1-a3f7c0f68635/ReportSection6f2ee9464148704944ec?experience=power-bi")
+    "https://app.powerbi.com/groups/me/reports/56b1a68c-0fbf-4c30-a1e1-a3f7c0f68635/ReportSection6f2ee9464148704944ec?experience=power-bi"
+    )
 
 
 # ===================== HOME PAGE =====================
