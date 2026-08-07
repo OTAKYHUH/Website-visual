@@ -175,8 +175,10 @@
         </button>
 
         <button type="button" id="shiokBtn">
-          SHIOK
+          PPT Weekly (SHIOK)
         </button>
+
+        
 
       </div>
     </form>
@@ -405,8 +407,11 @@
 
       // ===== Power BI Button Logic (non-protected ones remain direct) =====
       const SHIFT_PBI_URL =
-        "https://app.powerbi.com/reportEmbed?reportId=b3af80f5-56b8-4b19-8e28-547613d2c6f8&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
-
+        "https://app.powerbi.com/reportEmbed?reportId=4932995f-e9e0-45ee-8696-25301d95970e&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
+      const SHIOK_URL = 
+        "https://app.powerbi.com/groups/me/reports/5b1088de-e6e3-4391-87bb-1af4756165b2/ReportSection0b72e683b08137da9f00?experience=power-bi&bookmarkGuid=Bookmarkdd9bb3a90dba0c15bd6a"
+      const DIVERSION_URL = 
+        "https://app.powerbi.com/groups/me/apps/6418f333-7812-43d1-9e08-8def7120daed/reports/493c1ec9-1f54-41bf-a57b-79815922a571/ReportSection?ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3&experience=power-bi"
       document.getElementById('roleForm')
         ?.addEventListener('submit', function (e) {
           const btn = e.submitter;
@@ -415,6 +420,14 @@
           if (btn.value === 'shift') {
             e.preventDefault();
             window.open(SHIFT_PBI_URL, "_blank");
+          }
+          if (btn.value === 'shiok') {
+            e.preventDefault();
+            window.open(SHIOK_URL, "_blank");
+          }
+          if (btn.value === 'diversion') {
+            e.preventDefault();
+            window.open(DIVERSION_URL, "_blank");
           }
         });
     })();
