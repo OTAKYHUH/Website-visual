@@ -29,39 +29,76 @@
       font-size: 3em;
       font-weight: bold;
       font-family: 'Montserrat', sans-serif;
+      text-align: left
+    }
+
+    h3 {
+      color: #ffffff;
+      font-size: 1em;
+      font-weight: bold;
+      font-family: 'Montserrat', sans-serif;
+      text-align: left
     }
 
     .button-group {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 24px;
-      flex-wrap: wrap;
-      white-space: nowrap;
-    }
-    .button-group > button {
-      width: 320px;
-      height: 120px;
-      padding: 0.9em 1.1em;
-      font-size: 1.6em;
-      border: none;
-      border-radius: 6px;
-      background-color: #E1C233;
-      color: black;
-      cursor: pointer;
-      transition: background 0.3s;
-      font-weight: bold;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      line-height: 1.15;
-      box-sizing: border-box;
-      white-space: normal;
-    }
-    button:hover { background-color: #0056b3; }
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
 
-    .error { color: red; margin-top: 1em; font-weight: bold; }
+.button-section {
+  border-radius: 8px;
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.section-label {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #666;
+  text-align: left;
+}
+
+.section-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+/* ✅ was .button-group > button, now targets buttons inside sections */
+.section-buttons > button {
+  width: 320px;
+  height: 120px;
+  padding: 0.9em 1.1em;
+  font-size: 1.6em;
+  border: none;
+  border-radius: 6px;
+  color: black;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.15;
+  box-sizing: border-box;
+  white-space: normal;
+  font-family: "Trebuchet MS", sans-serif
+}
+
+.section-buttons > button:hover {
+  background-color: #0056b3;
+  color: #ffffff
+}
+.error { color: red; margin-top: 1em; font-weight: bold; }
 
     /* ===== Modal ===== */
     .modal {
@@ -128,7 +165,7 @@
   <div class="container">
     <img src="{{ url_for('static', filename='Gold YOD Logo.png') }}" alt="Logo" class="logo">
 
-    <h2>YOD PERFORMANCE <br>DASHBOARD</h2>
+    <h2 style="text-align: center">YOD PERFORMANCE<br>DASHBOARD</h2>
 
     {% with messages = get_flashed_messages() %}
       {% if messages %}
@@ -138,47 +175,77 @@
 
     <form method="POST" id="roleForm">
       <div class="button-group">
-
-        <button type="submit" name="role" value="shift">
+        
+      <div class="button-section">
+        <h2>Staff Performance</h2>
+        <h3>Insights into the YWT performances of Senior and Junior Officers across P123 and P456.</h3>
+        <div class="section-buttons">
+        <button type="submit" name="role" style="background-color: #00f2ff" value="ywt">
           YWT Champion<br>(Team Performance Drive)
         </button>
 
-        <!-- ✅ Daily Analysis (password modal) -->
-        <button type="button" id="dailyAnalysisBtn">
-          Daily Analysis
+        <button type="button" style="background-color: #00f2ff" id="soPerformance1stHalfBtn">
+          SO Individual Performance<br> (January - June)
         </button>
 
-        <button type="button" id="trainingBtn">
-          Training
+        <button type="button" style="background-color: #00f2ff" id="soPerformance2ndHalfBtn">
+          SO Individual Performance<br> (July - December)
         </button>
 
-        <button type="button" id="playbookBtn">
-          Playbook
-        </button>
-
-        <!-- ✅ SO Individual Performance (password modal, no users.xlsx) -->
-        <button type="button" id="soPerformanceBtn">
-          SO Individual Performance
-        </button>
-
-        <button type="button" id="joPerformanceBtn">
+        <button type="button" style="background-color: #00f2ff" id="joPerformanceBtn">
           JO Individual Performance
         </button>
+      </div>
+    </div>
 
-        <!-- ✅ Staff Profile (password modal) -->
-        <button type="button" id="staffProfileBtn">
+    <div class="button-section">
+        <h2>Staff Development and Training</h2>
+        <h3>Useful tools to train and improve the skills of Senior and Junior Officers across P123 and P456.</h3>
+        <div class="section-buttons">
+        <button type="button" style="background-color: #2fff00" id="staffProfileBtn">
           Staff Profile
         </button>
 
-        <button type="button" id="pptWeeklyBtn">
+        <button type="button" style="background-color: #2fff00" id="trainingBtn">
+          Training
+        </button>
+
+        <button type="button" style="background-color: #2fff00" id="playbookBtn">
+          Playbook
+        </button>
+      </div>
+    </div>
+
+    <div class="button-section">
+        <h2>Other Dashboards</h2>
+        <h3>Additional dashboards that provide analysis and insights from other perspectives and areas of P123 and P456.</h3>
+        <div class="section-buttons">
+        <!-- ✅ Daily Analysis (password modal) -->
+        <button type="button" style="background-color: #ffa200" id="dailyAnalysisBtn">
+          Daily Analysis
+        </button>
+
+        <button type="button" style="background-color: #ffa200" id="pptWeeklyBtn">
           PPT Weekly
         </button>
 
-        <button type="button" id="shiokBtn">
+        <button type="button" style="background-color: #ffa200" id="pptWeeklyShiokBtn">
           PPT Weekly (SHIOK)
         </button>
 
-        
+        <button type="button" style="background-color: #ffa200" id="shiok">
+          SHIOK 1.1
+        </button>
+
+        <button type="button" style="background-color: #ffa200" id="diversion">
+          Diversion
+        </button>
+
+        <button type="button" style="background-color: #ffa200" id="armgYC">
+          ARMG/YC
+        </button>
+      </div>
+    </div>
 
       </div>
     </form>
@@ -315,18 +382,29 @@
           });
         });
 
-      // ✅ SO Individual Performance (server-side protected)
-      document.getElementById("soPerformanceBtn")
+      // ✅ SO Individual Performance (Jan to Jun) (server-side protected)
+      document.getElementById("soPerformance1stHalfBtn")
         ?.addEventListener("click", () => {
           openPwModal({
-            role: "so_performance",
-            title: "SO Individual Performance",
-            actionUrl: "{{ url_for('home.so_performance_login') }}",
+            role: "so_performance_1sthalf",
+            title: "SO Individual Performance (January to June)",
+            actionUrl: "{{ url_for('home.so_performance_1sthalf_login') }}",
             requireUsername: false
           });
         });
 
-      //JO Performance
+        // ✅ SO Individual Performance (Jul to Dec) (server-side protected)
+      document.getElementById("soPerformance2ndHalfBtn")
+        ?.addEventListener("click", () => {
+          openPwModal({
+            role: "so_performance_2ndhalf",
+            title: "SO Individual Performance (July to December)",
+            actionUrl: "{{ url_for('home.so_performance_2ndhalf_login') }}",
+            requireUsername: false
+          });
+        });
+
+        // JO Individual Performance (server-side protected)
       document.getElementById("joPerformanceBtn")
         ?.addEventListener("click", () => {
           openPwModal({
@@ -349,15 +427,17 @@
         });
 
       //SHIOK 
-      document.getElementById("shiokBtn")
+      document.getElementById("pptWeeklyShiokBtn")
         ?.addEventListener("click", () => {
           openPwModal({
-            role: "shiok",
-            title: "SHIOK",
-            actionUrl: "{{ url_for('home.shiok_login') }}",
+            role: "ppt_weekly_shiok",
+            title: "PPT Weekly (SHIOK)",
+            actionUrl: "{{ url_for('home.ppt_weekly_shiok_login') }}",
             requireUsername: false
           });
         });
+
+        
 
         
       // ===== Training modal =====
@@ -399,27 +479,25 @@
       trainingRoleSelect?.addEventListener("change", syncTrainingPwUI);
       syncTrainingPwUI();
 
-      // ===== Playbook =====
-      const playbookBtn = document.getElementById('playbookBtn');
-      playbookBtn?.addEventListener('click', () => {
-        window.open(playbookBtn.dataset.url, "_blank");
-      });
+      //Feature for redirecting to a new tab for Playbook removed - changed to modal
 
       // ===== Power BI Button Logic (non-protected ones remain direct) =====
-      const SHIFT_PBI_URL =
-        "https://app.powerbi.com/reportEmbed?reportId=4932995f-e9e0-45ee-8696-25301d95970e&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3";
-      const SHIOK_URL = 
-        "https://app.powerbi.com/groups/me/reports/5b1088de-e6e3-4391-87bb-1af4756165b2/ReportSection0b72e683b08137da9f00?experience=power-bi&bookmarkGuid=Bookmarkdd9bb3a90dba0c15bd6a"
-      const DIVERSION_URL = 
-        "https://app.powerbi.com/groups/me/apps/6418f333-7812-43d1-9e08-8def7120daed/reports/493c1ec9-1f54-41bf-a57b-79815922a571/ReportSection?ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3&experience=power-bi"
+      const YWT_PBI_URL =
+      "https://app.powerbi.com/reportEmbed?reportId=4932995f-e9e0-45ee-8696-25301d95970e&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
+      const SHIOK_URL =
+      "https://app.powerbi.com/groups/me/reports/5b1088de-e6e3-4391-87bb-1af4756165b2/ReportSection0b72e683b08137da9f00?experience=power-bi&bookmarkGuid=Bookmarkdd9bb3a90dba0c15bd6a"
+      const DIVERSION_URL =
+      "https://app.powerbi.com/groups/me/apps/6418f333-7812-43d1-9e08-8def7120daed/reports/493c1ec9-1f54-41bf-a57b-79815922a571/ReportSection?ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3&experience=power-bi"
+      const ARMG_YC_URL =
+      "https://app.powerbi.com/groups/me/reports/56b1a68c-0fbf-4c30-a1e1-a3f7c0f68635/ReportSection6f2ee9464148704944ec?experience=power-bi"
       document.getElementById('roleForm')
         ?.addEventListener('submit', function (e) {
           const btn = e.submitter;
           if (!btn) return;
 
-          if (btn.value === 'shift') {
+          if (btn.value === 'ywt') {
             e.preventDefault();
-            window.open(SHIFT_PBI_URL, "_blank");
+            window.open(YWT_PBI_URL, "_blank");
           }
           if (btn.value === 'shiok') {
             e.preventDefault();
@@ -430,6 +508,15 @@
             window.open(DIVERSION_URL, "_blank");
           }
         });
+
+        document.getElementById('shiok')
+            ?.addEventListener('click', () => window.open(SHIOK_URL, "_blank"));
+
+        document.getElementById('diversion')
+            ?.addEventListener('click', () => window.open(DIVERSION_URL, "_blank"));
+
+        document.getElementById('armgYC')
+            ?.addEventListener('click', () => window.open(ARMG_YC_URL, "_blank"));
     })();
   </script>
 
