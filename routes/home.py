@@ -20,32 +20,6 @@ ARMG_YC_PASSWORD = os.environ.get("ARMG_YC_PASSWORD", "cess27")
 
 # ===================== URLS (SERVER-SIDE) =====================
 
-# ✅ Staff Profile URL (kept server-side)
-STAFF_PROFILE_URL = (
-    "https://globalpsa.sharepoint.com/:x:/s/PSAC-CNBD-YOD-efile/"
-    "IQDQRbYZAnJeSaHbuUxC4x6yAXaNJ1Bwi693i6NtMbvJPZg?e=Tbd92g"
-)
-
-# ✅ Daily Analysis Power BI URL (kept server-side)
-DAILY_ANALYSIS_URL = (
-    "https://app.powerbi.com/reportEmbed?reportId=8f105737-0465-44ee-822a-0791181fc5ca"
-    "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
-)
-
-PLAYBOOK_URL = (
-    "https://miro.com/app/dashboard/"
-)
-
-PPT_WEEKLY_URL = (
-    "https://app.powerbi.com/reportEmbed?reportId=08e074d4-3c03-46b9-b533-812c20defe3e" 
-    "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
-)
-
-PPT_WEEKLY_SHIOK_URL = (
-    "https://app.powerbi.com/reportEmbed?reportId=c250baad-0d3f-4420-b764-ff3dd9cd1510"
-    "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
-)
-
 SO_PERFORMANCE_1STHALF_URL = (
     "https://app.powerbi.com/reportEmbed?reportId=6089e1a7-b291-4e3e-996c-ba9e3da9b503"
     "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
@@ -58,6 +32,30 @@ SO_PERFORMANCE_2NDHALF_URL = (
 
 JO_PERFORMANCE_URL = (
     "https://app.powerbi.com/reportEmbed?reportId=f2de832e-d53a-4786-9a6a-24493ce5e91a"
+    "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
+)
+
+STAFF_PROFILE_URL = (
+    "https://globalpsa.sharepoint.com/:x:/s/PSAC-CNBD-YOD-efile/"
+    "IQDQRbYZAnJeSaHbuUxC4x6yAXaNJ1Bwi693i6NtMbvJPZg?e=Tbd92g"
+)
+
+PLAYBOOK_URL = (
+    "https://miro.com/app/dashboard/"
+)
+
+DAILY_ANALYSIS_URL = (
+    "https://app.powerbi.com/reportEmbed?reportId=8f105737-0465-44ee-822a-0791181fc5ca"
+    "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
+)
+
+PPT_WEEKLY_URL = (
+    "https://app.powerbi.com/reportEmbed?reportId=08e074d4-3c03-46b9-b533-812c20defe3e" 
+    "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
+)
+
+PPT_WEEKLY_SHIOK_URL = (
+    "https://app.powerbi.com/reportEmbed?reportId=c250baad-0d3f-4420-b764-ff3dd9cd1510"
     "&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
 )
 
