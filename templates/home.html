@@ -516,6 +516,7 @@
       // ===== Power BI Button Logic (non-protected ones remain direct) =====
       const YWT_PBI_URL =
       "https://app.powerbi.com/reportEmbed?reportId=4932995f-e9e0-45ee-8696-25301d95970e&autoAuth=true&ctid=bc1b92b9-5dc9-49be-995b-c97eb515a1d3"
+      document.getElementById('roleForm')
         ?.addEventListener('submit', function (e) {
           const btn = e.submitter;
           if (!btn) return;
